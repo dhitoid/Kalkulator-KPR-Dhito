@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Kalkulator KPR — Kalkulator</title>
-  <meta name="description" content="Simulasi angsuran KPR — Kalkulator By Dhito">
+  <title>Kalkulator KPR — Kalkulator Praktis</title>
+  <meta name="description" content="Simulasi angsuran KPR — Kalkulator Praktis oleh Dhito">
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <!-- html2canvas for screenshot -->
@@ -56,8 +56,8 @@
     <header>
       <div id="logo" class="app-icon" title="Ketuk 3x untuk admin">🏠</div>
       <div>
-        <h1>Kalkulator KPR — Kalkulator</h1>
-        <div class="muted">Simulasi angsuran KPR — By Dhito</div>
+        <h1>Kalkulator KPR — Kalkulator Praktis</h1>
+        <div class="muted">Simulasi angsuran KPR — Dhito</div>
       </div>
     </header>
 
@@ -70,7 +70,7 @@
 
         <div style="display:flex;gap:8px;margin-top:12px">
           <div style="flex:1">
-            <label for="price">Harga Properti</label>
+            <label for="price">Harga rumah</label>
             <input id="price" class="input money" inputmode="numeric" value="1000000000" />
           </div>
         </div>
@@ -409,8 +409,8 @@ calcBtn.addEventListener('click', handleCalculate);
 
 /* ---------------- Reset ---------------- */
 resetBtn.addEventListener('click', ()=>{
-  priceEl.value = '0'; dpValEl.value='0'; dpPctEl.value='0';
-  yearsEl.value='0'; bankRates = loadBankRates(); populateBankSelect(); bankEl.value='BCA'; updateRateFromBank();
+  priceEl.value = '1000000000'; dpValEl.value='200000000'; dpPctEl.value='20';
+  yearsEl.value='15'; bankRates = loadBankRates(); populateBankSelect(); bankEl.value='BCA'; updateRateFromBank();
   otherFeesEl.value='5000000'; extraEl.value='0';
   summaryDiv.style.display='none';
   amortTableBody.innerHTML = '';
@@ -448,7 +448,7 @@ function buildShareText(){
   const monthly = fmtRupiah(d.summary.monthly);
   const totalInterest = fmtRupiah(d.summary.totalInterest);
   const totalPay = fmtRupiah(d.summary.totalPayment);
-  return `🏠 Simulasi KPR — Kalkulator By (Dhito)\nBank: ${bankName}\nHarga rumah: ${price}\nUang muka: ${dp}\nTenor: ${tenor}\nSuku bunga: ${rate}\n\nAngsuran/bln: ${monthly}\nTotal bunga: ${totalInterest}\nTotal bayar: ${totalPay}\n\nCoba sendiri: ${deployLink}`;
+  return `🏠 Simulasi KPR — Kalkulator Praktis (Dhito)\nBank: ${bankName}\nHarga rumah: ${price}\nUang muka: ${dp}\nTenor: ${tenor}\nSuku bunga: ${rate}\n\nAngsuran/bln: ${monthly}\nTotal bunga: ${totalInterest}\nTotal bayar: ${totalPay}\n\nCoba sendiri: ${deployLink}`;
 }
 shareTextBtn.addEventListener('click', ()=>{
   const txt = buildShareText();
