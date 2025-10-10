@@ -19,118 +19,291 @@
     --blur-bg: blur(14px);
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial;
   }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,#f9fbff 0%,var(--bg) 100%);-webkit-font-smoothing:antialiased}
-  .wrap{max-width:980px;margin:20px auto;padding:12px}
-  header{display:flex;gap:14px;align-items:center;margin-bottom:18px;backdrop-filter:var(--blur-bg)}
-  .app-icon{width:56px;height:56px;border-radius:14px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:26px;box-shadow:0 10px 24px rgba(0,122,255,0.18);overflow:hidden;flex-shrink:0}
-  .app-icon img{width:100%;height:100%;object-fit:contain;border-radius:12px}
-  .app-title{display:flex;flex-direction:column}
-  .app-title h1{font-size:1.15rem;margin:0;color:#0f172a;font-weight:700}
-  .app-title .muted{color:var(--muted);font-size:0.92rem;margin-top:3px}
-  .grid{display:grid;grid-template-columns:1fr;gap:14px}
-  @media(min-width:920px){ .grid{grid-template-columns:380px 1fr} }
-  .card{background:var(--card);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow);backdrop-filter:var(--blur-bg);border:1px solid rgba(255,255,255,0.6);transition:transform .18s ease,box-shadow .18s ease}
-  .card:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(2,6,23,0.09)}
-  label{display:block;font-size:0.86rem;color:var(--muted);margin-bottom:6px;font-weight:600}
-  .input{width:100%;padding:12px;border-radius:12px;border:1px solid #e6edf8;font-size:1rem;background:linear-gradient(180deg,#fff,#fbfdff);transition:box-shadow .15s,border-color .15s}
-  .input:focus{outline:none;box-shadow:0 6px 20px rgba(0,122,255,0.08);border-color:var(--accent)}
-  .row{display:flex;gap:10px}
-  .btn{padding:10px 14px;border-radius:12px;background:var(--accent);color:#fff;border:none;font-weight:700;cursor:pointer;transition:transform .12s,opacity .12s}
-  .btn:hover{transform:translateY(-1px);opacity:.96}
-  .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(0,122,255,0.12)}
-  .small{font-size:0.82rem;color:var(--muted)}
-  .stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-  .stat{flex:1;min-width:140px;padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff,#f8fbff);box-shadow:inset 0 -1px 0 rgba(0,0,0,0.03);text-align:center}
-  table{width:100%;border-collapse:collapse;font-size:0.88rem;margin-top:10px}
-  th,td{padding:10px;border-bottom:1px solid #eef6ff;text-align:right}
-  th{background:transparent;color:var(--muted);font-weight:700}
-  .left{text-align:left}
-  .controls{display:flex;gap:8px;align-items:center;flex-wrap:/* === TABEL BUNGA BERJENJANG – versi rapi dan responsif === */
-#tieredRatesContainer {
-  overflow-x: auto; /* biar bisa di-scroll di HP */
-  -webkit-overflow-scrolling: touch;
-}
 
-#tieredRatesTable {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 6px;
-  min-width: 340px; /* pastikan tidak terlalu sempit di layar kecil */
-}
+  * { box-sizing: border-box; }
 
-#tieredRatesTable th,
-#tieredRatesTable td {
-  padding: 6px 8px;
-  border-bottom: 1px solid #f1f6ff;
-  vertical-align: middle;
-  white-space: nowrap; /* cegah teks pecah ke bawah */
-}
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: linear-gradient(180deg, #f9fbff 0%, var(--bg) 100%);
+    -webkit-font-smoothing: antialiased;
+  }
 
-#tieredRatesTable th.left,
-#tieredRatesTable td.left {
-  text-align: left;
-}
+  .wrap {
+    max-width: 980px;
+    margin: 20px auto;
+    padding: 12px;
+  }
 
-/* ==== Input bunga per tahun ==== */
-#tieredRatesTable input.input {
-  padding: 6px 8px;
-  height: 34px;
-  width: 80px;           /* bunga tetap ringkas */
-  font-size: 0.95rem;
-  text-align: right;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background: linear-gradient(180deg,#fff,#fbfdff);
-  box-sizing: border-box;
-}
+  header {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 18px;
+    backdrop-filter: var(--blur-bg);
+  }
 
-/* ==== Kolom Angsuran (Rp) ==== */
-#tieredRatesTable .amt {
-  text-align: right;
-  width: 160px;          /* lebih lebar agar semua angka muat */
-  font-weight: 600;
-  font-family: ui-monospace, monospace;
-}
+  .app-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 26px;
+    box-shadow: 0 10px 24px rgba(0,122,255,0.18);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
 
-/* ==== Fokus input ==== */
-#tieredRatesTable input.input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 4px rgba(0,122,255,0.2);
-}
+  .app-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 12px;
+  }
 
-/* ==== Header tabel ==== */
-#tieredRatesTable th {
-  font-size: 0.85rem;
-  color: var(--muted);
-  font-weight: 700;
-}
+  .app-title {
+    display: flex;
+    flex-direction: column;
+  }
 
-/* ==== Rapatkan label di atas tabel ==== */
-#tieredRatesContainer > div:first-child {
-  margin-bottom: 4px;
-}
+  .app-title h1 {
+    font-size: 1.15rem;
+    margin: 0;
+    color: #0f172a;
+    font-weight: 700;
+  }
 
-/* ==== Responsif: biar tetap enak dibaca di HP ==== */
-@media (max-width: 480px) {
+  .app-title .muted {
+    color: var(--muted);
+    font-size: 0.92rem;
+    margin-top: 3px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  @media(min-width:920px){
+    .grid { grid-template-columns: 380px 1fr; }
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    backdrop-filter: var(--blur-bg);
+    border: 1px solid rgba(255,255,255,0.6);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 36px rgba(2,6,23,0.09);
+  }
+
+  label {
+    display: block;
+    font-size: 0.86rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #e6edf8;
+    font-size: 1rem;
+    background: linear-gradient(180deg, #fff, #fbfdff);
+    transition: box-shadow .15s, border-color .15s;
+  }
+
+  .input:focus {
+    outline: none;
+    box-shadow: 0 6px 20px rgba(0,122,255,0.08);
+    border-color: var(--accent);
+  }
+
+  .row { display: flex; gap: 10px; }
+
+  .btn {
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .12s, opacity .12s;
+  }
+
+  .btn:hover { transform: translateY(-1px); opacity: .96; }
+
+  .btn.ghost {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid rgba(0,122,255,0.12);
+  }
+
+  .small { font-size: 0.82rem; color: var(--muted); }
+
+  .stats {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+
+  .stat {
+    flex: 1;
+    min-width: 140px;
+    padding: 12px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #fff, #f8fbff);
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,0.03);
+    text-align: center;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    margin-top: 10px;
+  }
+
+  th, td {
+    padding: 10px;
+    border-bottom: 1px solid #eef6ff;
+    text-align: right;
+  }
+
+  th { background: transparent; color: var(--muted); font-weight: 700; }
+
+  .left { text-align: left; }
+
+  /* === TABEL BUNGA BERJENJANG – versi FIXED (tanpa scroll) === */
   #tieredRatesTable {
-    min-width: 420px; /* biar bisa discroll horizontal */
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 6px;
+    table-layout: fixed; /* biar kolom auto menyesuaikan */
   }
-  #tieredRatesTable input.input {
-    width: 90px;
-  }
-  #tieredRatesTable .amt {
-    width: 180px;
-  }
-}
 
-  .modal { position: fixed; inset: 0; display:none; align-items:center; justify-content:center; background: rgba(10,20,40,0.45); z-index:9999; }
-  .modal .inner { background: #fff; padding: 16px; border-radius:12px; width: 92%; max-width:520px; box-shadow:0 20px 60px rgba(2,6,23,0.4); }
-  .bank-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-  .bank-row input{flex:1}
-  .help { font-size:0.8rem; color:#475569; margin-top:8px; }
-  @media(max-width:480px){ header{gap:10px} .app-title h1{font-size:1rem} .card{padding:12px} .app-icon{width:48px;height:48px} #tieredRatesTable input.input{width:80px} #tieredRatesTable .amt{width:110px;font-size:0.95rem} }
+  #tieredRatesTable th,
+  #tieredRatesTable td {
+    padding: 6px 6px;
+    border-bottom: 1px solid #f1f6ff;
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #tieredRatesTable th.left,
+  #tieredRatesTable td.left { text-align: left; }
+
+  /* Kolom lebar tiap tipe */
+  #tieredRatesTable th:nth-child(1),
+  #tieredRatesTable td:nth-child(1) { width: 16%; }  /* Tahun */
+  #tieredRatesTable th:nth-child(2),
+  #tieredRatesTable td:nth-child(2) { width: 28%; }  /* Bunga (%) */
+  #tieredRatesTable th:nth-child(3),
+  #tieredRatesTable td:nth-child(3) { width: 56%; }  /* Angsuran */
+
+  /* Input bunga */
+  #tieredRatesTable input.input {
+    padding: 6px 6px;
+    height: 34px;
+    width: 100%;
+    font-size: 0.95rem;
+    text-align: right;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: linear-gradient(180deg,#fff,#fbfdff);
+    box-sizing: border-box;
+  }
+
+  /* Kolom Angsuran */
+  #tieredRatesTable .amt {
+    text-align: right;
+    display: inline-block;
+    width: 100%;
+    font-weight: 600;
+    font-family: ui-monospace, monospace;
+    white-space: nowrap;
+  }
+
+  #tieredRatesTable input.input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 4px rgba(0,122,255,0.2);
+  }
+
+  #tieredRatesTable th {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  #tieredRatesContainer > div:first-child {
+    margin-bottom: 4px;
+  }
+
+  @media (max-width: 480px) {
+    #tieredRatesTable th:nth-child(1),
+    #tieredRatesTable td:nth-child(1) { width: 18%; }
+    #tieredRatesTable th:nth-child(2),
+    #tieredRatesTable td:nth-child(2) { width: 30%; }
+    #tieredRatesTable th:nth-child(3),
+    #tieredRatesTable td:nth-child(3) { width: 52%; }
+    
+    #tieredRatesTable input.input {
+      font-size: 0.9rem;
+      padding: 5px 6px;
+    }
+  }
+
+  /* Modal */
+  .modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10,20,40,0.45);
+    z-index: 9999;
+  }
+
+  .modal .inner {
+    background: #fff;
+    padding: 16px;
+    border-radius: 12px;
+    width: 92%;
+    max-width: 520px;
+    box-shadow: 0 20px 60px rgba(2,6,23,0.4);
+  }
+
+  .bank-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .bank-row input { flex: 1; }
+
+  .help { font-size: 0.8rem; color: #475569; margin-top: 8px; }
+
+  @media(max-width:480px){
+    header{gap:10px}
+    .app-title h1{font-size:1rem}
+    .card{padding:12px}
+    .app-icon{width:48px;height:48px}
+  }
 </style>
+
 </head>
 <body>
   <div class="wrap">
