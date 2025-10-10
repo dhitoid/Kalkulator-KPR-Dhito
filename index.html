@@ -189,8 +189,7 @@
     </div>
   </div>
 
-<script>
-/* ---------------- Utilities ---------------- */
+<script>/* ---------------- Utilities ---------------- */
 // Format angka ke rupiah
 function fmtRupiah(n){
   if(!isFinite(n)) return 'Rp 0';
@@ -199,7 +198,7 @@ function fmtRupiah(n){
   return sign + 'Rp ' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
-// Ubah teks seperti "389.096.000" atau "Rp 389.096.000" jadi angka murni
+// Ubah teks seperti "389.096.000" atau "Rp 389.096.000" jadi angka murni 389096000
 function unfmt(v){
   if (!v) return 0;
   const clean = String(v).replace(/[^\d\-]/g, ''); // hapus Rp dan titik
@@ -226,7 +225,6 @@ function attachMoneyInputs() {
     });
   });
 }
-
 
 /* ---------------- Bank rates / persistence ---------------- */
 const defaultBankRates = {
@@ -434,10 +432,8 @@ function attachMoneyInputs() {
 attachMoneyInputs();
 
 /* ---------------- Interaksi antar field (Harga & DP) ---------------- */
-const priceEl = document.getElementById('priceEl');
-const dpValEl = document.getElementById('dpValEl');
-const dpPctEl = document.getElementById('dpPctEl');
 
+// Saat ubah persen DP → ubah otomatis nominal DP
 dpPctEl.addEventListener('input', () => {
   const price = unfmt(priceEl.value);
   const pct = parseFloat(dpPctEl.value) || 0;
@@ -447,6 +443,7 @@ dpPctEl.addEventListener('input', () => {
   }
 });
 
+// Saat ubah nominal DP → ubah otomatis persen DP
 dpValEl.addEventListener('input', () => {
   const price = unfmt(priceEl.value);
   const dp = unfmt(dpValEl.value);
@@ -456,6 +453,7 @@ dpValEl.addEventListener('input', () => {
   }
 });
 
+// Saat ubah harga rumah → update otomatis DP nominal berdasarkan persen
 priceEl.addEventListener('input', () => {
   const price = unfmt(priceEl.value);
   const pct = parseFloat(dpPctEl.value) || 0;
@@ -468,6 +466,7 @@ priceEl.addEventListener('input', () => {
 
 /* ---------------- Calculate handler ---------------- */
 function handleCalculate(){
+  // Ambil angka bersih tanpa titik
   const price = unfmt(priceEl.value);
   const dpVal = unfmt(dpValEl.value);
   const dpPct = parseFloat(dpPctEl.value) || 0;
@@ -476,6 +475,7 @@ function handleCalculate(){
   const otherFees = unfmt(otherFeesEl.value);
   const extra = unfmt(extraEl.value);
 
+  // Hitung DP berdasarkan persen bila kolom nominal kosong
   let dp = dpVal;
   if (!dp && dpPct && price) dp = Math.round(price * dpPct / 100);
   if (price && dp) dpPctEl.value = (dp / price * 100).toFixed(2);
