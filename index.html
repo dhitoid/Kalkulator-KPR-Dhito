@@ -406,41 +406,99 @@ function computeTieredPreview(baseRates, principal, years, extra=0){
   return preview;
 }
 
-function generateTieredTable(){
+function generateTieredTable() {
   const years = Math.min(parseInt(yearsEl.value) || 0, 25);
   const baseRate = parseFloat(rateEl.value) || 0;
   tieredRatesTableBody.innerHTML = '';
   const principal = Math.max(0, unfmt(priceEl.value) - unfmt(dpValEl.value) + unfmt(otherFeesEl.value));
   const extra = unfmt(extraEl.value);
   const defaultRates = [];
-  for(let i=1;i<=years;i++) defaultRates.push((baseRate + (i-1)*0.25).toFixed(2));
+  for (let i = 1; i <= years; i++) defaultRates.push((baseRate + (i - 1) * 0.25).toFixed(2));
+
   const preview = computeTieredPreview(defaultRates, principal, years, extra);
-  for(let i=1;i<=years;i++){
-    const tr=document.createElement('tr');
-    const tdYear=document.createElement('td'); tdYear.textContent = i; tdYear.className='left';
-    const tdInput=document.createElement('td');
-    const input=document.createElement('input'); input.type='number'; input.step='0.01'; input.value = defaultRates[i-1]; input.className='input';
-    input.style.width='110px';
-    tdInput.appendChild(input);
-    const tdAmt=document.createElement('td'); tdAmt.className='amt';
-    const prev = preview.find(p=>p.year===i);
-    tdAmt.textContent = prev ? fmtRupiah(prev.monthlyPayment) : fmtRupiah(0);
-    tr.appendChild(tdYear); tr.appendChild(tdInput); tr.appendChild(tdAmt);
+
+  for (let i = 1; i <= years; i++) {
+    const tr = document.createElement('tr');
+
+    // Tahun
+    const tdYear = document.createElement('td');
+    tdYear.textContent = i;
+    tdYear.className = 'left';
+
+    // Input bunga
+    const tdInput = document.createElement('td');
+    const inputRate = document.createElement('input');
+    inputRate.type = 'number';
+    inputRate.step = '0.01';
+    inputRate.value = defaultRates[i - 1];
+    inputRate.className = 'input';
+    inputRate.style.width = '110px';
+    tdInput.appendChild(inputRate);
+
+    // Input angsuran per bulan
+    const tdAmt = document.createElement('td');
+    tdAmt.className = 'amt';
+    const inputAmt = document.createElement('input');
+    inputAmt.type = 'text';
+    inputAmt.className = 'input money';
+    inputAmt.value = formatNumberWithDots(Math.round(preview[i - 1]?.monthlyPayment || 0));
+    tdAmt.appendChild(inputAmt);
+
+    tr.appendChild(tdYear);
+    tr.appendChild(tdInput);
+    tr.appendChild(tdAmt);
     tieredRatesTableBody.appendChild(tr);
 
-    input.addEventListener('input', ()=>{
-      const inputs = Array.from(tieredRatesTableBody.querySelectorAll('input')).map(inp=>parseFloat(inp.value)||0);
-      const preview2 = computeTieredPreview(inputs, principal, years, extra);
-      const rows = tieredRatesTableBody.querySelectorAll('tr');
-      // ensure we update every row up to years
-      for(let y=1;y<=years;y++){
-        const amtCell = rows[y-1].querySelector('.amt');
-        const p = preview2.find(pp=>pp.year===y);
-        amtCell.textContent = p ? fmtRupiah(p.monthlyPayment) : fmtRupiah(0);
+    // 🔄 Saat bunga berubah → update angsuran
+    inputRate.addEventListener('input', () => {
+      const rates = Array.from(tieredRatesTableBody.querySelectorAll('tr')).map(row =>
+        parseFloat(row.querySelector('input[type="number"]').value) || 0
+      );
+      const newPreview = computeTieredPreview(rates, principal, years, extra);
+      Array.from(tieredRatesTableBody.querySelectorAll('tr')).forEach((row, idx) => {
+        const amtInput = row.querySelector('input.money');
+        amtInput.value = formatNumberWithDots(Math.round(newPreview[idx]?.monthlyPayment || 0));
+      });
+    });
+
+    // 🔄 Saat angsuran berubah → hitung bunga otomatis
+    inputAmt.addEventListener('input', () => {
+      const amt = unfmt(inputAmt.value);
+      const remainingMonths = Math.max(1, (years - i + 1) * 12);
+      // kita cari bunga yang membuat payment ≈ amt
+      let rateGuess = 0;
+      let balance = principal;
+      for (let y = 1; y < i; y++) {
+        const rateY = parseFloat(tieredRatesTableBody.querySelectorAll('input[type="number"]')[y - 1].value) / 100 / 12;
+        const remainM = Math.max(1, (years - y + 1) * 12);
+        const monthlyY = rateY === 0 ? balance / remainM : (rateY * balance) / (1 - Math.pow(1 + rateY, -remainM));
+        for (let m = 0; m < 12 && balance > 0.0001; m++) {
+          const intY = balance * rateY;
+          const pokokY = monthlyY - intY + extra;
+          balance = Math.max(0, balance - pokokY);
+        }
+      }
+
+      // coba cari bunga via iterasi (Newton-Raphson sederhana)
+      let foundRate = 0;
+      for (let r = 0; r <= 20; r += 0.001) {
+        const rMonthly = r / 100 / 12;
+        const mPay = rMonthly === 0 ? balance / remainingMonths : (rMonthly * balance) / (1 - Math.pow(1 + rMonthly, -remainingMonths));
+        if (Math.abs(mPay - amt) < 5) {
+          foundRate = r;
+          break;
+        }
+      }
+
+      if (foundRate) {
+        inputRate.value = foundRate.toFixed(2);
+        inputRate.dispatchEvent(new Event('input'));
       }
     });
   }
+  attachMoneyInputs();
 }
+
 
 interestTypeEl.addEventListener('change', ()=>{
   const val = interestTypeEl.value;
