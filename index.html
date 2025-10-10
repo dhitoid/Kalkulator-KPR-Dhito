@@ -109,7 +109,7 @@
           <label for="interestType">Jenis bunga</label>
           <select id="interestType" class="input" aria-label="Jenis bunga">
             <option value="flat" selected>Flat (Tetap)</option>
-            <option value="tiered">Berjenjang (Per tahun berubah)</option>
+            <option value="tiered">Berjenjang (Floating)</option>
           </select>
         </div>
 
@@ -383,7 +383,8 @@ priceEl.addEventListener('input', () => {
 function computeTieredPreview(baseRates, principal, years, extra=0){
   const preview = [];
   let balance = principal;
-  for(let year=1; year<=years && year<=25 && balance>0.0001; year++){
+  const maxY = Math.min(years,25);
+  for(let year=1; year<=maxY && balance>0.0001; year++){
     const ratePercent = (baseRates[year-1] != null) ? baseRates[year-1] : baseRates[baseRates.length-1];
     const yearlyRate = (parseFloat(ratePercent) || 0) / 100;
     const monthlyRate = yearlyRate / 12;
@@ -470,17 +471,20 @@ function handleCalculate(){
   if(principal<=0||months<=0){ alert("Pastikan semua input (harga, tenor, dll.) diisi dengan benar."); return; }
 
   let res;
+  let baseRatesForResult = null;
   if(interestTypeEl.value === 'flat'){
     res = calcAmortization({ principal, annualRate: rate, months, extra });
+    baseRatesForResult = Array(years).fill(rate);
   } else {
     const inputs = tieredRatesTableBody.querySelectorAll('input');
     let baseRates = Array.from(inputs).map(i=>parseFloat(i.value) || rate);
     while(baseRates.length < years) baseRates.push(baseRates[baseRates.length-1] || rate);
+    baseRatesForResult = baseRates.slice(0, years);
     res = calcTieredAmortization({ principal, baseRates, years, extra });
   }
   renderResults(res);
   window._lastResult = {
-    inputs:{ price, dp, years, rate, otherFees, extra, bank: bankEl.value, interestType: interestTypeEl.value },
+    inputs:{ price, dp, years, rate, otherFees, extra, bank: bankEl.value, interestType: interestTypeEl.value, baseRates: baseRatesForResult },
     summary: { monthly: res.monthlyPayment, totalInterest: res.totalInterest, totalPayment: res.totalPayment, schedule: res.schedule }
   };
 }
@@ -517,11 +521,12 @@ exportImgBtn.addEventListener('click', async ()=>{
   if(!window._lastResult){ alert('Silakan hitung terlebih dahulu.'); return; }
   try {
     const container = document.createElement('div');
-    container.style.padding='18px'; container.style.background='#fff'; container.style.width='900px';
-    container.innerHTML = `<h3 style="margin:0 0 10px 0">Simulasi KPR — ${window._lastResult.inputs.bank}</h3>
+    container.style.padding='18px'; container.style.background='#fff'; container.style.width='900px'; container.style.boxSizing='border-box';
+    const inputs = window._lastResult.inputs;
+    container.innerHTML = `<h3 style="margin:0 0 10px 0">Simulasi KPR — ${inputs.bank}</h3>
       <div style="margin-bottom:10px">
-        <div>Pinjaman: ${fmtRupiah(window._lastResult.inputs.price - window._lastResult.inputs.dp + window._lastResult.inputs.otherFees || 0)}</div>
-        <div>Angsuran/bln: ${fmtRupiah(window._lastResult.summary.monthly || 0)}</div>
+        <div>Pinjaman: ${fmtRupiah(inputs.price - inputs.dp + inputs.otherFees || 0)}</div>
+        <div>Angsuran/bln (preview): ${fmtRupiah(window._lastResult.summary.monthly || 0)}</div>
         <div>Total bunga: ${fmtRupiah(window._lastResult.summary.totalInterest || 0)}</div>
       </div><div id="miniChartWrap" style="width:100%;height:260px"></div>`;
     document.body.appendChild(container);
@@ -549,24 +554,21 @@ exportImgBtn.addEventListener('click', async ()=>{
 shareTextBtn.addEventListener('click', ()=>{
   const d = window._lastResult;
   if(!d){ alert('Silakan hitung terlebih dahulu.'); return; }
-  let txt = `🏠 Simulasi KPR — ${d.inputs.bank}\nHarga rumah: ${fmtRupiah(d.inputs.price)}\nUang muka: ${fmtRupiah(d.inputs.dp)}\nTenor: ${d.inputs.years} tahun\n`;
+  let txt = `🏠 Simulasi KPR — ${d.inputs.bank}\nHarga: ${fmtRupiah(d.inputs.price)}\nUang muka: ${fmtRupiah(d.inputs.dp)}\nTenor: ${d.inputs.years} tahun\n`;
   if(d.inputs.interestType === 'flat'){
     txt += `Suku bunga: ${d.inputs.rate}% (Flat)\nAngsuran/bln: ${fmtRupiah(d.summary.monthly)}\nTotal bunga: ${fmtRupiah(d.summary.totalInterest)}\nTotal bayar: ${fmtRupiah(d.summary.totalPayment)}\n`;
   } else {
-    txt += `Jenis: Berjenjang\n`;
+    txt += `Jenis: Berjenjang (Floating)\n\n`;
     const schedule = d.summary.schedule || [];
-    // compute per-year monthly preview from schedule
     const years = d.inputs.years;
-    for(let y=1;y<=years;y++){
-      const startMonth = (y-1)*12 + 1;
-      if(startMonth > schedule.length) break;
-      const row = schedule[startMonth-1];
-      const rateInputRow = (function(){
-        const inputs = Array.from(tieredRatesTableBody.querySelectorAll('input')).map(i=>parseFloat(i.value)||d.inputs.rate);
-        return inputs[y-1] || inputs[inputs.length-1] || d.inputs.rate;
-      })();
+    const baseRates = d.inputs.baseRates || [];
+    for(let y=1;y<=Math.min(years,25);y++){
+      const startMonthIndex = (y-1)*12;
+      if(startMonthIndex >= schedule.length) break;
+      const row = schedule[startMonthIndex];
+      const rateVal = (baseRates[y-1] != null) ? baseRates[y-1] : (baseRates[baseRates.length-1] || d.inputs.rate);
       const monthly = row ? (row.principalPayment + row.interestPayment) : 0;
-      txt += `Tahun ${y}: ${rateInputRow.toFixed(2)}% → ${fmtRupiah(monthly)} /bln\n`;
+      txt += `Tahun ${y}: ${Number(rateVal).toFixed(2)}% → ${fmtRupiah(monthly)} /bln\n`;
     }
     txt += `\nTotal bunga: ${fmtRupiah(d.summary.totalInterest)}\nTotal bayar: ${fmtRupiah(d.summary.totalPayment)}\n`;
   }
