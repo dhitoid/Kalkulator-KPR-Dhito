@@ -1,588 +1,277 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Kalkulator KPR — Kalkulator Praktis</title>
-  <meta name="description" content="Simulasi angsuran KPR — Kalkulator Praktis oleh Dhito">
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <!-- html2canvas for screenshot -->
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
-  <style>
-    :root{
-      --bg: #f3f7ff;
-      --card: #ffffff;
-      --muted: #63738a;
-      --accent: #0b5ed7;
-      --radius-lg: 16px;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,#eef4ff 0%,var(--bg) 100%);-webkit-font-smoothing:antialiased}
-    .wrap{max-width:980px;margin:16px auto;padding:14px}
-    header{display:flex;gap:12px;align-items:center;margin-bottom:14px}
-    .app-icon{width:56px;height:56px;border-radius:12px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:26px;box-shadow:0 8px 20px rgba(11,94,215,0.14);user-select:none}
-    h1{font-size:1.05rem;margin:0}
-    .muted{color:var(--muted);font-size:0.92rem}
-    .grid{display:grid;grid-template-columns:1fr;gap:12px}
-    @media(min-width:920px){ .grid{grid-template-columns:380px 1fr} }
-    .card{background:var(--card);border-radius:var(--radius-lg);padding:16px;box-shadow:0 8px 30px rgba(15,23,42,0.06)}
-    label{display:block;font-size:0.85rem;color:var(--muted);margin-bottom:6px;font-weight:600}
-    .input{width:100%;padding:12px;border-radius:12px;border:1px solid #eef3ff;font-size:1rem;background:linear-gradient(180deg,#fff,#fbfdff)}
-    .row{display:flex;gap:10px}
-    .btn{padding:10px 14px;border-radius:12px;background:var(--accent);color:#fff;border:none;font-weight:700;cursor:pointer}
-    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(11,94,215,0.12)}
-    .small{font-size:0.82rem;color:var(--muted)}
-    .stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    .stat{flex:1;min-width:140px;padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff,#f8fbff);box-shadow:inset 0 -1px 0 rgba(0,0,0,0.03)}
-    table{width:100%;border-collapse:collapse;font-size:0.88rem;margin-top:10px}
-    th,td{padding:8px;border-bottom:1px solid #f1f6ff;text-align:right}
-    th{background:transparent;color:var(--muted);font-weight:700}
-    .left{text-align:left}
-    .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    .modal { position: fixed; inset: 0; display:none; align-items:center; justify-content:center; background: rgba(10,20,40,0.45); z-index:9999; }
-    .modal .inner { background: #fff; padding: 16px; border-radius:12px; width: 92%; max-width:520px; box-shadow:0 20px 60px rgba(2,6,23,0.4); }
-    .bank-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-    .bank-row input{flex:1}
-    .help { font-size:0.8rem; color:#475569; margin-top:8px; }
-    /* small screens */
-    @media(max-width:420px){ .app-icon{width:48px;height:48px;font-size:22px} .wrap{padding:12px} }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kalkulator KPR Dhito</title>
+<link rel="manifest" href="manifest.json" />
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    background: linear-gradient(180deg, #1a73e8 0%, #0f4eb3 100%);
+    color: #fff;
+    margin: 0; padding: 0;
+    display: flex; flex-direction: column; align-items: center;
+    min-height: 100vh;
+    backdrop-filter: blur(20px);
+  }
+  header {
+    text-align: center;
+    padding: 1.2em 0;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 1.8em;
+    letter-spacing: 1px;
+  }
+  .container {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 420px;
+    padding: 1.5em;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    margin-bottom: 2em;
+  }
+  label {
+    display: block;
+    margin-top: 1em;
+    font-size: 0.9em;
+  }
+  .input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .prefix {
+    position: absolute;
+    left: 12px;
+    color: #ddd;
+    font-weight: 500;
+  }
+  .input-group input {
+    padding-left: 35px;
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    height: 44px;
+    font-size: 16px;
+    margin-top: 4px;
+    text-align: left;
+  }
+  select, button {
+    width: 100%;
+    height: 44px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: none;
+    margin-top: 10px;
+  }
+  button {
+    background: #fff;
+    color: #0f4eb3;
+    font-weight: 600;
+  }
+  .result {
+    margin-top: 1em;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 1em;
+  }
+  #adminPanel {
+    display: none;
+    background: rgba(255,255,255,0.2);
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 1em;
+  }
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div id="logo" class="app-icon" title="Ketuk 3x untuk admin">🏠</div>
-      <div>
-        <h1>Kalkulator KPR — Kalkulator Praktis</h1>
-        <div class="muted">Simulasi angsuran KPR — Dhito</div>
-      </div>
-    </header>
+<header>
+  <h1 id="logo">🏠 Kalkulator KPR Dhito</h1>
+</header>
 
-    <div class="grid">
-      <div class="card" id="input-card">
-        <label for="bank">Pilih Bank</label>
-        <select id="bank" class="input" aria-label="Pilih Bank">
-          <!-- options generated by JS -->
-        </select>
-
-        <div style="display:flex;gap:8px;margin-top:12px">
-          <div style="flex:1">
-            <label for="price">Harga rumah</label>
-            <input id="price" class="input money" inputmode="numeric" value="1000000000" />
-          </div>
-        </div>
-
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <div style="flex:1">
-            <label for="dpVal">Uang muka</label>
-            <input id="dpVal" class="input money" inputmode="numeric" value="200000000" />
-          </div>
-          <div style="width:120px">
-            <label for="dpPct">atau (%)</label>
-            <input id="dpPct" class="input" inputmode="numeric" value="20" />
-          </div>
-        </div>
-
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <div style="flex:1">
-            <label for="years">Tenor (tahun)</label>
-            <input id="years" class="input" inputmode="numeric" type="number" min="1" max="30" value="15" />
-          </div>
-          <div style="width:160px">
-            <label for="rate">Suku bunga (% per tahun)</label>
-            <input id="rate" class="input" inputmode="decimal" value="7.25" />
-          </div>
-        </div>
-
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <div style="flex:1">
-            <label for="otherFees">Biaya lain (opsional)</label>
-            <input id="otherFees" class="input money" inputmode="numeric" value="5000000" />
-          </div>
-          <div style="width:160px">
-            <label for="extra">Pembayaran ekstra/bln</label>
-            <input id="extra" class="input money" inputmode="numeric" value="0" />
-          </div>
-        </div>
-
-        <div style="display:flex;gap:10px;margin-top:14px;align-items:center">
-          <button id="calcBtn" class="btn">Hitung</button>
-          <button id="resetBtn" class="btn ghost">Reset</button>
-          <div style="margin-left:auto" class="small">Metode: <strong>annuitas</strong></div>
-        </div>
-
-        <div class="stats" id="summary" style="display:none">
-          <div class="stat">
-            <div class="small">Pinjaman</div>
-            <div id="loanAmt" style="font-size:1.05rem;font-weight:800">Rp 0</div>
-          </div>
-          <div class="stat">
-            <div class="small">Angsuran/bln</div>
-            <div id="monthly" style="font-size:1.05rem;font-weight:800">Rp 0</div>
-          </div>
-          <div class="stat">
-            <div class="small">Total bunga</div>
-            <div id="totalInterest" style="font-size:1.05rem;font-weight:800">Rp 0</div>
-          </div>
-        </div>
-
-        <div class="help">Tip: ketuk logo di atas 3x untuk mengubah suku bunga bank.</div>
-      </div>
-
-      <div class="card" id="result-card">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-          <h2 style="margin:0">Hasil & Amortisasi</h2>
-          <div class="controls">
-            <button id="exportImg" class="btn">📸 Bagikan Gambar</button>
-            <button id="downloadCsv" class="btn ghost">Ekspor CSV</button>
-            <button id="shareText" class="btn ghost">Kirim ke WhatsApp</button>
-          </div>
-        </div>
-
-        <div id="result-area" style="margin-top:12px">
-          <canvas id="kprChart" height="320" style="width:100%;max-height:420px"></canvas>
-
-          <div style="overflow:auto;margin-top:12px;max-height:280px">
-            <table id="amortTable" aria-live="polite">
-              <thead><tr><th class="left">Bulan</th><th>Saldo awal</th><th>Angsuran pokok</th><th>Bunga</th><th class="left">Saldo akhir</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-
-        <footer style="margin-top:12px">
-          <div class="small">Dibuat oleh Dhito · Catatan: perhitungan menggunakan rumus annuitas. Hasil aktual dapat berbeda.</div>
-        </footer>
-      </div>
-    </div>
+<div class="container" id="mainContainer">
+  <label>Harga Rumah</label>
+  <div class="input-group">
+    <span class="prefix">Rp</span>
+    <input type="text" id="harga" inputmode="numeric" placeholder="Masukkan harga rumah" class="rupiah">
   </div>
 
-  <!-- ADMIN modal -->
-  <div id="modal" class="modal">
-    <div class="inner">
-      <h3>Kelola Suku Bunga Bank</h3>
-      <div id="bankList"></div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
-        <button id="saveBanks" class="btn">Simpan</button>
-        <button id="resetBanks" class="btn ghost">Reset Default</button>
-        <button id="closeModal" class="btn ghost">Tutup</button>
-      </div>
-      <div class="help">Perubahan tersimpan ke browser (localStorage) dan berlaku saat Anda mengakses situs dari perangkat ini.</div>
-    </div>
+  <label>Uang Muka</label>
+  <div class="input-group">
+    <span class="prefix">Rp</span>
+    <input type="text" id="uangMuka" inputmode="numeric" placeholder="Masukkan uang muka" class="rupiah">
   </div>
 
+  <label>Tenor (tahun)</label>
+  <input type="number" id="tenor" placeholder="Masukkan tenor (tahun)" min="1" max="30">
+
+  <label>Pilih Bank</label>
+  <select id="bank">
+    <option value="BCA">BCA</option>
+    <option value="BTN">BTN</option>
+    <option value="BRI">BRI</option>
+    <option value="MANDIRI">Mandiri</option>
+    <option value="BNI">BNI</option>
+    <option value="OCBC">OCBC</option>
+    <option value="BSI">BSI</option>
+  </select>
+
+  <label>Suku Bunga (%)</label>
+  <input type="number" id="bunga" placeholder="Suku bunga" step="0.01">
+
+  <button id="hitung">Hitung KPR</button>
+
+  <div class="result" id="hasil"></div>
+
+  <button id="shareWA">Bagikan ke WhatsApp</button>
+  <button id="shareImg">Bagikan Gambar</button>
+
+  <div id="adminPanel">
+    <h3>Kelola Suku Bunga Bank</h3>
+    <div id="bankList"></div>
+    <button id="resetBank">Reset Default</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script>
-/* ---------------- Utilities ---------------- */
-function fmtRupiah(n){
-  if(!isFinite(n)) return 'Rp 0';
-  const sign = n < 0 ? '-' : '';
-  n = Math.abs(Math.round(n));
-  const s = n.toString();
-  return sign + 'Rp ' + s.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-}
-function unfmt(v){
-  if(v==null) return 0;
-  return Number(String(v).replace(/[^0-9\-\.\,]/g,'').replace(/,/g,'')) || 0;
-}
-/* format input while typing (simple, caret moves to end) */
-function formatMoneyInput(el){
-  const raw = el.value;
-  const n = unfmt(raw);
-  el.value = n === 0 ? '' : fmtRupiah(n).replace('Rp ',''); // store without "Rp " in input to keep editing simple
-}
-
-/* ---------------- Bank rates / persistence ---------------- */
-const defaultBankRates = {
-  'BCA': 7.25,
-  'BTN': 6.90,
-  'BRI': 7.10,
-  'MANDIRI': 7.50,
-  'BNI': 7.40,
-  'OCBC': 7.00,
-  'BSI': 6.85,
-  'CUSTOM': null
+/* === DATA BANK === */
+const defaultRates = {
+  BCA: 7.25, BTN: 6.9, BRI: 7.1,
+  MANDIRI: 7.5, BNI: 7.4, OCBC: 7.3, BSI: 6.8
 };
-const storageKey = 'kpr_bank_rates_v2';
+let bankRates = JSON.parse(localStorage.getItem('bankRates')) || defaultRates;
 
-function loadBankRates(){
-  try {
-    const raw = localStorage.getItem(storageKey);
-    if(!raw) return Object.assign({}, defaultBankRates);
-    const parsed = JSON.parse(raw);
-    return Object.assign({}, defaultBankRates, parsed);
-  } catch(e){
-    return Object.assign({}, defaultBankRates);
-  }
+const bankSelect = document.getElementById('bank');
+const bungaInput = document.getElementById('bunga');
+
+bankSelect.addEventListener('change', () => {
+  const bank = bankSelect.value;
+  bungaInput.value = bankRates[bank];
+});
+
+/* === FORMAT RUPIAH === */
+function formatRupiah(angka) {
+  const numberString = angka.replace(/[^\d]/g, '');
+  if (numberString === '') return '';
+  return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
-function saveBankRates(map){
-  try { localStorage.setItem(storageKey, JSON.stringify(map)); } catch(e){}
+function getNumericValue(str) {
+  return parseInt(str.replace(/[^\d]/g, '')) || 0;
 }
+document.querySelectorAll('.rupiah').forEach(input => {
+  input.addEventListener('input', e => {
+    const cursor = input.selectionStart;
+    const before = input.value.length;
+    const formatted = formatRupiah(e.target.value);
+    input.value = formatted;
+    const after = input.value.length;
+    input.setSelectionRange(cursor + (after - before), cursor + (after - before));
+  });
+  input.addEventListener('blur', e => {
+    if (e.target.value !== '') e.target.value = 'Rp ' + e.target.value;
+  });
+  input.addEventListener('focus', e => {
+    e.target.value = e.target.value.replace('Rp ', '');
+  });
+});
+function getValueRupiah(id){return getNumericValue(document.getElementById(id).value);}
 
-let bankRates = loadBankRates();
+/* === HITUNG KPR === */
+document.getElementById('hitung').addEventListener('click', ()=>{
+  const harga = getValueRupiah('harga');
+  const uangMuka = getValueRupiah('uangMuka');
+  const bunga = parseFloat(bungaInput.value) || 0;
+  const tenor = parseFloat(document.getElementById('tenor').value) || 0;
+  const pinjaman = harga - uangMuka;
+  const bulan = tenor * 12;
+  const rate = bunga / 100 / 12;
+  const angsuran = (pinjaman * rate) / (1 - Math.pow(1 + rate, -bulan));
+  const totalBayar = angsuran * bulan;
+  const totalBunga = totalBayar - pinjaman;
 
-/* ---------------- Elements ---------------- */
-const bankEl = document.getElementById('bank');
-const priceEl = document.getElementById('price');
-const dpValEl = document.getElementById('dpVal');
-const dpPctEl = document.getElementById('dpPct');
-const yearsEl = document.getElementById('years');
-const rateEl = document.getElementById('rate');
-const otherFeesEl = document.getElementById('otherFees');
-const extraEl = document.getElementById('extra');
+  document.getElementById('hasil').innerHTML = `
+    💰 Pinjaman: Rp ${pinjaman.toLocaleString('id-ID')}
+    <br>📅 Angsuran per bulan: <b>Rp ${angsuran.toLocaleString('id-ID')}</b>
+    <br>🏦 Total Bunga: Rp ${totalBunga.toLocaleString('id-ID')}
+    <br>💸 Total Pembayaran: Rp ${totalBayar.toLocaleString('id-ID')}
+  `;
+});
 
-const calcBtn = document.getElementById('calcBtn');
-const resetBtn = document.getElementById('resetBtn');
-const summaryDiv = document.getElementById('summary');
-const loanAmtEl = document.getElementById('loanAmt');
-const monthlyEl = document.getElementById('monthly');
-const totalInterestEl = document.getElementById('totalInterest');
+/* === SHARE WHATSAPP === */
+document.getElementById('shareWA').addEventListener('click', ()=>{
+  const harga = getValueRupiah('harga').toLocaleString('id-ID');
+  const uangMuka = getValueRupiah('uangMuka').toLocaleString('id-ID');
+  const bunga = bungaInput.value;
+  const tenor = document.getElementById('tenor').value;
+  const bank = bankSelect.value;
+  const hasil = document.getElementById('hasil').innerText;
+  const url = "https://dhitoid.github.io/Kalkulator-KPR-Dhito/";
+  const text = `🏠 Simulasi KPR — Kalkulator Dhito
+Bank: ${bank}
+Harga Rumah: Rp ${harga}
+Uang Muka: Rp ${uangMuka}
+Tenor: ${tenor} tahun
+Bunga: ${bunga}%
 
-const amortTableBody = document.querySelector('#amortTable tbody');
-const downloadCsvBtn = document.getElementById('downloadCsv');
-const exportImgBtn = document.getElementById('exportImg');
-const shareTextBtn = document.getElementById('shareText');
+${hasil}
 
-const logo = document.getElementById('logo');
-const modal = document.getElementById('modal');
-const bankList = document.getElementById('bankList');
-const saveBanksBtn = document.getElementById('saveBanks');
-const resetBanksBtn = document.getElementById('resetBanks');
-const closeModalBtn = document.getElementById('closeModal');
+Coba sendiri di 🔗 ${url}`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
+});
 
-const resultArea = document.getElementById('result-area');
-
-/* ---------------- Chart ---------------- */
-let kprChart = null;
-function createChart(labels, datasets){
-  const ctx = document.getElementById('kprChart');
-  if(kprChart) kprChart.destroy();
-  kprChart = new Chart(ctx, {
-    type: 'line',
-    data: { labels, datasets },
-    options: {
-      maintainAspectRatio: false,
-      interaction: { mode:'index', intersect:false },
-      plugins: {
-        legend:{ display:true, position:'bottom' },
-        tooltip:{
-          callbacks:{
-            label: function(ctx){
-              const val = Number(ctx.raw || 0);
-              return ctx.dataset.label + ': ' + fmtRupiah(val);
-            }
-          }
-        }
-      },
-      scales: {
-        y: { ticks: { callback: v => 'Rp ' + Number(v).toLocaleString('id') } }
+/* === SHARE IMAGE === */
+document.getElementById('shareImg').addEventListener('click', ()=>{
+  html2canvas(document.body).then(canvas=>{
+    canvas.toBlob(blob=>{
+      const file = new File([blob], "hasil_kpr.png", {type:"image/png"});
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        navigator.share({files:[file], title:"Simulasi KPR Dhito"});
+      }else{
+        const a=document.createElement('a');
+        a.href=canvas.toDataURL();
+        a.download='hasil_kpr.png';
+        a.click();
       }
-    }
-  });
-}
-
-/* ---------------- Amortization (annuity) ---------------- */
-function calcAmortization({principal, annualRate, months, extra=0}){
-  const r = annualRate / 12 / 100;
-  let baseMonthly;
-  if(!isFinite(r) || r === 0) baseMonthly = principal / months;
-  else baseMonthly = (r * principal) / (1 - Math.pow(1 + r, -months));
-  const schedule = [];
-  let bal = principal;
-  let totalInterest = 0;
-  for(let m=1; m<=months && bal>0.0001; m++){
-    const interest = bal * r;
-    let principalPay = baseMonthly - interest;
-    principalPay += extra;
-    if(principalPay > bal) principalPay = bal;
-    const endBal = Math.max(0, bal - principalPay);
-    schedule.push({ month:m, startBalance:bal, principalPayment:principalPay, interestPayment:interest, endBalance:endBal });
-    totalInterest += interest;
-    bal = endBal;
-  }
-  const monthlyDisplay = baseMonthly + extra;
-  const totalPayment = schedule.reduce((s,r)=>s + r.principalPayment + r.interestPayment, 0);
-  return { schedule, monthlyPayment: monthlyDisplay, totalInterest, totalPayment, months: schedule.length, baseMonthly };
-}
-
-/* ---------------- Render results ---------------- */
-function renderResults(res){
-  summaryDiv.style.display = 'flex';
-  loanAmtEl.textContent = fmtRupiah(res.principal || 0);
-  monthlyEl.textContent = fmtRupiah(res.monthlyPayment || 0);
-  totalInterestEl.textContent = fmtRupiah(res.totalInterest || 0);
-
-  amortTableBody.innerHTML = '';
-  const labels = [], balSeries = [], interestSeries = [], principalSeries = [];
-  res.schedule.forEach(row=>{
-    labels.push(String(row.month));
-    balSeries.push(Math.round(row.endBalance));
-    interestSeries.push(Math.round(row.interestPayment));
-    principalSeries.push(Math.round(row.principalPayment));
-
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="left">#${row.month}</td><td>${fmtRupiah(row.startBalance)}</td><td>${fmtRupiah(row.principalPayment)}</td><td>${fmtRupiah(row.interestPayment)}</td><td class="left">${fmtRupiah(row.endBalance)}</td>`;
-    tr.tabIndex = 0;
-    tr.addEventListener('click', ()=> alert('Bulan ' + row.month + '\\nSaldo awal: ' + fmtRupiah(row.startBalance) + '\\nPokok: ' + fmtRupiah(row.principalPayment) + '\\nBunga: ' + fmtRupiah(row.interestPayment) + '\\nSaldo akhir: ' + fmtRupiah(row.endBalance)));
-    amortTableBody.appendChild(tr);
-  });
-
-  createChart(labels, [
-    { label: 'Saldo akhir (Rp)', data: balSeries, borderWidth:3, tension:0.2 },
-    { label: 'Bunga/bln (Rp)', data: interestSeries, borderWidth:2, tension:0.2 },
-    { label: 'Pokok/bln (Rp)', data: principalSeries, borderWidth:2, tension:0.2 }
-  ]);
-}
-
-/* ---------------- Wire up bank selector + UI ---------------- */
-function populateBankSelect(){
-  bankEl.innerHTML = '';
-  Object.keys(bankRates).forEach(k=>{
-    const opt = document.createElement('option');
-    opt.value = k;
-    const val = bankRates[k];
-    opt.textContent = k + (val ? ' — ' + val + '%' : (k === 'CUSTOM' ? ' — Custom' : ''));
-    bankEl.appendChild(opt);
-  });
-}
-function updateRateFromBank(){
-  const b = bankEl.value;
-  const v = bankRates[b];
-  if(v == null) {
-    rateEl.removeAttribute('readonly');
-  } else {
-    rateEl.value = String(v);
-    rateEl.setAttribute('readonly','true');
-  }
-}
-populateBankSelect();
-updateRateFromBank();
-bankEl.addEventListener('change', updateRateFromBank);
-
-/* ---------------- Money inputs formatting (basic) ---------------- */
-function attachMoneyInputs(){
-  document.querySelectorAll('.money').forEach(el=>{
-    // show formatted on blur, raw on focus
-    el.addEventListener('focus', ()=> {
-      const v = unfmt(el.value);
-      el.value = v ? v.toString() : '';
-    });
-    el.addEventListener('blur', ()=> {
-      const n = unfmt(el.value);
-      el.value = n ? fmtRupiah(n).replace('Rp ','') : '';
-    });
-    // also sanitize input to digits only while typing
-    el.addEventListener('input', ()=> {
-      el.value = String(el.value).replace(/[^0-9]/g,'');
     });
   });
-}
-attachMoneyInputs();
-
-/* ---------------- Calculate handler ---------------- */
-function handleCalculate(){
-  const price = unfmt(priceEl.value) || 0;
-  const dpVal = unfmt(dpValEl.value) || 0;
-  const dpPct = Number(dpPctEl.value) || 0;
-  const years = Math.max(1, Math.floor(Number(yearsEl.value) || 1));
-  const rate = Number(rateEl.value) || 0;
-  const otherFees = unfmt(otherFeesEl.value) || 0;
-  const extra = unfmt(extraEl.value) || 0;
-
-  let dp = dpVal;
-  if(!dp && dpPct) dp = Math.round(price * (dpPct/100));
-  if(dpVal && price) dpPctEl.value = Math.round((dpVal/price)*10000)/100;
-
-  const principal = Math.max(0, price - (dp || 0)) + otherFees;
-  const months = years * 12;
-
-  const res = calcAmortization({ principal, annualRate: rate, months, extra });
-  res.principal = principal;
-  renderResults(res);
-
-  // store last result for sharing text
-  window._lastResult = { inputs:{price, dp, years, rate, otherFees, extra, bank: bankEl.value}, summary:{ monthly: res.monthlyPayment, totalInterest: res.totalInterest, totalPayment: res.totalPayment } };
-}
-calcBtn.addEventListener('click', handleCalculate);
-
-/* ---------------- Reset ---------------- */
-resetBtn.addEventListener('click', ()=>{
-  priceEl.value = '1000000000'; dpValEl.value='200000000'; dpPctEl.value='20';
-  yearsEl.value='15'; bankRates = loadBankRates(); populateBankSelect(); bankEl.value='BCA'; updateRateFromBank();
-  otherFeesEl.value='5000000'; extraEl.value='0';
-  summaryDiv.style.display='none';
-  amortTableBody.innerHTML = '';
-  if(kprChart) kprChart.destroy();
 });
 
-/* ---------------- CSV export ---------------- */
-downloadCsvBtn.addEventListener('click', ()=>{
-  const rows = Array.from(amortTableBody.querySelectorAll('tr'));
-  if(rows.length === 0){ alert('Tidak ada data. Silakan hitung terlebih dahulu.'); return; }
-  const header = ['Bulan','Saldo awal','Angsuran pokok','Bunga','Saldo akhir'];
-  const lines = [header.join(',')];
-  rows.forEach(r=>{
-    const tds = r.querySelectorAll('td');
-    const month = tds[0].textContent.replace(/[^0-9]/g,'');
-    const start = unfmt(tds[1].textContent); const pokok = unfmt(tds[2].textContent); const bunga = unfmt(tds[3].textContent); const end = unfmt(tds[4].textContent);
-    lines.push([month, start.toFixed(2), pokok.toFixed(2), bunga.toFixed(2), end.toFixed(2)].join(','));
-  });
-  const csv = lines.join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'amortisasi_kpr.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-});
-
-/* ---------------- Build share text (include link) ---------------- */
-const deployLink = 'https://dhitoid.github.io/Kalkulator-KPR-Dhito/'; // your link
-function buildShareText(){
-  const d = window._lastResult;
-  if(!d) return `Simulasi KPR — ${deployLink}`;
-  const bankName = d.inputs.bank || '';
-  const price = fmtRupiah(d.inputs.price);
-  const dp = fmtRupiah(d.inputs.dp);
-  const tenor = d.inputs.years + ' tahun';
-  const rate = d.inputs.rate + ' %';
-  const monthly = fmtRupiah(d.summary.monthly);
-  const totalInterest = fmtRupiah(d.summary.totalInterest);
-  const totalPay = fmtRupiah(d.summary.totalPayment);
-  return `🏠 Simulasi KPR — Kalkulator Praktis (Dhito)\nBank: ${bankName}\nHarga rumah: ${price}\nUang muka: ${dp}\nTenor: ${tenor}\nSuku bunga: ${rate}\n\nAngsuran/bln: ${monthly}\nTotal bunga: ${totalInterest}\nTotal bayar: ${totalPay}\n\nCoba sendiri: ${deployLink}`;
-}
-shareTextBtn.addEventListener('click', ()=>{
-  const txt = buildShareText();
-  if(!window._lastResult) { alert('Silakan hitung terlebih dahulu.'); return; }
-  // prefer navigator.share
-  if(navigator.share){
-    navigator.share({ title: 'Simulasi KPR', text: txt }).catch(()=> {
-      // fallback to wa.me
-      window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
-    });
-  } else {
-    window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
-  }
-});
-
-/* ---------------- Export full-page image & share ---------------- */
-exportImgBtn.addEventListener('click', async ()=>{
-  // ensure latest calculations
-  if(!window._lastResult){ alert('Silakan hitung terlebih dahulu.'); return; }
-  try {
-    // scroll to top for consistent capture
-    window.scrollTo({top:0,behavior:'instant'});
-    // compute full page dims
-    const el = document.documentElement;
-    const width = Math.max(el.scrollWidth, el.clientWidth);
-    const height = Math.max(el.scrollHeight, el.clientHeight);
-    // capture full page
-    const canvas = await html2canvas(document.documentElement, { scale: 2, useCORS: true, width: width, height: height, windowWidth: width, windowHeight: height, backgroundColor: null });
-    canvas.toBlob(async (blob) => {
-      if(!blob){ alert('Gagal membuat gambar.'); return; }
-      const file = new File([blob], 'hasil_kpr.png', { type: 'image/png' });
-      // prefer Web Share with files
-      if(navigator.canShare && navigator.canShare({ files: [file] })){
-        try {
-          await navigator.share({ files: [file], title: 'Hasil Simulasi KPR', text: 'Simulasi KPR — Kalkulator Praktis' });
-        } catch(e){
-          // fallback to download + wa text
-          fallbackDownload(canvas);
-          window.open('https://wa.me/?text=' + encodeURIComponent(buildShareText()), '_blank');
-        }
-      } else {
-        // fallback: download and open wa.me text share
-        fallbackDownload(canvas);
-        window.open('https://wa.me/?text=' + encodeURIComponent(buildShareText()), '_blank');
-      }
-    }, 'image/png', 0.95);
-  } catch(err){
-    console.error(err);
-    alert('Gagal mengambil gambar hasil. Gunakan browser terbaru (Chrome/Edge/Safari).');
-  }
-});
-function fallbackDownload(canvas){
-  const link = document.createElement('a');
-  link.href = canvas.toDataURL('image/png');
-  link.download = 'hasil_kpr.png';
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-}
-
-/* ---------------- Admin modal (edit bank rates) ---------------- */
+/* === ADMIN MODE === */
 let tapCount = 0;
-let tapTimer = null;
-logo.addEventListener('click', ()=>{
+document.getElementById('logo').addEventListener('click', ()=>{
   tapCount++;
-  if(tapTimer) clearTimeout(tapTimer);
-  tapTimer = setTimeout(()=>{ tapCount = 0; }, 800);
-  if(tapCount >= 3){
-    tapCount = 0;
-    openAdminModal();
+  if(tapCount>=3){
+    tapCount=0;
+    const panel=document.getElementById('adminPanel');
+    panel.style.display = (panel.style.display==='block'?'none':'block');
+    renderBankList();
   }
 });
-
-function openAdminModal(){
-  // build input list
-  bankList.innerHTML = '';
-  Object.keys(bankRates).forEach(key=>{
-    const row = document.createElement('div'); row.className = 'bank-row';
-    const label = document.createElement('div'); label.style.width='90px'; label.textContent = key;
-    const input = document.createElement('input'); input.type='number'; input.step='0.01'; input.className='input'; input.value = bankRates[key] == null ? '' : String(bankRates[key]);
-    input.dataset.key = key;
-    const note = document.createElement('div'); note.style.width='40px'; note.style.fontSize='0.9rem'; note.style.color='#475569'; note.textContent='%';
-    row.appendChild(label); row.appendChild(input); row.appendChild(note);
-    bankList.appendChild(row);
+function renderBankList(){
+  const list=document.getElementById('bankList');
+  list.innerHTML='';
+  Object.keys(bankRates).forEach(b=>{
+    const div=document.createElement('div');
+    div.innerHTML=`${b}: <input type="number" id="rate_${b}" value="${bankRates[b]}" step="0.01">`;
+    list.appendChild(div);
   });
-  modal.style.display = 'flex';
 }
-closeModalBtn.addEventListener('click', ()=> modal.style.display='none');
-
-saveBanksBtn.addEventListener('click', ()=>{
-  const inputs = bankList.querySelectorAll('input');
-  inputs.forEach(inp=>{
-    const k = inp.dataset.key;
-    const v = inp.value === '' ? null : Number(inp.value);
-    bankRates[k] = v;
-  });
-  saveBankRates(bankRates);
-  populateBankSelect();
-  modal.style.display = 'none';
-  updateRateFromBank();
-  alert('Suku bunga bank disimpan (local).');
+document.getElementById('adminPanel').addEventListener('input',e=>{
+  if(e.target.id.startsWith('rate_')){
+    const bank=e.target.id.replace('rate_','');
+    bankRates[bank]=parseFloat(e.target.value);
+    localStorage.setItem('bankRates',JSON.stringify(bankRates));
+  }
 });
-
-resetBanksBtn.addEventListener('click', ()=>{
-  if(!confirm('Reset suku bunga ke nilai default?')) return;
-  bankRates = Object.assign({}, defaultBankRates);
-  saveBankRates(bankRates);
-  populateBankSelect();
-  modal.style.display = 'none';
-  updateRateFromBank();
-  alert('Reset selesai.');
-});
-
-/* ---------------- Load from hash (optional) ---------------- */
-function loadFromHash(){
-  try {
-    const hash = location.hash.replace(/^#/,'');
-    if(!hash) return;
-    const params = new URLSearchParams(hash);
-    if(params.get('price')) priceEl.value=params.get('price');
-    if(params.get('dpVal')) dpValEl.value=params.get('dpVal');
-    if(params.get('dpPct')) dpPctEl.value=params.get('dpPct');
-    if(params.get('years')) yearsEl.value=params.get('years');
-    if(params.get('rate')) rateEl.value=params.get('rate');
-    if(params.get('bank')) { bankEl.value=params.get('bank'); updateRateFromBank(); }
-    setTimeout(()=>{ handleCalculate(); }, 220);
-  } catch(e){}
-}
-document.addEventListener('DOMContentLoaded', ()=>{
-  populateBankSelect();
-  bankEl.value = 'BCA';
-  updateRateFromBank();
-  attachMoneyInputs();
-  loadFromHash();
+document.getElementById('resetBank').addEventListener('click',()=>{
+  bankRates=defaultRates;
+  localStorage.setItem('bankRates',JSON.stringify(bankRates));
+  renderBankList();
 });
 </script>
 </body>
