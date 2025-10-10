@@ -184,9 +184,12 @@ function fmtRupiah(n){
   return sign + 'Rp ' + s.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 function unfmt(v){
-  if(v==null) return 0;
-  return Number(String(v).replace(/[^0-9\-\.\,]/g,'').replace(/,/g,'')) || 0;
+  if (!v) return 0;
+  // Hapus semua selain angka dan tanda minus
+  const clean = String(v).replace(/[^\d\-]/g, '');
+  return Number(clean) || 0;
 }
+
 /* format input while typing (simple, caret moves to end) */
 function formatMoneyInput(el){
   const raw = el.value;
