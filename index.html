@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Kalkulator KPR — Kalkulator Praktis</title>
-  <meta name="description" content="Simulasi angsuran KPR — Kalkulator Praktis oleh Dhito">
+  <title>Kalkulator Praktis</title>
+  <meta name="description" content="Simulasi angsuran KPR — Kalkulator Praktis oleh Dhito Property">
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <!-- html2canvas for screenshot -->
@@ -69,10 +69,11 @@
 <body>
   <div class="wrap">
     <header>
-      <div id="logo" class="app-icon" title="Ketuk 3x untuk admin">🏠</div>
-      <div>
-        <h1>Kalkulator KPR — Kalkulator Praktis</h1>
-        <div class="muted">Simulasi angsuran KPR — Dhito</div>
+<div id="logo" class="app-icon" title="Ketuk 3x untuk admin">
+  <img src="https://raw.githubusercontent.com/dhitoid/Kalkulator-KPR-Dhito/main/assets/modernia.png" alt="Logo Dhito Property" />
+</div>
+        <h1>Kalkulator Praktis</h1>
+        <div class="muted">Simulasi angsuran — Dhito Property</div>
       </div>
     </header>
 
@@ -85,7 +86,7 @@
 
         <div style="display:flex;gap:8px;margin-top:12px">
           <div style="flex:1">
-            <label for="price">Harga rumah</label>
+            <label for="price">Harga Properti</label>
             <input id="price" class="input money" inputmode="numeric" value="1000000000" />
           </div>
         </div>
@@ -131,7 +132,7 @@
 
         <div class="stats" id="summary" style="display:none">
           <div class="stat">
-            <div class="small">Pinjaman</div>
+            <div class="small">Plafon</div>
             <div id="loanAmt" style="font-size:1.05rem;font-weight:800">Rp 0</div>
           </div>
           <div class="stat">
@@ -144,14 +145,14 @@
           </div>
         </div>
 
-        <div class="help">Tip: ketuk logo di atas 3x untuk mengubah suku bunga bank.</div>
+        <div class="help">Tips: ketuk logo di atas 3x untuk mengubah suku bunga bank.</div>
       </div>
 
       <div class="card" id="result-card">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
           <h2 style="margin:0">Hasil & Amortisasi</h2>
           <div class="controls">
-            <button id="exportImg" class="btn">📸 Bagikan Gambar</button>
+            <button id="exportImg" class="btn">Bagikan Gambar</button>
             <button id="downloadCsv" class="btn ghost">Ekspor CSV</button>
             <button id="shareText" class="btn ghost">Kirim ke WhatsApp</button>
           </div>
@@ -169,7 +170,7 @@
         </div>
 
         <footer style="margin-top:12px">
-          <div class="small">Dibuat oleh Dhito · Catatan: perhitungan menggunakan rumus annuitas. Hasil aktual dapat berbeda.</div>
+          <div class="small">Dibuat oleh Dhito Property· Catatan: perhitungan menggunakan rumus annuitas. Hasil aktual dapat berbeda.</div>
         </footer>
       </div>
     </div>
@@ -185,7 +186,7 @@
         <button id="resetBanks" class="btn ghost">Reset Default</button>
         <button id="closeModal" class="btn ghost">Tutup</button>
       </div>
-      <div class="help">Perubahan tersimpan ke browser (localStorage) dan berlaku saat Anda mengakses situs dari perangkat ini.</div>
+      <div class="help">Perubahan tersimpan dan berlaku saat Anda mengakses situs dari perangkat ini.</div>
     </div>
   </div>
 
@@ -383,9 +384,9 @@ calcBtn.addEventListener('click',handleCalculate);
 
 /* ---------------- Reset ---------------- */
 resetBtn.addEventListener('click',()=>{
-  priceEl.value='1000000000';dpValEl.value='200000000';dpPctEl.value='20';
+  priceEl.value='0';dpValEl.value='0';dpPctEl.value='20';
   yearsEl.value='15';bankRates=loadBankRates();populateBankSelect();bankEl.value='BCA';updateRateFromBank();
-  otherFeesEl.value='5000000';extraEl.value='0';
+  otherFeesEl.value='0';extraEl.value='0';
   summaryDiv.style.display='none';amortTableBody.innerHTML='';if(kprChart)kprChart.destroy();
 });
 
