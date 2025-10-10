@@ -228,7 +228,7 @@ const defaultBankRates = {
   'BNI': 7.40,
   'OCBC': 7.00,
   'BSI': 6.85,
-  'DEVELOPER': null
+  'DEVELOPER': null // ganti dari CUSTOM ke DEVELOPER
 };
 const storageKey = 'kpr_bank_rates_v2';
 function loadBankRates(){
@@ -330,6 +330,40 @@ function renderResults(res){
   ]);
 }
 
+/* ---------------- Bank Selector ---------------- */
+function populateBankSelect(){
+  bankEl.innerHTML='';
+  Object.keys(bankRates).forEach(k=>{
+    const opt=document.createElement('option');
+    opt.value=k;
+    const v=bankRates[k];
+    opt.textContent=k+(v!=null?' — '+v+'%':(k==='DEVELOPER'?' — Developer':''));
+    bankEl.appendChild(opt);
+  });
+}
+function updateRateFromBank(){
+  const v=bankRates[bankEl.value];
+  if(v==null){rateEl.removeAttribute('readonly');}
+  else{rateEl.value=v;rateEl.setAttribute('readonly','true');}
+}
+populateBankSelect();updateRateFromBank();
+bankEl.addEventListener('change',updateRateFromBank);
+attachMoneyInputs();
+
+/* ---------------- Field linkage ---------------- */
+dpPctEl.addEventListener('input',()=>{
+  const price=unfmt(priceEl.value);const pct=parseFloat(dpPctEl.value)||0;
+  if(price>=0&&pct>=0){dpValEl.value=formatNumberWithDots(String(Math.round(price*pct/100)));}
+});
+dpValEl.addEventListener('input',()=>{
+  const price=unfmt(priceEl.value);const dp=unfmt(dpValEl.value);
+  if(price>=0&&dp>=0){dpPctEl.value=((dp/price)*100).toFixed(2);}
+});
+priceEl.addEventListener('input',()=>{
+  const price=unfmt(priceEl.value);const pct=parseFloat(dpPctEl.value)||0;
+  if(price>=0&&pct>=0){dpValEl.value=formatNumberWithDots(String(Math.round(price*pct/100)));}
+});
+
 /* ---------------- Hitung ---------------- */
 function handleCalculate(){
   const price=unfmt(priceEl.value);
@@ -355,7 +389,7 @@ resetBtn.addEventListener('click',()=>{
   summaryDiv.style.display='none';amortTableBody.innerHTML='';if(kprChart)kprChart.destroy();
 });
 
-/* ---------------- CSV Export ---------------- */
+/* ---------------- CSV Export (format Rp) ---------------- */
 downloadCsvBtn.addEventListener('click',()=>{
   const rows=[...amortTableBody.querySelectorAll('tr')];
   if(!rows.length){alert('Hitung dulu sebelum ekspor.');return;}
@@ -375,57 +409,25 @@ downloadCsvBtn.addEventListener('click',()=>{
   a.download='amortisasi_kpr.csv';a.click();a.remove();
 });
 
-/* ---------------- Bagikan gambar (fix iOS + area chart saja) ---------------- */
+/* ---------------- Bagikan gambar (hanya chart+hasil) ---------------- */
 exportImgBtn.addEventListener('click',async()=>{
   if(!window._lastResult){alert('Hitung dulu sebelum bagikan.');return;}
   try{
-    // hanya ambil chart dan ringkasan, bukan tabel
-    const clone=document.createElement('div');
-    clone.style.padding='16px';
-    clone.style.background='#fff';
-    clone.innerHTML=`
-      <h3>Simulasi KPR — ${window._lastResult.inputs.bank}</h3>
-      <p><b>Pinjaman:</b> ${fmtRupiah(window._lastResult.summary.principal)}<br>
-         <b>Angsuran/bln:</b> ${fmtRupiah(window._lastResult.summary.monthlyPayment)}<br>
-         <b>Total bunga:</b> ${fmtRupiah(window._lastResult.summary.totalInterest)}</p>
-      <canvas id="cloneChart" width="800" height="400"></canvas>`;
-    document.body.appendChild(clone);
-
-    // render chart kecil untuk disertakan di gambar
-    const ctx=clone.querySelector('#cloneChart');
-    new Chart(ctx,{
-      type:'line',
-      data:kprChart.data,
-      options:{responsive:false,plugins:{legend:{display:false}}}
-    });
-
-    const canvas=await html2canvas(clone,{scale:2,backgroundColor:'#fff'});
-    document.body.removeChild(clone);
-
-    // buat file gambar
+    const el=document.getElementById('result-area');
+    const canvas=await html2canvas(el,{scale:2,useCORS:true,backgroundColor:'#fff'});
     canvas.toBlob(async blob=>{
       if(!blob)return alert('Gagal membuat gambar');
       const file=new File([blob],'hasil_kpr.png',{type:'image/png'});
-      // coba Web Share API
-      if(navigator.canShare && navigator.canShare({files:[file]})){
-        await navigator.share({files:[file],title:'Hasil Simulasi KPR'});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        await navigator.share({files:[file],title:'Hasil Simulasi KPR',text:'Simulasi KPR — Kalkulator Praktis'});
       }else{
-        // fallback iOS Safari / desktop
-        const imgURL=canvas.toDataURL('image/png');
-        const newWin=window.open();
-        newWin.document.write(`<img src="${imgURL}" style="width:100%">`);
+        const link=document.createElement('a');
+        link.href=canvas.toDataURL('image/png');
+        link.download='hasil_kpr.png';
+        link.click();
       }
     });
-  }catch(e){alert('Gagal membuat gambar. Gunakan browser terbaru.');}
-});
-
-/* ---------------- Kirim ke WhatsApp (text share) ---------------- */
-shareTextBtn.addEventListener('click',()=>{
-  if(!window._lastResult){alert('Hitung dulu sebelum kirim.');return;}
-  const d=window._lastResult;
-  const text=`📊 *Simulasi KPR — ${d.inputs.bank}*\n\n🏠 Harga Rumah: ${fmtRupiah(d.inputs.price)}\n💰 Uang Muka: ${fmtRupiah(d.inputs.dp)}\n📅 Tenor: ${d.inputs.years} tahun\n💸 Angsuran/bln: ${fmtRupiah(d.summary.monthlyPayment)}\n💵 Total Bunga: ${fmtRupiah(d.summary.totalInterest)}\n\nSimulasi oleh Kalkulator Praktis 🏡`;
-  const url=`https://wa.me/?text=${encodeURIComponent(text)}`;
-  window.open(url,'_blank');
+  }catch(e){alert('Gagal membuat gambar, gunakan browser terbaru.');}
 });
 
 /* ---------------- Admin Modal ---------------- */
@@ -461,21 +463,10 @@ resetBanksBtn.onclick=()=>{
 };
 
 /* ---------------- Init ---------------- */
-function populateBankSelect(){
-  bankEl.innerHTML='';
-  Object.keys(bankRates).forEach(k=>{
-    const opt=document.createElement('option');
-    opt.value=k;
-    const v=bankRates[k];
-    opt.textContent=k+(v!=null?' — '+v+'%':(k==='DEVELOPER'?' — Developer':''));
-    bankEl.appendChild(opt);
-  });
-}
-function updateRateFromBank(){
-  const v=bankRates[bankEl.value];
-  if(v==null){rateEl.removeAttribute('readonly');}
-  else{rateEl.value=v;rateEl.setAttribute('readonly','true');}
-}
+document.addEventListener('DOMContentLoaded',()=>{
+  populateBankSelect();bankEl.value='BCA';updateRateFromBank();attachMoneyInputs();
+});
+
 
 /* ---------------- Load from hash (optional) ---------------- */
 function loadFromHash(){
