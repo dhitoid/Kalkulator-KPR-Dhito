@@ -658,9 +658,12 @@ function generateTieredTable() {
   tieredRatesTableBody.innerHTML = '';
   const principal = Math.max(0, unfmt(priceEl.value) - unfmt(dpValEl.value) + unfmt(otherFeesEl.value));
   const extra = unfmt(extraEl.value);
+
+  // buat default bunga tiap tahun
   const defaultRates = [];
   for (let i = 1; i <= years; i++) defaultRates.push((baseRate + (i - 1) * 0.25).toFixed(2));
 
+  // buat preview awal
   const preview = computeTieredPreview(defaultRates, principal, years, extra);
 
   for (let i = 1; i <= years; i++) {
@@ -681,7 +684,7 @@ function generateTieredTable() {
     inputRate.style.width = '110px';
     tdInput.appendChild(inputRate);
 
-    // Input angsuran per bulan
+    // Input angsuran/bln
     const tdAmt = document.createElement('td');
     tdAmt.className = 'amt';
     const inputAmt = document.createElement('input');
@@ -695,7 +698,7 @@ function generateTieredTable() {
     tr.appendChild(tdAmt);
     tieredRatesTableBody.appendChild(tr);
 
-    // 🔄 Saat bunga berubah → update angsuran
+    // 🔄 Saat bunga berubah → update semua angsuran
     inputRate.addEventListener('input', () => {
       const rates = Array.from(tieredRatesTableBody.querySelectorAll('tr')).map(row =>
         parseFloat(row.querySelector('input[type="number"]').value) || 0
@@ -707,44 +710,44 @@ function generateTieredTable() {
       });
     });
 
-    // 🔄 Saat angsuran berubah → hitung bunga otomatis
+    // 🔄 Saat angsuran diubah → cari bunga yang pas agar angsuran ≈ input
     inputAmt.addEventListener('input', () => {
       const amt = unfmt(inputAmt.value);
-      const remainingMonths = Math.max(1, (years - i + 1) * 12);
-      // kita cari bunga yang membuat payment ≈ amt
-      let rateGuess = 0;
+
+      // hitung saldo awal di awal tahun ke-i
       let balance = principal;
       for (let y = 1; y < i; y++) {
-        const rateY = parseFloat(tieredRatesTableBody.querySelectorAll('input[type="number"]')[y - 1].value) / 100 / 12;
+        const prevRate = parseFloat(tieredRatesTableBody.querySelectorAll('input[type="number"]')[y - 1].value) / 100 / 12;
         const remainM = Math.max(1, (years - y + 1) * 12);
-        const monthlyY = rateY === 0 ? balance / remainM : (rateY * balance) / (1 - Math.pow(1 + rateY, -remainM));
+        const monthlyPrev = prevRate === 0 ? balance / remainM : (prevRate * balance) / (1 - Math.pow(1 + prevRate, -remainM));
         for (let m = 0; m < 12 && balance > 0.0001; m++) {
-          const intY = balance * rateY;
-          const pokokY = monthlyY - intY + extra;
+          const intY = balance * prevRate;
+          const pokokY = monthlyPrev - intY + extra;
           balance = Math.max(0, balance - pokokY);
         }
       }
 
-      // coba cari bunga via iterasi (Newton-Raphson sederhana)
-      let foundRate = 0;
+      // iterasi cari bunga yang membuat payment mendekati amt
+      let foundRate = null;
+      const remainingMonths = Math.max(1, (years - i + 1) * 12);
       for (let r = 0; r <= 20; r += 0.001) {
         const rMonthly = r / 100 / 12;
         const mPay = rMonthly === 0 ? balance / remainingMonths : (rMonthly * balance) / (1 - Math.pow(1 + rMonthly, -remainingMonths));
-        if (Math.abs(mPay - amt) < 5) {
+        if (Math.abs(mPay - amt) < 5) { // selisih < Rp5
           foundRate = r;
           break;
         }
       }
 
-      if (foundRate) {
+      if (foundRate !== null) {
         inputRate.value = foundRate.toFixed(2);
-        inputRate.dispatchEvent(new Event('input'));
+        inputRate.dispatchEvent(new Event('input')); // update tabel sesuai bunga baru
       }
     });
   }
+
   attachMoneyInputs();
 }
-
 
 interestTypeEl.addEventListener('change', ()=>{
   const val = interestTypeEl.value;
