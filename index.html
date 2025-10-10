@@ -47,10 +47,52 @@
   th{background:transparent;color:var(--muted);font-weight:700}
   .left{text-align:left}
   .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  #tieredRatesTable{width:100%;border-collapse:collapse;margin-top:8px}
-  #tieredRatesTable td{padding:8px;border-bottom:1px solid #f1f6ff;text-align:left}
-  #tieredRatesTable input.input{padding:8px;height:36px;width:110px}
-  #tieredRatesTable .amt { text-align: right; width:180px; font-weight:700; }
+/* === TABEL BUNGA BERJENJANG – versi rapat dan rapi === */
+#tieredRatesTable {
+  width: auto;
+  border-collapse: collapse;
+  margin-top: 6px;
+}
+
+#tieredRatesTable th,
+#tieredRatesTable td {
+  padding: 4px 6px; /* kecilkan jarak antar kolom */
+  border-bottom: 1px solid #f1f6ff;
+  vertical-align: middle;
+}
+
+#tieredRatesTable th.left,
+#tieredRatesTable td.left {
+  text-align: left;
+}
+
+#tieredRatesTable input.input {
+  padding: 5px 6px;
+  height: 30px;
+  width: 85px; /* lebih kecil agar kolom lebih dekat */
+  font-size: 0.9rem;
+  text-align: right;
+  margin-right: 4px;
+  border-radius: 8px;
+}
+
+#tieredRatesTable .amt {
+  text-align: right;
+  width: 110px; /* sempitkan kolom angsuran */
+  font-weight: 600;
+}
+
+/* rapatkan label atas tabel */
+#tieredRatesContainer > div:first-child {
+  margin-bottom: 4px;
+}
+
+/* tampilkan input lebih menyatu */
+#tieredRatesTable input.input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 4px rgba(0,122,255,0.2);
+}
+
   .modal { position: fixed; inset: 0; display:none; align-items:center; justify-content:center; background: rgba(10,20,40,0.45); z-index:9999; }
   .modal .inner { background: #fff; padding: 16px; border-radius:12px; width: 92%; max-width:520px; box-shadow:0 20px 60px rgba(2,6,23,0.4); }
   .bank-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
