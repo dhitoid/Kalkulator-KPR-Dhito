@@ -46,19 +46,25 @@
   th,td{padding:10px;border-bottom:1px solid #eef6ff;text-align:right}
   th{background:transparent;color:var(--muted);font-weight:700}
   .left{text-align:left}
-  .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-/* === TABEL BUNGA BERJENJANG – versi rapat dan rapi === */
+  .controls{display:flex;gap:8px;align-items:center;flex-wrap:/* === TABEL BUNGA BERJENJANG – versi rapi dan responsif === */
+#tieredRatesContainer {
+  overflow-x: auto; /* biar bisa di-scroll di HP */
+  -webkit-overflow-scrolling: touch;
+}
+
 #tieredRatesTable {
-  width: auto;
+  width: 100%;
   border-collapse: collapse;
   margin-top: 6px;
+  min-width: 340px; /* pastikan tidak terlalu sempit di layar kecil */
 }
 
 #tieredRatesTable th,
 #tieredRatesTable td {
-  padding: 4px 6px; /* kecilkan jarak antar kolom */
+  padding: 6px 8px;
   border-bottom: 1px solid #f1f6ff;
   vertical-align: middle;
+  white-space: nowrap; /* cegah teks pecah ke bawah */
 }
 
 #tieredRatesTable th.left,
@@ -66,42 +72,56 @@
   text-align: left;
 }
 
-/* ==== Perbaikan agar angka tidak terpotong ==== */
+/* ==== Input bunga per tahun ==== */
 #tieredRatesTable input.input {
   padding: 6px 8px;
   height: 34px;
-  width: 95px;           /* bunga sedikit lebih lebar */
+  width: 80px;           /* bunga tetap ringkas */
   font-size: 0.95rem;
   text-align: right;
   border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: linear-gradient(180deg,#fff,#fbfdff);
   box-sizing: border-box;
 }
 
+/* ==== Kolom Angsuran (Rp) ==== */
 #tieredRatesTable .amt {
   text-align: right;
-  width: 140px;          /* lebar cukup untuk semua digit Rp */
+  width: 160px;          /* lebih lebar agar semua angka muat */
   font-weight: 600;
+  font-family: ui-monospace, monospace;
 }
 
-/* Untuk layar kecil (HP) biar tidak kepotong */
-@media (max-width: 480px) {
-  #tieredRatesTable input.input {
-    width: 90px;
-  }
-  #tieredRatesTable .amt {
-    width: 130px;
-  }
+/* ==== Fokus input ==== */
+#tieredRatesTable input.input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 4px rgba(0,122,255,0.2);
 }
 
-/* rapatkan label atas tabel */
+/* ==== Header tabel ==== */
+#tieredRatesTable th {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+/* ==== Rapatkan label di atas tabel ==== */
 #tieredRatesContainer > div:first-child {
   margin-bottom: 4px;
 }
 
-/* tampilkan input lebih menyatu */
-#tieredRatesTable input.input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 4px rgba(0,122,255,0.2);
+/* ==== Responsif: biar tetap enak dibaca di HP ==== */
+@media (max-width: 480px) {
+  #tieredRatesTable {
+    min-width: 420px; /* biar bisa discroll horizontal */
+  }
+  #tieredRatesTable input.input {
+    width: 90px;
+  }
+  #tieredRatesTable .amt {
+    width: 180px;
+  }
 }
 
   .modal { position: fixed; inset: 0; display:none; align-items:center; justify-content:center; background: rgba(10,20,40,0.45); z-index:9999; }
