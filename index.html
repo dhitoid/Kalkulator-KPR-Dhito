@@ -8,54 +8,56 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
-  <style>
-    :root {
-      --bg: #f5f7fb;
-      --card: rgba(255,255,255,0.85);
-      --muted: #6b7280;
-      --accent: #007aff;
-      --radius-lg: 16px;
-      --shadow: 0 10px 30px rgba(2,6,23,0.06);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,#f6fbff 0%,var(--bg) 100%);-webkit-font-smoothing:antialiased}
-    .wrap{max-width:980px;margin:20px auto;padding:14px}
-    header{display:flex;gap:14px;align-items:center;margin-bottom:18px;backdrop-filter:blur(12px)}
-    .app-icon{width:56px;height:56px;border-radius:14px;background:linear-gradient(180deg,var(--accent),#005ecb);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:26px;box-shadow:0 10px 24px rgba(0,122,255,0.18);overflow:hidden;flex-shrink:0}
-    .app-icon img{width:100%;height:100%;object-fit:contain;border-radius:12px}
-    .app-title{display:flex;flex-direction:column}
-    .app-title h1{font-size:1.15rem;margin:0;color:#0f172a;font-weight:700}
-    .app-title .muted{color:var(--muted);font-size:0.92rem;margin-top:3px}
-    .grid{display:grid;grid-template-columns:1fr;gap:14px}
-    @media(min-width:920px){ .grid{grid-template-columns:380px 1fr} }
-    .card{background:var(--card);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.6);transition:transform .18s ease,box-shadow .18s ease}
-    .card:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(2,6,23,0.09)}
-    label{display:block;font-size:0.86rem;color:var(--muted);margin-bottom:6px;font-weight:600}
-    .input{width:100%;padding:12px;border-radius:12px;border:1px solid #e6edf8;font-size:1rem;background:linear-gradient(180deg,#fff,#fbfdff);transition:box-shadow .15s,border-color .15s}
-    .input:focus{outline:none;box-shadow:0 6px 20px rgba(0,122,255,0.08);border-color:var(--accent)}
-    .btn{padding:10px 14px;border-radius:12px;background:var(--accent);color:#fff;border:none;font-weight:700;cursor:pointer;transition:transform .12s,opacity .12s}
-    .btn:hover{transform:translateY(-1px);opacity:.98}
-    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(0,122,255,0.12)}
-    .small{font-size:0.82rem;color:var(--muted)}
-    .stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    .stat{flex:1;min-width:140px;padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff,#f8fbff);box-shadow:inset 0 -1px 0 rgba(0,0,0,0.03);text-align:center}
-    table{width:100%;border-collapse:collapse;font-size:0.88rem;margin-top:10px}
-    th,td{padding:10px;border-bottom:1px solid #eef6ff;text-align:right}
-    th{background:transparent;color:var(--muted);font-weight:700}
-    .left{text-align:left}
-    .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    #tieredRatesTable{width:100%;border-collapse:collapse;margin-top:8px}
-    #tieredRatesTable td{padding:8px;border-bottom:1px solid #f1f6ff;text-align:left}
-    #tieredRatesTable input.input{padding:8px;height:36px;width:110px;border-radius:10px;border:1px solid #e6edf8}
-    #tieredRatesTable .amt { text-align: right; width:180px; font-weight:700; color:#0f172a; }
-    .modal { position: fixed; inset: 0; display:none; align-items:center; justify-content:center; background: rgba(10,20,40,0.45); z-index:9999; }
-    .modal .inner { background: #fff; padding: 16px; border-radius:12px; width: 92%; max-width:520px; box-shadow:0 20px 60px rgba(2,6,23,0.4); }
-    .bank-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-    .bank-row input{flex:1}
-    .help { font-size:0.8rem; color:#475569; margin-top:8px; }
-    @media(max-width:480px){ header{gap:10px} .app-title h1{font-size:1rem} .card{padding:12px} .app-icon{width:48px;height:48px} #tieredRatesTable input.input{width:80px} #tieredRatesTable .amt{width:110px;font-size:0.95rem} }
-  </style>
+<style>
+  :root {
+    --bg: #f5f7fb;
+    --card: rgba(255, 255, 255, 0.9);
+    --muted: #707b8a;
+    --accent: #007aff;
+    --radius-lg: 18px;
+    --shadow: 0 10px 30px rgba(2,6,23,0.06);
+    --blur-bg: blur(14px);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#f9fbff 0%,var(--bg) 100%);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:980px;margin:20px auto;padding:12px}
+  header{display:flex;gap:14px;align-items:center;margin-bottom:18px;backdrop-filter:var(--blur-bg)}
+  .app-icon{width:56px;height:56px;border-radius:14px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:26px;box-shadow:0 10px 24px rgba(0,122,255,0.18);overflow:hidden;flex-shrink:0}
+  .app-icon img{width:100%;height:100%;object-fit:contain;border-radius:12px}
+  .app-title{display:flex;flex-direction:column}
+  .app-title h1{font-size:1.15rem;margin:0;color:#0f172a;font-weight:700}
+  .app-title .muted{color:var(--muted);font-size:0.92rem;margin-top:3px}
+  .grid{display:grid;grid-template-columns:1fr;gap:14px}
+  @media(min-width:920px){ .grid{grid-template-columns:380px 1fr} }
+  .card{background:var(--card);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow);backdrop-filter:var(--blur-bg);border:1px solid rgba(255,255,255,0.6);transition:transform .18s ease,box-shadow .18s ease}
+  .card:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(2,6,23,0.09)}
+  label{display:block;font-size:0.86rem;color:var(--muted);margin-bottom:6px;font-weight:600}
+  .input{width:100%;padding:12px;border-radius:12px;border:1px solid #e6edf8;font-size:1rem;background:linear-gradient(180deg,#fff,#fbfdff);transition:box-shadow .15s,border-color .15s}
+  .input:focus{outline:none;box-shadow:0 6px 20px rgba(0,122,255,0.08);border-color:var(--accent)}
+  .row{display:flex;gap:10px}
+  .btn{padding:10px 14px;border-radius:12px;background:var(--accent);color:#fff;border:none;font-weight:700;cursor:pointer;transition:transform .12s,opacity .12s}
+  .btn:hover{transform:translateY(-1px);opacity:.96}
+  .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(0,122,255,0.12)}
+  .small{font-size:0.82rem;color:var(--muted)}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .stat{flex:1;min-width:140px;padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff,#f8fbff);box-shadow:inset 0 -1px 0 rgba(0,0,0,0.03);text-align:center}
+  table{width:100%;border-collapse:collapse;font-size:0.88rem;margin-top:10px}
+  th,td{padding:10px;border-bottom:1px solid #eef6ff;text-align:right}
+  th{background:transparent;color:var(--muted);font-weight:700}
+  .left{text-align:left}
+  .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  #tieredRatesTable{width:100%;border-collapse:collapse;margin-top:8px}
+  #tieredRatesTable td{padding:8px;border-bottom:1px solid #f1f6ff;text-align:left}
+  #tieredRatesTable input.input{padding:8px;height:36px;width:110px}
+  #tieredRatesTable .amt { text-align: right; width:180px; font-weight:700; }
+  .modal { position: fixed; inset: 0; display:none; align-items:center; justify-content:center; background: rgba(10,20,40,0.45); z-index:9999; }
+  .modal .inner { background: #fff; padding: 16px; border-radius:12px; width: 92%; max-width:520px; box-shadow:0 20px 60px rgba(2,6,23,0.4); }
+  .bank-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+  .bank-row input{flex:1}
+  .help { font-size:0.8rem; color:#475569; margin-top:8px; }
+  @media(max-width:480px){ header{gap:10px} .app-title h1{font-size:1rem} .card{padding:12px} .app-icon{width:48px;height:48px} #tieredRatesTable input.input{width:80px} #tieredRatesTable .amt{width:110px;font-size:0.95rem} }
+</style>
 </head>
 <body>
   <div class="wrap">
@@ -202,7 +204,6 @@
   </div>
 
 <script>
-/* Utilities */
 function fmtRupiah(n){
   if(!isFinite(n)) return 'Rp 0';
   const sign = n < 0 ? '-' : '';
@@ -231,15 +232,11 @@ function attachMoneyInputs() {
     });
   });
 }
-
-/* Bank rates */
 const defaultBankRates = {'BCA':7.25,'BTN':6.90,'BRI':7.10,'MANDIRI':7.50,'BNI':7.40,'OCBC':7.00,'BSI':6.85,'DEVELOPER':null};
 const storageKey = 'kpr_bank_rates_v2';
 function loadBankRates(){ try{ const raw=localStorage.getItem(storageKey); if(!raw) return Object.assign({}, defaultBankRates); return Object.assign({}, defaultBankRates, JSON.parse(raw)); }catch(e){ return Object.assign({}, defaultBankRates); } }
 function saveBankRates(map){ try{ localStorage.setItem(storageKey, JSON.stringify(map)); }catch(e){} }
 let bankRates = loadBankRates();
-
-/* Elements */
 const bankEl=document.getElementById('bank');
 const priceEl=document.getElementById('price');
 const dpValEl=document.getElementById('dpVal');
@@ -275,10 +272,21 @@ let kprChart = null;
 function createChart(labels,datasets){
   const ctx=document.getElementById('kprChart');
   if(kprChart) kprChart.destroy();
-  kprChart=new Chart(ctx,{type:'line',data:{labels,datasets},options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:true,position:'bottom'},tooltip:{callbacks:{label: function(ctx){ const val=Number(ctx.raw||0); return ctx.dataset.label+': '+fmtRupiah(val); }}}},scales:{y:{ticks:{callback:v=>'Rp '+Number(v).toLocaleString('id')}}}}});
+  kprChart=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets},
+    options:{
+      maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:true,position:'bottom'},
+        tooltip:{callbacks:{label: function(ctx){ const val=Number(ctx.raw||0); return ctx.dataset.label+': '+fmtRupiah(val); }}}
+      },
+      scales:{y:{ticks:{callback:v=>'Rp '+Number(v).toLocaleString('id')}}}
+    }
+  });
 }
 
-/* Standard annuitas amortization */
 function calcAmortization({principal,annualRate,months,extra=0}){
   const r=annualRate/12/100;
   let baseMonthly;
@@ -299,20 +307,18 @@ function calcAmortization({principal,annualRate,months,extra=0}){
   return { schedule, monthlyPayment: monthlyDisplay, totalInterest, totalPayment: schedule.reduce((s,r)=>s + r.principalPayment + r.interestPayment,0), months: schedule.length, principal };
 }
 
-/* Tiered (floating) amortization — each year uses its rate to compute monthly payment for that year's remaining balance */
 function calcTieredAmortization({principal, baseRates, years, extra=0}){
   const schedule=[]; let balance=principal; let totalInterest=0; let monthCounter=1;
-  const maxYears = Math.max(years, baseRates.length);
   for(let year=1; year<=years && balance>0.0001; year++){
     const ratePercent = (baseRates[year-1] != null) ? baseRates[year-1] : baseRates[baseRates.length-1];
     const yearlyRate = (parseFloat(ratePercent) || 0) / 100;
     const monthlyRate = yearlyRate / 12;
-    const monthsInBlock = 12;
-    // compute monthly payment for this block based on current balance and 12-month remaining block principle
+    const monthsInYear = 12;
+    const remainingMonths = Math.max(1, (years - year + 1) * 12);
     let monthlyPayment;
-    if(!isFinite(monthlyRate) || monthlyRate === 0) monthlyPayment = balance / monthsInBlock;
-    else monthlyPayment = (monthlyRate * balance) / (1 - Math.pow(1 + monthlyRate, -monthsInBlock));
-    for(let m=1;m<=monthsInBlock && balance>0.0001;m++){
+    if(!isFinite(monthlyRate) || monthlyRate === 0) monthlyPayment = balance / remainingMonths;
+    else monthlyPayment = (monthlyRate * balance) / (1 - Math.pow(1 + monthlyRate, -remainingMonths));
+    for(let m=1;m<=monthsInYear && balance>0.0001;m++){
       const interest = balance * monthlyRate;
       let principalPay = monthlyPayment - interest + extra;
       if(principalPay > balance) principalPay = balance;
@@ -325,7 +331,6 @@ function calcTieredAmortization({principal, baseRates, years, extra=0}){
   return { schedule, monthlyPayment: schedule.length ? (schedule[0].principalPayment + schedule[0].interestPayment) : 0, totalInterest, totalPayment: schedule.reduce((s,r)=>s + r.principalPayment + r.interestPayment,0), months: schedule.length, principal };
 }
 
-/* Render results (amortization table + chart) */
 function renderResults(res){
   summaryDiv.style.display='flex';
   loanAmtEl.textContent = fmtRupiah(res.principal || 0);
@@ -349,7 +354,6 @@ function renderResults(res){
   ]);
 }
 
-/* Bank selector */
 function populateBankSelect(){
   bankEl.innerHTML='';
   Object.keys(bankRates).forEach(k=>{
@@ -364,76 +368,53 @@ function updateRateFromBank(){ const v = bankRates[bankEl.value]; if(v==null){ r
 populateBankSelect(); updateRateFromBank(); bankEl.addEventListener('change', updateRateFromBank);
 attachMoneyInputs();
 
-/* Field linkage */
-dpPctEl.addEventListener('input', () => {
-  const price = unfmt(priceEl.value);
-  const pct = parseFloat(dpPctEl.value) || 0;
-  if (price >= 0 && pct >= 0) {
-    const dp = Math.round(price * pct / 100);
-    dpValEl.value = formatNumberWithDots(String(dp));
-  }
+dpPctEl.addEventListener('input', ()=>{
+  const price=unfmt(priceEl.value);const pct=parseFloat(dpPctEl.value)||0;
+  if(price>=0&&pct>=0){dpValEl.value=formatNumberWithDots(String(Math.round(price*pct/100)));}
 });
-dpValEl.addEventListener('input', () => {
-  const price = unfmt(priceEl.value);
-  const dp = unfmt(dpValEl.value);
-  if (price > 0 && dp >= 0) {
-    const pct = (dp / price) * 100;
-    dpPctEl.value = pct.toFixed(2);
-  }
+dpValEl.addEventListener('input',()=>{
+  const price=unfmt(priceEl.value);const dp=unfmt(dpValEl.value);
+  if(price>=0&&dp>=0){dpPctEl.value=((dp/price)*100).toFixed(2);}
 });
-priceEl.addEventListener('input', () => {
-  const price = unfmt(priceEl.value);
-  const pct = parseFloat(dpPctEl.value) || 0;
-  if (price >= 0 && pct >= 0) {
-    const dp = Math.round(price * pct / 100);
-    dpValEl.value = formatNumberWithDots(String(dp));
-  }
+priceEl.addEventListener('input',()=>{
+  const price=unfmt(priceEl.value);const pct=parseFloat(dpPctEl.value)||0;
+  if(price>=0&&pct>=0){dpValEl.value=formatNumberWithDots(String(Math.round(price*pct/100)));}
 });
 
-/* Compute preview per-year monthly payment given baseRates array (used to populate tiered table) */
 function computeTieredPreview(baseRates, principal, years, extra=0){
   const preview = [];
   let balance = principal;
-  const maxY = Math.min(years, 25);
-  for(let year=1; year<=maxY && balance>0.0001; year++){
+  const maxY = Math.min(years,25);
+  for(let year=1; year<=maxY; year++){
     const ratePercent = (baseRates[year-1] != null) ? baseRates[year-1] : baseRates[baseRates.length-1];
     const yearlyRate = (parseFloat(ratePercent) || 0) / 100;
     const monthlyRate = yearlyRate / 12;
-    const monthsInBlock = 12;
+    const remainingMonths = Math.max(1, (years - year + 1) * 12);
     let monthlyPayment;
-    if(!isFinite(monthlyRate) || monthlyRate === 0) monthlyPayment = balance / monthsInBlock;
-    else monthlyPayment = (monthlyRate * balance) / (1 - Math.pow(1 + monthlyRate, -monthsInBlock));
-    // monthlyPayment is payment required to amortize current balance over 12 months with monthlyRate
+    if(!isFinite(monthlyRate) || monthlyRate === 0) monthlyPayment = balance / remainingMonths;
+    else monthlyPayment = (monthlyRate * balance) / (1 - Math.pow(1 + monthlyRate, -remainingMonths));
+    // This monthlyPayment is the payment that will be applied for the coming months (bank-like recalculation)
     preview.push({ year, monthlyPayment: monthlyPayment + extra, rate: parseFloat(ratePercent)||0 });
-    for(let m=1;m<=monthsInBlock && balance>0.0001;m++){
+    // simulate 12 months of payments using that monthlyPayment
+    for(let m=1;m<=12 && balance>0.0001;m++){
       const interest = balance * monthlyRate;
       let principalPay = monthlyPayment - interest + extra;
       if(principalPay > balance) principalPay = balance;
       balance = Math.max(0, balance - principalPay);
     }
   }
-  // If there are years > preview length (e.g., balance became 0), still show zeros for remaining years
-  for(let y = preview.length+1; y<=Math.min(years,25); y++){
-    preview.push({ year: y, monthlyPayment: 0, rate: parseFloat(baseRates[Math.min(baseRates.length-1, y-1)]) || 0 });
-  }
   return preview;
 }
 
-/* Populate tiered rates table (years rows, default values and preview amounts) */
 function generateTieredTable(){
   const years = Math.min(parseInt(yearsEl.value) || 0, 25);
   const baseRate = parseFloat(rateEl.value) || 0;
   tieredRatesTableBody.innerHTML = '';
   const principal = Math.max(0, unfmt(priceEl.value) - unfmt(dpValEl.value) + unfmt(otherFeesEl.value));
   const extra = unfmt(extraEl.value);
-
-  // default: small incremental change (you used +0.25 earlier) — keep that as suggestion
   const defaultRates = [];
   for(let i=1;i<=years;i++) defaultRates.push((baseRate + (i-1)*0.25).toFixed(2));
-
-  // compute preview using defaultRates as baseline
   const preview = computeTieredPreview(defaultRates, principal, years, extra);
-
   for(let i=1;i<=years;i++){
     const tr=document.createElement('tr');
     const tdYear=document.createElement('td'); tdYear.textContent = i; tdYear.className='left';
@@ -447,20 +428,20 @@ function generateTieredTable(){
     tr.appendChild(tdYear); tr.appendChild(tdInput); tr.appendChild(tdAmt);
     tieredRatesTableBody.appendChild(tr);
 
-    // On each input change, recompute preview for all years (based on current principal & any other edits)
     input.addEventListener('input', ()=>{
-      const inputs = Array.from(tieredRatesTableBody.querySelectorAll('input')).map(inp=>parseFloat(inp.value) || 0);
+      const inputs = Array.from(tieredRatesTableBody.querySelectorAll('input')).map(inp=>parseFloat(inp.value)||0);
       const preview2 = computeTieredPreview(inputs, principal, years, extra);
       const rows = tieredRatesTableBody.querySelectorAll('tr');
-      preview2.forEach(p=>{
-        const amtCell = rows[p.year-1].querySelector('.amt');
-        if(amtCell) amtCell.textContent = fmtRupiah(p.monthlyPayment);
-      });
+      // ensure we update every row up to years
+      for(let y=1;y<=years;y++){
+        const amtCell = rows[y-1].querySelector('.amt');
+        const p = preview2.find(pp=>pp.year===y);
+        amtCell.textContent = p ? fmtRupiah(p.monthlyPayment) : fmtRupiah(0);
+      }
     });
   }
 }
 
-/* interest type toggles */
 interestTypeEl.addEventListener('change', ()=>{
   const val = interestTypeEl.value;
   methodLabel.textContent = val === 'tiered' ? 'berjenjang' : 'flat';
@@ -479,7 +460,6 @@ extraEl.addEventListener('input', ()=>{ if(interestTypeEl.value==='tiered') gene
 
 hideTieredBtn.addEventListener('click',(e)=>{ e.preventDefault(); tieredRatesContainer.style.display='none'; interestTypeEl.value='flat'; methodLabel.textContent='annuitas'; });
 
-/* Calculate */
 function handleCalculate(){
   const price = unfmt(priceEl.value);
   const dpVal = unfmt(dpValEl.value);
@@ -515,7 +495,6 @@ function handleCalculate(){
 }
 calcBtn.addEventListener('click', handleCalculate);
 
-/* Reset */
 resetBtn.addEventListener('click', ()=>{
   priceEl.value='0'; dpValEl.value='0'; dpPctEl.value='20';
   yearsEl.value='15'; bankRates = loadBankRates(); populateBankSelect(); bankEl.value='BCA'; updateRateFromBank();
@@ -524,7 +503,6 @@ resetBtn.addEventListener('click', ()=>{
   summaryDiv.style.display='none'; amortTableBody.innerHTML=''; if(kprChart) kprChart.destroy();
 });
 
-/* CSV export */
 downloadCsvBtn.addEventListener('click', ()=>{
   const rows = Array.from(amortTableBody.querySelectorAll('tr'));
   if(rows.length === 0){ alert('Tidak ada data. Silakan hitung terlebih dahulu.'); return; }
@@ -544,7 +522,6 @@ downloadCsvBtn.addEventListener('click', ()=>{
   const a = document.createElement('a'); a.href = url; a.download = 'amortisasi_kpr.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
 });
 
-/* Export image (chart + summary) */
 exportImgBtn.addEventListener('click', async ()=>{
   if(!window._lastResult){ alert('Silakan hitung terlebih dahulu.'); return; }
   try {
@@ -579,7 +556,6 @@ exportImgBtn.addEventListener('click', async ()=>{
   } catch(err){ console.error(err); alert('Gagal membuat gambar hasil. Gunakan browser terbaru (Chrome/Edge/Safari).'); }
 });
 
-/* WhatsApp share (diperinci sesuai flat/berjenjang) */
 shareTextBtn.addEventListener('click', ()=>{
   const d = window._lastResult;
   if(!d){ alert('Silakan hitung terlebih dahulu.'); return; }
@@ -591,17 +567,12 @@ shareTextBtn.addEventListener('click', ()=>{
     const schedule = d.summary.schedule || [];
     const years = d.inputs.years;
     const baseRates = d.inputs.baseRates || [];
-    // For each year up to tenor (but cap 25 shown), get the start-of-year monthly payment (start month of that year)
     for(let y=1;y<=Math.min(years,25);y++){
-      const startMonthIndex = (y-1)*12; // zero-based index in schedule
-      let monthly = 0;
-      if(startMonthIndex < schedule.length){
-        const row = schedule[startMonthIndex];
-        monthly = row ? (row.principalPayment + row.interestPayment) : 0;
-      } else {
-        monthly = 0;
-      }
+      const startMonthIndex = (y-1)*12;
+      if(startMonthIndex >= schedule.length) break;
+      const row = schedule[startMonthIndex];
       const rateVal = (baseRates[y-1] != null) ? baseRates[y-1] : (baseRates[baseRates.length-1] || d.inputs.rate);
+      const monthly = row ? (row.principalPayment + row.interestPayment) : 0;
       txt += `Tahun ${y}: ${Number(rateVal).toFixed(2)}% → ${fmtRupiah(monthly)} /bln\n`;
     }
     txt += `\nTotal bunga: ${fmtRupiah(d.summary.totalInterest)}\nTotal bayar: ${fmtRupiah(d.summary.totalPayment)}\n`;
@@ -611,34 +582,35 @@ shareTextBtn.addEventListener('click', ()=>{
   window.open(waUrl, '_blank');
 });
 
-/* Admin modal (bank list) */
 let tapCount=0,tapTimer=null;
 logo.addEventListener('click', ()=>{
   tapCount++; if(tapTimer) clearTimeout(tapTimer); tapTimer = setTimeout(()=>{ tapCount=0; }, 800);
   if(tapCount>=3){ tapCount=0; openAdminModal(); }
 });
 function openAdminModal(){
-  bankList.innerHTML=''; Object.keys(bankRates).forEach(key=>{
-    const row=document.createElement('div'); row.className='bank-row';
-    const label=document.createElement('div'); label.style.width='90px'; label.textContent=key;
-    const input=document.createElement('input'); input.type='number'; input.step='0.01'; input.className='input'; input.value=bankRates[key]==null?'':String(bankRates[key]); input.dataset.key=key;
-    const note=document.createElement('div'); note.style.width='40px'; note.style.fontSize='0.9rem'; note.style.color='#475569'; note.textContent='%';
+  bankList.innerHTML='';
+  Object.keys(bankRates).forEach(key=>{
+    const row=document.createElement('div');row.className='bank-row';
+    const label=document.createElement('div');label.style.width='90px';label.textContent=key;
+    const input=document.createElement('input');input.type='number';input.step='0.01';input.className='input';input.value=bankRates[key]==null?'':String(bankRates[key]);input.dataset.key=key;
+    const note=document.createElement('div');note.style.width='40px';note.style.fontSize='0.9rem';note.style.color='#475569';note.textContent='%';
     row.appendChild(label); row.appendChild(input); row.appendChild(note); bankList.appendChild(row);
   });
   modal.style.display='flex';
 }
 closeModalBtn.addEventListener('click', ()=> modal.style.display='none');
 saveBanksBtn.addEventListener('click', ()=> {
-  const inputs = bankList.querySelectorAll('input');
-  inputs.forEach(inp=>{ bankRates[inp.dataset.key] = inp.value === '' ? null : Number(inp.value); });
-  saveBankRates(bankRates); populateBankSelect(); modal.style.display='none'; updateRateFromBank(); alert('Suku bunga bank disimpan (local).');
+  bankList.querySelectorAll('input').forEach(inp=>{
+    bankRates[inp.dataset.key]=inp.value===''?null:Number(inp.value);
+  });
+  saveBankRates(bankRates);populateBankSelect();updateRateFromBank();modal.style.display='none';
+  alert('Suku bunga disimpan.');
 });
 resetBanksBtn.addEventListener('click', ()=> {
-  if(!confirm('Reset suku bunga ke nilai default?')) return;
-  bankRates = Object.assign({}, defaultBankRates); saveBankRates(bankRates); populateBankSelect(); modal.style.display='none'; updateRateFromBank(); alert('Reset selesai.');
+  if(!confirm('Reset suku bunga ke default?'))return;
+  bankRates={...defaultBankRates};saveBankRates(bankRates);populateBankSelect();updateRateFromBank();modal.style.display='none';
 });
 
-/* Load from hash (optional) */
 function loadFromHash(){
   try {
     const hash = location.hash.replace(/^#/,'');
@@ -654,7 +626,6 @@ function loadFromHash(){
   } catch(e){}
 }
 
-/* Init */
 document.addEventListener('DOMContentLoaded', ()=>{
   populateBankSelect();
   bankEl.value='BCA';
