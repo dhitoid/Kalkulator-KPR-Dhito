@@ -40,13 +40,34 @@
     padding: 0 16px;
   }
 
-  header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-    backdrop-filter: var(--blur-bg);
-  }
+header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+  backdrop-filter: var(--blur-bg);
+}
+
+.app-title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.app-title h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.3;
+}
+
+.app-title .muted {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 2px;
+}
+
 
   /* Logo */
   .app-icon {
@@ -288,19 +309,35 @@
       align-items: flex-start;
     }
   }
+  @media (max-width: 480px) {
+  header {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+  .app-title h1 {
+    font-size: 1.05rem;
+  }
+  .app-title .muted {
+    font-size: 0.8rem;
+  }
+}
+
 </style>
 
 </head>
 <body>
   <div class="wrap">
-    <header>
-<div id="logo" class="app-icon" title="Ketuk 3x untuk admin">
-  <img src="https://raw.githubusercontent.com/dhitoid/Kalkulator-KPR-Dhito/main/assets/modernia.png" alt="Logo Dhito Property" />
-</div>
-        <h1>Kalkulator Praktis</h1>
-        <div class="muted">Simulasi angsuran — Dhito Property</div>
-      </div>
-    </header>
+<header>
+  <div id="logo" class="app-icon" title="Ketuk 3x untuk admin">
+    <img src="https://raw.githubusercontent.com/dhitoid/Kalkulator-KPR-Dhito/main/assets/modernia.png" alt="Logo Dhito Property" />
+  </div>
+  <div class="app-title">
+    <h1>Kalkulator Praktis</h1>
+    <div class="muted">Simulasi angsuran — Dhito Property</div>
+  </div>
+</header>
+
 
     <div class="grid">
       <div class="card" id="input-card">
