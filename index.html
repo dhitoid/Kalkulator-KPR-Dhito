@@ -362,11 +362,10 @@ updateRateFromBank();
 bankEl.addEventListener('change', updateRateFromBank);
 
 /* ---------------- Money inputs formatting (live with separators) ---------------- */
-function unfmt(v){
-  if(v==null) return 0;
-  return Number(String(v).replace(/[^\d\-]/g,'')) || 0;
+function formatNumberWithDots(value) {
+  const num = value.replace(/\D/g, '');
+  return num.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
-
 
 function attachMoneyInputs() {
   document.querySelectorAll('.money').forEach(el => {
@@ -399,7 +398,6 @@ function attachMoneyInputs() {
 
 /* pastikan format disiapkan */
 attachMoneyInputs();
-
 
 /* ---------------- Calculate handler ---------------- */
 function handleCalculate(){
