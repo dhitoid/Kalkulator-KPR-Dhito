@@ -66,20 +66,31 @@
   text-align: left;
 }
 
+/* ==== Perbaikan agar angka tidak terpotong ==== */
 #tieredRatesTable input.input {
-  padding: 5px 6px;
-  height: 30px;
-  width: 85px; /* lebih kecil agar kolom lebih dekat */
-  font-size: 0.9rem;
+  padding: 6px 8px;
+  height: 34px;
+  width: 95px;           /* bunga sedikit lebih lebar */
+  font-size: 0.95rem;
   text-align: right;
-  margin-right: 4px;
   border-radius: 8px;
+  box-sizing: border-box;
 }
 
 #tieredRatesTable .amt {
   text-align: right;
-  width: 110px; /* sempitkan kolom angsuran */
+  width: 140px;          /* lebar cukup untuk semua digit Rp */
   font-weight: 600;
+}
+
+/* Untuk layar kecil (HP) biar tidak kepotong */
+@media (max-width: 480px) {
+  #tieredRatesTable input.input {
+    width: 90px;
+  }
+  #tieredRatesTable .amt {
+    width: 130px;
+  }
 }
 
 /* rapatkan label atas tabel */
