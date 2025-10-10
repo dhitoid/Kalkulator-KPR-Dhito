@@ -174,27 +174,41 @@
     </div>
   </div>
 
-<script>
-/* ---------------- Utilities ---------------- */
+<script>/* ---------------- Utilities ---------------- */
+// Format angka ke rupiah
 function fmtRupiah(n){
   if(!isFinite(n)) return 'Rp 0';
   const sign = n < 0 ? '-' : '';
   n = Math.abs(Math.round(n));
-  const s = n.toString();
-  return sign + 'Rp ' + s.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return sign + 'Rp ' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
+
+// Ubah teks seperti "389.096.000" atau "Rp 389.096.000" jadi angka murni 389096000
 function unfmt(v){
   if (!v) return 0;
-  // Hapus semua selain angka dan tanda minus
-  const clean = String(v).replace(/[^\d\-]/g, '');
+  const clean = String(v).replace(/[^\d\-]/g, ''); // hapus Rp dan titik
   return Number(clean) || 0;
 }
 
-/* format input while typing (simple, caret moves to end) */
-function formatMoneyInput(el){
-  const raw = el.value;
-  const n = unfmt(raw);
-  el.value = n === 0 ? '' : fmtRupiah(n).replace('Rp ',''); // store without "Rp " in input to keep editing simple
+/* Format input uang: selalu pakai titik ribuan */
+function formatNumberWithDots(value) {
+  const num = value.replace(/\D/g, '');
+  return num ? num.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
+}
+
+function attachMoneyInputs() {
+  document.querySelectorAll('.money').forEach(el => {
+    // tampilkan format titik langsung saat load
+    el.value = formatNumberWithDots(el.value);
+
+    el.addEventListener('input', () => {
+      const pos = el.selectionStart;
+      const before = el.value.length;
+      el.value = formatNumberWithDots(el.value);
+      const after = el.value.length;
+      el.selectionEnd = pos + (after - before);
+    });
+  });
 }
 
 /* ---------------- Bank rates / persistence ---------------- */
@@ -404,28 +418,43 @@ attachMoneyInputs();
 
 /* ---------------- Calculate handler ---------------- */
 function handleCalculate(){
-  const price = unfmt(priceEl.value) || 0;
-  const dpVal = unfmt(dpValEl.value) || 0;
-  const dpPct = Number(dpPctEl.value) || 0;
-  const years = Math.max(1, Math.floor(Number(yearsEl.value) || 1));
-  const rate = Number(rateEl.value) || 0;
-  const otherFees = unfmt(otherFeesEl.value) || 0;
-  const extra = unfmt(extraEl.value) || 0;
+  // Ambil angka bersih tanpa titik
+  const price = unfmt(priceEl.value);
+  const dpVal = unfmt(dpValEl.value);
+  const dpPct = parseFloat(dpPctEl.value) || 0;
+  const years = parseInt(yearsEl.value) || 0;
+  const rate = parseFloat(rateEl.value) || 0;
+  const otherFees = unfmt(otherFeesEl.value);
+  const extra = unfmt(extraEl.value);
 
+  // Hitung DP berdasarkan persen bila kolom nominal kosong
   let dp = dpVal;
-  if(!dp && dpPct) dp = Math.round(price * (dpPct/100));
-  if(dpVal && price) dpPctEl.value = Math.round((dpVal/price)*10000)/100;
+  if (!dp && dpPct && price) dp = Math.round(price * dpPct / 100);
+  if (price && dp) dpPctEl.value = (dp / price * 100).toFixed(2);
 
-  const principal = Math.max(0, price - (dp || 0)) + otherFees;
+  const principal = Math.max(0, price - dp + otherFees);
   const months = years * 12;
+
+  if (principal <= 0 || months <= 0 || rate <= 0) {
+    alert("Pastikan semua input sudah diisi dengan benar.");
+    return;
+  }
 
   const res = calcAmortization({ principal, annualRate: rate, months, extra });
   res.principal = principal;
   renderResults(res);
 
-  // store last result for sharing text
-  window._lastResult = { inputs:{price, dp, years, rate, otherFees, extra, bank: bankEl.value}, summary:{ monthly: res.monthlyPayment, totalInterest: res.totalInterest, totalPayment: res.totalPayment } };
+  // Simpan hasil terakhir untuk share
+  window._lastResult = {
+    inputs: { price, dp, years, rate, otherFees, extra, bank: bankEl.value },
+    summary: {
+      monthly: res.monthlyPayment,
+      totalInterest: res.totalInterest,
+      totalPayment: res.totalPayment
+    }
+  };
 }
+
 calcBtn.addEventListener('click', handleCalculate);
 
 /* ---------------- Reset ---------------- */
