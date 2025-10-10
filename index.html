@@ -660,22 +660,20 @@ function generateTieredTable() {
   const principal = Math.max(0, unfmt(priceEl.value) - unfmt(dpValEl.value) + unfmt(otherFeesEl.value));
   const extra = unfmt(extraEl.value);
 
-  // default bunga tiap tahun
   const defaultRates = [];
   for (let i = 1; i <= years; i++) defaultRates.push((baseRate + (i - 1) * 0.25).toFixed(2));
 
-  // buat preview awal
   const preview = computeTieredPreview(defaultRates, principal, years, extra);
 
   for (let i = 1; i <= years; i++) {
     const tr = document.createElement('tr');
 
-    // tahun
+    // === Tahun ===
     const tdYear = document.createElement('td');
     tdYear.textContent = i;
     tdYear.className = 'left';
 
-    // bunga (%)
+    // === Bunga ===
     const tdRate = document.createElement('td');
     const inputRate = document.createElement('input');
     inputRate.type = 'number';
@@ -685,7 +683,7 @@ function generateTieredTable() {
     inputRate.style.width = '90px';
     tdRate.appendChild(inputRate);
 
-    // angsuran/bln (Rp)
+    // === Angsuran ===
     const tdAmt = document.createElement('td');
     tdAmt.className = 'amt';
     const inputAmt = document.createElement('input');
@@ -699,24 +697,21 @@ function generateTieredTable() {
     tr.appendChild(tdAmt);
     tieredRatesTableBody.appendChild(tr);
 
-    // === saat bunga diubah → update semua angsuran ===
+    // === Saat bunga diubah → update hanya angsuran tahun ini ===
     inputRate.addEventListener('input', () => {
+      const rateVal = parseFloat(inputRate.value) || 0;
       const rates = Array.from(tieredRatesTableBody.querySelectorAll('input[type="number"]')).map(
         el => parseFloat(el.value) || 0
       );
       const newPreview = computeTieredPreview(rates, principal, years, extra);
-      Array.from(tieredRatesTableBody.querySelectorAll('tr')).forEach((row, idx) => {
-        const amtInput = row.querySelector('input.money');
-        amtInput.value = formatNumberWithDots(Math.round(newPreview[idx]?.monthlyPayment || 0));
-      });
+      inputAmt.value = formatNumberWithDots(Math.round(newPreview[i - 1]?.monthlyPayment || 0));
     });
 
-    // === saat angsuran diubah → cari bunga yang sesuai ===
+    // === Saat angsuran diubah → hitung bunga yang cocok ===
     inputAmt.addEventListener('input', () => {
       const targetPayment = unfmt(inputAmt.value);
       if (!targetPayment || targetPayment <= 0) return;
 
-      // hitung saldo awal sebelum tahun ke-i
       let balance = principal;
       for (let y = 1; y < i; y++) {
         const prevRate = parseFloat(tieredRatesTableBody.querySelectorAll('input[type="number"]')[y - 1].value) / 100 / 12;
@@ -729,12 +724,11 @@ function generateTieredTable() {
         }
       }
 
-      // iterasi untuk cari bunga baru berdasarkan targetPayment
+      // cari bunga yang sesuai untuk baris ini
       const remainingMonths = Math.max(1, (years - i + 1) * 12);
       let bestRate = 0;
       let minDiff = Infinity;
-
-      for (let r = 0; r <= 25; r += 0.001) { // cari bunga 0–25%
+      for (let r = 0; r <= 25; r += 0.001) {
         const rMonthly = r / 100 / 12;
         const payment = rMonthly === 0
           ? balance / remainingMonths
@@ -746,13 +740,10 @@ function generateTieredTable() {
         }
       }
 
-      // set bunga hasil
+      // update bunga baris ini saja
       inputRate.value = bestRate.toFixed(2);
-      inputRate.style.backgroundColor = '#fff7cc'; // efek highlight
+      inputRate.style.backgroundColor = '#fff7cc';
       setTimeout(() => (inputRate.style.backgroundColor = ''), 600);
-
-      // update tabel otomatis
-      inputRate.dispatchEvent(new Event('input'));
     });
   }
 
