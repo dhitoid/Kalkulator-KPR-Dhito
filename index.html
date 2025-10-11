@@ -707,16 +707,23 @@ function generateTieredTable() {
       inputAmt.value = formatNumberWithDots(Math.round(newPreview[i - 1]?.monthlyPayment || 0));
     });
 
-    // === Saat angsuran diubah → hitung bunga yang cocok ===
+    // === Saat angsuran diubah → hitung bunga & update baris berikutnya ===
     inputAmt.addEventListener('input', () => {
       const targetPayment = unfmt(inputAmt.value);
       if (!targetPayment || targetPayment <= 0) return;
 
+      const allRateInputs = Array.from(tieredRatesTableBody.querySelectorAll('input[type="number"]'));
+      const allAmtInputs = Array.from(tieredRatesTableBody.querySelectorAll('input.money'));
+
       let balance = principal;
+      // simulasi tahun-tahun sebelum baris ini
       for (let y = 1; y < i; y++) {
-        const prevRate = parseFloat(tieredRatesTableBody.querySelectorAll('input[type="number"]')[y - 1].value) / 100 / 12;
+        const prevRate = (parseFloat(allRateInputs[y - 1].value) || 0) / 100 / 12;
         const remainMonths = Math.max(1, (years - y + 1) * 12);
-        const prevPayment = prevRate === 0 ? balance / remainMonths : (prevRate * balance) / (1 - Math.pow(1 + prevRate, -remainMonths));
+        const prevPayment = prevRate === 0
+          ? balance / remainMonths
+          : (prevRate * balance) / (1 - Math.pow(1 + prevRate, -remainMonths));
+
         for (let m = 0; m < 12 && balance > 0.01; m++) {
           const interest = balance * prevRate;
           const principalPay = prevPayment - interest + extra;
@@ -724,7 +731,7 @@ function generateTieredTable() {
         }
       }
 
-      // cari bunga yang sesuai untuk baris ini
+      // cari bunga yang sesuai dengan nominal angsuran baris ini
       const remainingMonths = Math.max(1, (years - i + 1) * 12);
       let bestRate = 0;
       let minDiff = Infinity;
@@ -740,16 +747,28 @@ function generateTieredTable() {
         }
       }
 
-      // update bunga baris ini saja
-      inputRate.value = bestRate.toFixed(2);
+      // update bunga di baris ini
+      allRateInputs[i - 1].value = bestRate.toFixed(2);
       inputRate.style.backgroundColor = '#fff7cc';
       setTimeout(() => (inputRate.style.backgroundColor = ''), 600);
+
+      // === update baris setelahnya secara otomatis ===
+      const updatedRates = allRateInputs.map((inp, idx) => idx === i - 1 ? bestRate : parseFloat(inp.value) || 0);
+      const newPreview = computeTieredPreview(updatedRates, principal, years, extra);
+
+      newPreview.forEach((p, idx) => {
+        if (allAmtInputs[idx]) {
+          allAmtInputs[idx].value = formatNumberWithDots(Math.round(p.monthlyPayment));
+        }
+        if (allRateInputs[idx] && idx > i - 1) {
+          allRateInputs[idx].value = p.rate.toFixed(2);
+        }
+      });
     });
   }
 
   attachMoneyInputs();
 }
-
 
 interestTypeEl.addEventListener('change', ()=>{
   const val = interestTypeEl.value;
