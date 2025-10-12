@@ -343,7 +343,17 @@
         <div style="display:flex;gap:8px;margin-top:10px">
           <div style="flex:1">
             <label for="years">Tenor (tahun)</label>
-            <input id="years" class="input" inputmode="numeric" type="number" min="1" max="30" value="15" />
+<select id="years" class="input">
+  <option value="1">1 tahun</option>
+  <option value="2">2 tahun</option>
+  <option value="3">3 tahun</option>
+  <option value="4">4 tahun</option>
+  <option value="5">5 tahun</option>
+  <option value="10">10 tahun</option>
+  <option value="15" selected>15 tahun</option>
+  <option value="20">20 tahun</option>
+  <option value="25">25 tahun</option>
+</select>
           </div>
           <div style="width:160px">
             <label for="rate">Suku bunga (% per tahun)</label>
@@ -553,28 +563,56 @@ function calcAmortization({principal,annualRate,months,extra=0}){
   return { schedule, monthlyPayment: monthlyDisplay, totalInterest, totalPayment: schedule.reduce((s,r)=>s + r.principalPayment + r.interestPayment,0), months: schedule.length, principal };
 }
 
-function calcTieredAmortization({principal, baseRates, years, extra=0}){
-  const schedule=[]; let balance=principal; let totalInterest=0; let monthCounter=1;
-  for(let year=1; year<=years && balance>0.0001; year++){
-    const ratePercent = (baseRates[year-1] != null) ? baseRates[year-1] : baseRates[baseRates.length-1];
-    const yearlyRate = (parseFloat(ratePercent) || 0) / 100;
-    const monthlyRate = yearlyRate / 12;
-    const monthsInYear = 12;
-    const remainingMonths = Math.max(1, (years - year + 1) * 12);
+function calcTieredAmortization({principal, baseRates, years, extra=0}) {
+  const schedule = [];
+  let balance = principal;
+  let totalInterest = 0;
+  let monthCounter = 1;
+
+  for (let year = 1; year <= years && balance > 0.0001; year++) {
+    const rate = parseFloat(baseRates[year - 1]) || baseRates[baseRates.length - 1] || 0;
+    const monthlyRate = rate / 100 / 12;
+    const remainingMonths = (years - year + 1) * 12;
+
+    // Hitung cicilan baru tiap awal tahun berdasarkan sisa pokok
     let monthlyPayment;
-    if(!isFinite(monthlyRate) || monthlyRate === 0) monthlyPayment = balance / remainingMonths;
-    else monthlyPayment = (monthlyRate * balance) / (1 - Math.pow(1 + monthlyRate, -remainingMonths));
-    for(let m=1;m<=monthsInYear && balance>0.0001;m++){
+    if (monthlyRate === 0) {
+      monthlyPayment = balance / remainingMonths;
+    } else {
+      monthlyPayment = (monthlyRate * balance) / (1 - Math.pow(1 + monthlyRate, -remainingMonths));
+    }
+
+    // Simulasi 12 bulan dalam tahun ini
+    for (let m = 1; m <= 12 && balance > 0.0001; m++) {
       const interest = balance * monthlyRate;
       let principalPay = monthlyPayment - interest + extra;
-      if(principalPay > balance) principalPay = balance;
+      if (principalPay > balance) principalPay = balance;
+
       const endBalance = Math.max(0, balance - principalPay);
-      schedule.push({ month: monthCounter++, startBalance: balance, principalPayment: principalPay, interestPayment: interest, endBalance });
+      schedule.push({
+        month: monthCounter++,
+        startBalance: balance,
+        principalPayment: principalPay,
+        interestPayment: interest,
+        endBalance,
+        rate
+      });
+
       totalInterest += interest;
       balance = endBalance;
     }
   }
-  return { schedule, monthlyPayment: schedule.length ? (schedule[0].principalPayment + schedule[0].interestPayment) : 0, totalInterest, totalPayment: schedule.reduce((s,r)=>s + r.principalPayment + r.interestPayment,0), months: schedule.length, principal };
+
+  const firstMonthly = schedule.length ? (schedule[0].principalPayment + schedule[0].interestPayment) : 0;
+
+  return {
+    schedule,
+    monthlyPayment: firstMonthly,
+    totalInterest,
+    totalPayment: schedule.reduce((s, r) => s + r.principalPayment + r.interestPayment, 0),
+    months: schedule.length,
+    principal
+  };
 }
 
 function renderResults(res){
