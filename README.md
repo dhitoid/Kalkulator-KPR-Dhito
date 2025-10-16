@@ -7,3 +7,5 @@ Sudah di lengkapi dengan pilihan BANK & SUKU BUNGA. Optional bisa di ubah untuk 
 Dengan tambahan fitur bagikan gambar anda bisa menyimpan hasil perhitungannya berupa PNG. lalu fitur kirim ke whatsapp termasuk mempermudah anda agar bisa langsung share hasil perhitungannya ke client / konsumen dengan simpel dan praktis 
 
 Created By Dhito
+
+Visit Link : https://dhitoid.github.io/Kalkulator-KPR-Dhito/
