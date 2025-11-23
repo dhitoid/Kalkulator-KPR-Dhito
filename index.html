@@ -1,723 +1,272 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Kalkulator Praktis — Dengan Skema Bank Fixed/Floating</title>
-  <meta name="description" content="Simulasi angsuran KPR — Kalkulator Praktis oleh Dhito Property">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <style>
-    /* --- gaya singkat yang mempertahankan tampilan asli --- */
-    :root {
-      --bg: #f5f7fb;
-      --card: rgba(255, 255, 255, 0.95);
-      --muted: #707b8a;
-      --accent: #007aff;
-      --radius-lg: 14px;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kalkulator KPR Modern 2026</title>
+
+<style>
+    body {
+        margin: 0;
+        background: #f4f6f9;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto;
+        padding: 20px;
+        color: #222;
     }
-    body{margin:0;background:linear-gradient(180deg,#f9fbff,#f5f7fb);-webkit-font-smoothing:antialiased}
-    .wrap{max-width:980px;margin:18px auto;padding:12px}
-    header{display:flex;gap:12px;align-items:center;margin-bottom:14px}
-    .app-icon{width:56px;height:56px;border-radius:12px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
-    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,0.06)}
-    .grid{display:grid;gap:12px}
-    @media(min-width:920px){.grid{grid-template-columns:380px 1fr}}
-    label{display:block;font-size:0.86rem;color:var(--muted);margin-bottom:6px;font-weight:600}
-    .input{width:100%;padding:10px;border-radius:10px;border:1px solid #e6edf8;background:#fff;font-size:1rem}
-    .row{display:flex;gap:8px}
-    .btn{padding:10px 12px;border-radius:10px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-weight:700}
-    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(0,122,255,0.12)}
-    .small{font-size:0.82rem;color:var(--muted)}
-    table{width:100%;border-collapse:collapse;margin-top:8px;font-size:0.9rem}
-    th,td{padding:8px;border-bottom:1px solid #eef6ff;text-align:right}
-    th{font-weight:700;color:var(--muted)}
-    .left{text-align:left}
-    #tieredRatesTable input.input{height:34px;padding:6px;font-size:0.92rem;text-align:right;border-radius:8px}
-    .help{font-size:0.82rem;color:#475569;margin-top:8px}
-    .stat{padding:10px;border-radius:10px;background:linear-gradient(180deg,#fff,#f8fbff);text-align:center}
-  </style>
+
+    h1 {
+        text-align: center;
+        margin-bottom: 25px;
+        font-size: 26px;
+        font-weight: 700;
+        color: #1b1d20;
+    }
+
+    .card {
+        background: #fff;
+        padding: 18px;
+        border-radius: 14px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+
+    label {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        display: block;
+        color: #333;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid #d6d6d6;
+        font-size: 15px;
+        margin-bottom: 15px;
+        outline: none;
+        transition: .2s;
+    }
+
+    input:focus, select:focus {
+        border-color: #2979ff;
+        box-shadow: 0 0 0 3px rgba(41,121,255,0.15);
+    }
+
+    .radio-row {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 15px;
+        margin-top: -5px;
+    }
+
+    .radio-row label {
+        font-weight: 500;
+    }
+
+    .btn-primary {
+        width: 100%;
+        background: #2979ff;
+        color: white;
+        padding: 14px;
+        border-radius: 12px;
+        font-size: 17px;
+        border: none;
+        cursor: pointer;
+        margin-top: 10px;
+        font-weight: 600;
+        transition: 0.25s;
+    }
+
+    .btn-primary:hover {
+        background: #1a5edb;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 14px;
+    }
+
+    table th, table td {
+        padding: 10px;
+        border-bottom: 1px solid #e8e8e8;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    table th {
+        background: #f0f2f5;
+        font-weight: 600;
+    }
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="app-icon">DP</div>
-      <div>
-        <h1 style="margin:0;font-size:1.15rem">Kalkulator By Dhito Property</h1>
-        <div class="small">Simulasi angsuran — dengan skema bank fixed/floating</div>
-      </div>
-    </header>
 
-    <div class="grid">
-      <!-- LEFT: INPUT -->
-      <div class="card" id="input-card">
-        <label for="bank">Pilih Bank</label>
-        <select id="bank" class="input" aria-label="Pilih Bank"></select>
+<h1>Kalkulator KPR Modern 2026</h1>
 
-        <div style="display:flex;gap:8px;margin-top:12px">
-          <div style="flex:1">
-            <label for="price">Harga Properti</label>
-            <input id="price" class="input money" inputmode="numeric" value="0" />
-          </div>
-        </div>
+<!-- CARD: DATA DASAR -->
+<div class="card">
+    <label>Harga Properti</label>
+    <input id="price" type="number" placeholder="misal 350000000">
 
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <div style="flex:1">
-            <label for="dpVal">Uang muka</label>
-            <input id="dpVal" class="input money" inputmode="numeric" value="0" />
-          </div>
-          <div style="width:120px">
-            <label for="dpPct">atau (%)</label>
-            <input id="dpPct" class="input" inputmode="numeric" value="20" />
-          </div>
-        </div>
+    <label>Down Payment (DP)</label>
+    <input id="dp" type="number" placeholder="misal 50000000">
 
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <div style="flex:1">
-            <label for="years">Tenor (tahun)</label>
-            <select id="years" class="input">
-              <option value="1">1 tahun</option>
-              <option value="2">2 tahun</option>
-              <option value="3">3 tahun</option>
-              <option value="4">4 tahun</option>
-              <option value="5">5 tahun</option>
-              <option value="6">6 tahun</option>
-              <option value="7">7 tahun</option>
-              <option value="8">8 tahun</option>
-              <option value="9">9 tahun</option>
-              <option value="10">10 tahun</option>
-              <option value="15" selected>15 tahun</option>
-              <option value="20">20 tahun</option>
-              <option value="25">25 tahun</option>
-            </select>
-          </div>
-          <div style="width:160px">
-            <label for="rate">Suku bunga (fixed %) </label>
-            <input id="rate" class="input" inputmode="decimal" value="7.25" />
-          </div>
-        </div>
+    <label>Booking Fee</label>
+    <input id="bookingFee" type="number" placeholder="misal 5000000">
 
-        <!-- New: floating rate + fixed years display -->
-        <div style="display:flex;gap:8px;margin-top:10px;align-items:end">
-          <div style="flex:1">
-            <label for="floatingRate">Floating rate setelah fixed (%)</label>
-            <input id="floatingRate" class="input" inputmode="decimal" value="12.00" />
-            <div class="small" style="margin-top:6px">Ini digunakan untuk mengisi tahun setelah periode fixed.</div>
-          </div>
-          <div style="width:120px">
-            <label for="fixedYears">Fixed (tahun)</label>
-            <input id="fixedYears" class="input" inputmode="numeric" value="3" />
-          </div>
-        </div>
-
-        <div style="margin-top:10px">
-          <label for="interestType">Jenis bunga</label>
-          <select id="interestType" class="input" aria-label="Jenis bunga">
-            <option value="flat">Flat (Tetap)</option>
-            <option value="tiered" selected>Berjenjang (Floating)</option>
-          </select>
-        </div>
-
-        <!-- Tier controls -->
-        <div id="tierControls" style="display:block;margin-top:10px">
-          <div style="display:flex;align-items:center;gap:8px">
-            <input type="checkbox" id="allowEditTier" />
-            <label for="allowEditTier" style="margin:0">Izinkan edit tier (ubah bunga per tahun)</label>
-          </div>
-        </div>
-
-        <div id="tieredRatesContainer" style="margin-top:10px">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <label style="margin:0">Bunga per tahun (%) — (maks 25 tahun)</label>
-            <button id="hideTieredBtn" class="btn ghost" style="padding:6px 8px;font-size:0.85rem">Sembunyikan Tabel</button>
-          </div>
-          <table id="tieredRatesTable">
-            <thead><tr><th class="left">Tahun</th><th>Bunga (%)</th><th class="left">Angsuran/bln (Rp)</th></tr></thead>
-            <tbody></tbody>
-          </table>
-          <div class="help">Default terisi berdasarkan bank. Centang "Izinkan edit tier" agar bisa ubah tiap tahun.</div>
-        </div>
-
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <div style="flex:1">
-            <label for="otherFees">Biaya lain (opsional)</label>
-            <input id="otherFees" class="input money" inputmode="numeric" value="0" />
-          </div>
-          <div style="width:160px">
-            <label for="extra">Pembayaran ekstra/bln</label>
-            <input id="extra" class="input money" inputmode="numeric" value="0" />
-          </div>
-        </div>
-
-        <div style="display:flex;gap:10px;margin-top:14px;align-items:center">
-          <button id="calcBtn" class="btn">Hitung</button>
-          <button id="resetBtn" class="btn ghost">Reset</button>
-          <div style="margin-left:auto" class="small">Metode: <strong id="methodLabel">berjenjang</strong></div>
-        </div>
-
-        <div class="stats" id="summary" style="display:none;margin-top:12px;gap:8px">
-          <div class="stat" style="min-width:120px">
-            <div class="small">Plafon</div>
-            <div id="loanAmt" style="font-size:1.05rem;font-weight:800">Rp 0</div>
-          </div>
-          <div class="stat" style="min-width:120px">
-            <div class="small">Angsuran/bln</div>
-            <div id="monthly" style="font-size:1.05rem;font-weight:800">Rp 0</div>
-          </div>
-          <div class="stat" style="min-width:120px">
-            <div class="small">Total bunga</div>
-            <div id="totalInterest" style="font-size:1.05rem;font-weight:800">Rp 0</div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- RIGHT: RESULT -->
-      <div class="card" id="result-card">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-          <h2 style="margin:0">Hasil & Amortisasi</h2>
-          <div class="controls">
-            <button id="exportImg" class="btn">Bagikan Gambar</button>
-            <button id="downloadCsv" class="btn ghost">Ekspor CSV</button>
-            <button id="shareText" class="btn ghost">Kirim ke WhatsApp</button>
-          </div>
-        </div>
-
-        <div id="result-area" style="margin-top:12px">
-          <canvas id="kprChart" height="320" style="width:100%;max-height:420px"></canvas>
-
-          <div style="overflow:auto;margin-top:12px;max-height:320px">
-            <table id="amortTable" aria-live="polite">
-              <thead><tr><th class="left">Bulan</th><th>Saldo awal</th><th>Angsuran pokok</th><th>Bunga</th><th class="left">Saldo akhir</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-
-        <footer style="margin-top:12px">
-          <div class="small">Dibuat oleh Dhito Property · Catatan: perhitungan menggunakan rumus annuitas per periode. Hanya ilustrasi.</div>
-        </footer>
-      </div>
+    <div class="radio-row">
+        <label><input type="radio" name="bfMode" value="reducePrice" checked> Kurangi Harga</label>
+        <label><input type="radio" name="bfMode" value="reduceDP"> Kurangi DP</label>
     </div>
-  </div>
+
+</div>
+
+<!-- CARD: TENOR & BUNGA-->
+<div class="card">
+    <label>Bank</label>
+    <select id="bankSelect">
+        <option value="">Pilih Bank</option>
+        <option value="bca">BCA</option>
+        <option value="btn">BTN</option>
+        <option value="mandiri">Mandiri</option>
+        <option value="bsi">BSI</option>
+    </select>
+
+    <label>Bunga Tahun 1</label>
+    <input id="rate1" type="number" step="0.01" placeholder="misal 7.25">
+
+    <label>Bunga Floating (setelah tahun 3/5)</label>
+    <input id="rateFloating" type="number" step="0.01" placeholder="misal 12">
+
+    <label>Tenor (tahun)</label>
+    <input id="years" type="number" placeholder="max 30 tahun">
+</div>
+
+<!-- CARD: TABEL BUNGA TIER -->
+<div class="card">
+    <h3 style="margin-top:0;margin-bottom:10px;font-size:17px;">Bunga Berjenjang</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Tahun</th>
+                <th>Bunga (%)</th>
+            </tr>
+        </thead>
+        <tbody id="tieredRatesTableBody"></tbody>
+    </table>
+
+    <button class="btn-primary" onclick="generateTier()">Generate Bunga</button>
+</div>
+
+<!-- CARD: HASIL -->
+<div class="card">
+    <h3 style="margin-top:0;font-size:17px;">Hasil Simulasi</h3>
+    <div id="result" style="font-size:15px;line-height:1.6;margin-top:5px;color:#333;">
+        Masukkan data untuk melihat hasil.
+    </div>
+</div>
+
 
 <script>
-/* ======================
-   Utility formatting
-   ====================== */
-function fmtRupiah(n){
-  if(!isFinite(n)) return 'Rp 0';
-  const sign = n < 0 ? '-' : '';
-  n = Math.abs(Math.round(n));
-  return sign + 'Rp ' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-}
-function unfmt(v){
-  if (v === 0) return 0;
-  if (!v) return 0;
-  const clean = String(v).replace(/[^\d\-]/g, '');
-  return Number(clean) || 0;
-}
-function formatNumberWithDots(value) {
-  const num = String(value).replace(/\D/g, '');
-  return num ? num.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
-}
-function attachMoneyInputs() {
-  document.querySelectorAll('.money').forEach(el => {
-    if (el.value) el.value = formatNumberWithDots(el.value);
-    el.addEventListener('input', () => {
-      const pos = el.selectionStart;
-      const before = el.value.length;
-      el.value = formatNumberWithDots(el.value);
-      const after = el.value.length;
-      el.selectionEnd = pos + (after - before);
-    });
-  });
-}
-
-/* ======================
-   Bank schemes (fixed + floating)
-   Keys must match option values in populateBankSelect
-   ====================== */
+// =========================================
+//        TABEL BUNGA BANK (HANYA FIXED)
+// =========================================
 const bankSchemes = {
-  'BCA': { fixedYears: 3, fixedRate: 7.25, floatingRate: 12.00 },
-  'BTN': { fixedYears: 5, fixedRate: 6.90, floatingRate: 11.75 },
-  'MANDIRI': { fixedYears: 3, fixedRate: 7.50, floatingRate: 12.25 },
-  'BRI': { fixedYears: 3, fixedRate: 7.10, floatingRate: 12.00 },
-  'BNI': { fixedYears: 5, fixedRate: 7.40, floatingRate: 12.10 },
-  'BSI': { fixedYears: 5, fixedRate: 6.85, floatingRate: 12.50 },
-  'DEVELOPER': { fixedYears: 0, fixedRate: null, floatingRate: null }
+    bca: { fixedYears: 3 },
+    btn: { fixedYears: 5 },
+    mandiri: { fixedYears: 3 },
+    bsi: { fixedYears: 5 }
 };
 
-/* keep legacy simple bankRates default for display text */
-const defaultBankRates = {'BCA':7.25,'BTN':6.90,'BRI':7.10,'MANDIRI':7.50,'BNI':7.40,'OCBC':7.00,'BSI':6.85,'DEVELOPER':null};
-const storageKey = 'kpr_bank_rates_v2';
-function loadBankRates(){ try{ const raw=localStorage.getItem(storageKey); if(!raw) return Object.assign({}, defaultBankRates); return Object.assign({}, defaultBankRates, JSON.parse(raw)); }catch(e){ return Object.assign({}, defaultBankRates); } }
-function saveBankRates(map){ try{ localStorage.setItem(storageKey, JSON.stringify(map)); }catch(e){} }
-let bankRates = loadBankRates();
+// =========================================
+//       GENERATE BUNGA BERJENJANG
+// =========================================
+function generateTier() {
+    const years = parseInt(document.getElementById("years").value);
+    const fixedRate = parseFloat(document.getElementById("rate1").value);
+    const floatingRate = parseFloat(document.getElementById("rateFloating").value);
+    const bank = document.getElementById("bankSelect").value;
+    const body = document.querySelector("#tieredRatesTableBody");
+    body.innerHTML = "";
 
-/* ======================
-   DOM refs
-   ====================== */
-const bankEl=document.getElementById('bank');
-const priceEl=document.getElementById('price');
-const dpValEl=document.getElementById('dpVal');
-const dpPctEl=document.getElementById('dpPct');
-const yearsEl=document.getElementById('years');
-const rateEl=document.getElementById('rate');
-const floatingRateEl=document.getElementById('floatingRate');
-const fixedYearsEl=document.getElementById('fixedYears');
-const otherFeesEl=document.getElementById('otherFees');
-const extraEl=document.getElementById('extra');
-const calcBtn=document.getElementById('calcBtn');
-const resetBtn=document.getElementById('resetBtn');
-const summaryDiv=document.getElementById('summary');
-const loanAmtEl=document.getElementById('loanAmt');
-const monthlyEl=document.getElementById('monthly');
-const totalInterestEl=document.getElementById('totalInterest');
-const amortTableBody=document.querySelector('#amortTable tbody');
-const downloadCsvBtn=document.getElementById('downloadCsv');
-const exportImgBtn=document.getElementById('exportImg');
-const shareTextBtn=document.getElementById('shareText');
-const interestTypeEl = document.getElementById('interestType');
-const tieredRatesContainer = document.getElementById('tieredRatesContainer');
-const tieredRatesTableBody = document.getElementById('tieredRatesTable').querySelector('tbody');
-const hideTieredBtn = document.getElementById('hideTieredBtn');
-const allowEditTierChk = document.getElementById('allowEditTier');
-const methodLabel = document.getElementById('methodLabel');
+    let fixedYears = 3;
+    if (bank && bankSchemes[bank]) fixedYears = bankSchemes[bank].fixedYears;
 
-let kprChart = null;
-function createChart(labels,datasets){
-  const ctx=document.getElementById('kprChart');
-  if(kprChart) kprChart.destroy();
-  kprChart=new Chart(ctx,{
-    type:'line',
-    data:{labels,datasets},
-    options:{
-      maintainAspectRatio:false,
-      interaction:{mode:'index',intersect:false},
-      plugins:{
-        legend:{display:true,position:'bottom'},
-        tooltip:{callbacks:{label: function(ctx){ const val=Number(ctx.raw||0); return ctx.dataset.label+': '+fmtRupiah(val); }}}
-      },
-      scales:{y:{ticks:{callback:v=>'Rp '+Number(v).toLocaleString('id')}}}
+    for (let y = 1; y <= years; y++) {
+        const tr = document.createElement("tr");
+
+        const tdY = document.createElement("td");
+        tdY.textContent = y;
+
+        const tdR = document.createElement("td");
+        tdR.contentEditable = true;
+        tdR.style.background = "#fafafa";
+        tdR.style.borderRadius = "6px";
+        tdR.textContent = (y <= fixedYears ? fixedRate : floatingRate).toFixed(2);
+
+        tr.appendChild(tdY);
+        tr.appendChild(tdR);
+
+        body.appendChild(tr);
     }
-  });
+
+    calculateKPR();
 }
 
-/* ======================
-   Amortization functions
-   ====================== */
-function calcAmortization({principal,annualRate,months,extra=0}){
-  const r=annualRate/12/100;
-  let baseMonthly;
-  if(!isFinite(r) || r === 0) baseMonthly = principal / months;
-  else baseMonthly = (r * principal) / (1 - Math.pow(1 + r, -months));
-  const schedule=[]; let bal=principal; let totalInterest=0;
-  for(let m=1;m<=months&&bal>0.0001;m++){
-    const interest=bal*r;
-    let principalPay=baseMonthly-interest;
-    principalPay += extra;
-    if(principalPay>bal) principalPay=bal;
-    const endBal=Math.max(0,bal-principalPay);
-    schedule.push({month:m,startBalance:bal,principalPayment:principalPay,interestPayment:interest,endBalance:endBal});
-    totalInterest += interest;
-    bal = endBal;
-  }
-  const monthlyDisplay = baseMonthly + extra;
-  return { schedule, monthlyPayment: monthlyDisplay, totalInterest, totalPayment: schedule.reduce((s,r)=>s + r.principalPayment + r.interestPayment,0), months: schedule.length, principal };
-}
+// =========================================
+//             HITUNG KPR
+// =========================================
+function calculateKPR() {
+    const price = Number(document.getElementById("price").value) || 0;
+    const dp = Number(document.getElementById("dp").value) || 0;
+    const bf = Number(document.getElementById("bookingFee").value) || 0;
+    const years = Number(document.getElementById("years").value) || 0;
 
-function calcTieredAmortization({principal, baseRates, years, extra=0}) {
-  const schedule = [];
-  let balance = principal;
-  let totalInterest = 0;
-  let monthCounter = 1;
-  // ensure baseRates length >= years
-  while(baseRates.length < years) baseRates.push(baseRates[baseRates.length-1] || 0);
+    const bfMode = document.querySelector('input[name="bfMode"]:checked').value;
 
-  for (let year = 1; year <= years && balance > 0.0001; year++) {
-    const rate = parseFloat(baseRates[year - 1]) || 0;
-    const monthlyRate = rate / 100 / 12;
-    const remainingMonths = (years - year + 1) * 12;
+    let finalPrice = price;
+    let finalDP = dp;
 
-    // recalc payment based on remaining months and current balance
-    let monthlyPayment;
-    if (monthlyRate === 0) {
-      monthlyPayment = balance / remainingMonths;
+    if (bfMode === "reducePrice") {
+        finalPrice -= bf;
     } else {
-      monthlyPayment = (monthlyRate * balance) / (1 - Math.pow(1 + monthlyRate, -remainingMonths));
+        finalDP += bf;
     }
 
-    // simulate 12 months for this year
-    for (let m = 1; m <= 12 && balance > 0.0001; m++) {
-      const interest = balance * monthlyRate;
-      let principalPay = monthlyPayment - interest + extra;
-      if (principalPay > balance) principalPay = balance;
-      const endBalance = Math.max(0, balance - principalPay);
-      schedule.push({
-        month: monthCounter++,
-        startBalance: balance,
-        principalPayment: principalPay,
-        interestPayment: interest,
-        endBalance,
-        rate
-      });
-      totalInterest += interest;
-      balance = endBalance;
-    }
-  }
+    const principal = finalPrice - finalDP;
 
-  const firstMonthly = schedule.length ? (schedule[0].principalPayment + schedule[0].interestPayment) : 0;
-
-  return {
-    schedule,
-    monthlyPayment: firstMonthly,
-    totalInterest,
-    totalPayment: schedule.reduce((s, r) => s + r.principalPayment + r.interestPayment, 0),
-    months: schedule.length,
-    principal
-  };
-}
-
-/* ======================
-   Tier preview & table generation
-   ====================== */
-function computeTieredPreview(baseRates, principal, years, extra=0){
-  const preview = [];
-  let balance = principal;
-  const maxY = Math.min(years,25);
-  for(let year=1; year<=maxY; year++){
-    const ratePercent = (baseRates[year-1] != null) ? baseRates[year-1] : baseRates[baseRates.length-1];
-    const yearlyRate = (parseFloat(ratePercent) || 0) / 100;
-    const monthlyRate = yearlyRate / 12;
-    const remainingMonths = Math.max(1, (years - year + 1) * 12);
-    let monthlyPayment;
-    if(!isFinite(monthlyRate) || monthlyRate === 0) monthlyPayment = balance / remainingMonths;
-    else monthlyPayment = (monthlyRate * balance) / (1 - Math.pow(1 + monthlyRate, -remainingMonths));
-    preview.push({ year, monthlyPayment: monthlyPayment + extra, rate: parseFloat(ratePercent)||0 });
-    // simulate 12 months of payments using that monthlyPayment
-    for(let m=1;m<=12 && balance>0.0001;m++){
-      const interest = balance * monthlyRate;
-      let principalPay = monthlyPayment - interest + extra;
-      if(principalPay > balance) principalPay = balance;
-      balance = Math.max(0, balance - principalPay);
-    }
-  }
-  return preview;
-}
-
-function generateTieredTable() {
-  tieredRatesTableBody.innerHTML = '';
-  const years = Math.min(parseInt(yearsEl.value) || 0, 25);
-  const principal = Math.max(0, unfmt(priceEl.value) - unfmt(dpValEl.value) + unfmt(otherFeesEl.value));
-  const extra = unfmt(extraEl.value);
-  // default baseRates based on fixedYears/fixedRate/floatingRate
-  const fixedY = parseInt(fixedYearsEl.value) || 0;
-  const fixedR = parseFloat(rateEl.value) || 0;
-  const floatR = parseFloat(floatingRateEl.value) || fixedR;
-
-  const defaultRates = [];
-  for (let i = 1; i <= years; i++) {
-    defaultRates.push((i <= fixedY ? fixedR : floatR).toFixed(2));
-  }
-
-  const preview = computeTieredPreview(defaultRates, principal, years, extra);
-
-  for (let i = 1; i <= years; i++) {
-    const tr = document.createElement('tr');
-
-    // Tahun
-    const tdYear = document.createElement('td');
-    tdYear.textContent = i;
-    tdYear.className = 'left';
-
-    // Bunga input (may be disabled if edits not allowed)
-    const tdRate = document.createElement('td');
-    const inputRate = document.createElement('input');
-    inputRate.type = 'number';
-    inputRate.step = '0.01';
-    inputRate.value = defaultRates[i - 1];
-    inputRate.className = 'input';
-    inputRate.style.width = '100px';
-    inputRate.disabled = !allowEditTierChk.checked;
-    tdRate.appendChild(inputRate);
-
-    // Angsuran preview (readonly money)
-    const tdAmt = document.createElement('td');
-    tdAmt.className = 'left';
-    const inputAmt = document.createElement('input');
-    inputAmt.type = 'text';
-    inputAmt.className = 'input money';
-    inputAmt.value = formatNumberWithDots(Math.round(preview[i - 1]?.monthlyPayment || 0));
-    inputAmt.readOnly = true;
-    tdAmt.appendChild(inputAmt);
-
-    tr.appendChild(tdYear);
-    tr.appendChild(tdRate);
-    tr.appendChild(tdAmt);
-    tieredRatesTableBody.appendChild(tr);
-
-    // Event: when rate changed (only possible if enabled)
-    inputRate.addEventListener('input', () => {
-      const rates = Array.from(tieredRatesTableBody.querySelectorAll('input[type="number"]')).map(el => parseFloat(el.value) || 0);
-      const newPreview = computeTieredPreview(rates, principal, years, extra);
-      // update all monthly preview fields
-      Array.from(tieredRatesTableBody.querySelectorAll('input.money')).forEach((el, idx) => {
-        el.value = formatNumberWithDots(Math.round(newPreview[idx]?.monthlyPayment || 0));
-      });
+    let tierRates = [];
+    document.querySelectorAll("#tieredRatesTableBody tr").forEach(row => {
+        let r = parseFloat(row.children[1].textContent);
+        tierRates.push(r);
     });
-  }
 
-  attachMoneyInputs();
-}
+    let paymentList = [];
 
-/* ======================
-   Bank apply scheme
-   ====================== */
-function populateBankSelect(){
-  bankEl.innerHTML='';
-  Object.keys(bankRates).forEach(k=>{
-    const opt=document.createElement('option');
-    opt.value=k;
-    const val=bankRates[k];
-    opt.textContent=k + (val != null ? ' — ' + val + '%' : (k === 'DEVELOPER' ? ' — Developer' : ''));
-    bankEl.appendChild(opt);
-  });
-}
-function applyBankScheme(){
-  const key = bankEl.value;
-  // if scheme exists, apply defaults; but leave inputs editable (B)
-  if(!key) return;
-  const scheme = bankSchemes[key];
-  if(scheme){
-    if(scheme.fixedRate != null) rateEl.value = scheme.fixedRate;
-    if(scheme.floatingRate != null) floatingRateEl.value = scheme.floatingRate;
-    if(scheme.fixedYears != null) fixedYearsEl.value = scheme.fixedYears;
-  } else {
-    // fallback: if bankRates has value, set as fixed
-    const v = bankRates[key];
-    if(v!=null) rateEl.value = v;
-  }
-  // Regenerate tier if needed
-  if(interestTypeEl.value === 'tiered') generateTieredTable();
-}
+    for (let y = 0; y < years; y++) {
+        const rate = tierRates[y] / 100 / 12;
+        const months = 12;
 
-/* ======================
-   UI events & wiring
-   ====================== */
-populateBankSelect();
-bankEl.value = Object.keys(bankRates)[0] || 'BCA';
-applyBankScheme();
-attachMoneyInputs();
-
-bankEl.addEventListener('change', ()=>{ applyBankScheme(); });
-
-dpPctEl.addEventListener('input', ()=>{
-  const price=unfmt(priceEl.value);const pct=parseFloat(dpPctEl.value)||0;
-  if(price>=0&&pct>=0){dpValEl.value=formatNumberWithDots(String(Math.round(price*pct/100)));}
-});
-dpValEl.addEventListener('input',()=>{
-  const price=unfmt(priceEl.value);const dp=unfmt(dpValEl.value);
-  if(price>=0&&dp>=0){dpPctEl.value=((dp/price)*100).toFixed(2);}
-});
-priceEl.addEventListener('input',()=>{
-  const price=unfmt(priceEl.value);const pct=parseFloat(dpPctEl.value)||0;
-  if(price>=0&&pct>=0){dpValEl.value=formatNumberWithDots(String(Math.round(price*pct/100)));}
-});
-
-interestTypeEl.addEventListener('change', ()=>{
-  methodLabel.textContent = interestTypeEl.value === 'tiered' ? 'berjenjang' : 'annuitas';
-  if(interestTypeEl.value === 'tiered'){
-    generateTieredTable();
-    tieredRatesContainer.style.display = 'block';
-  } else {
-    tieredRatesContainer.style.display = 'none';
-  }
-});
-
-yearsEl.addEventListener('change', ()=>{ if(interestTypeEl.value==='tiered') generateTieredTable(); });
-fixedYearsEl.addEventListener('input', ()=>{ if(interestTypeEl.value==='tiered') generateTieredTable(); });
-rateEl.addEventListener('input', ()=>{ if(interestTypeEl.value==='tiered') generateTieredTable(); });
-floatingRateEl.addEventListener('input', ()=>{ if(interestTypeEl.value==='tiered') generateTieredTable(); });
-priceEl.addEventListener('input', ()=>{ if(interestTypeEl.value==='tiered') generateTieredTable(); });
-otherFeesEl.addEventListener('input', ()=>{ if(interestTypeEl.value==='tiered') generateTieredTable(); });
-extraEl.addEventListener('input', ()=>{ if(interestTypeEl.value==='tiered') generateTieredTable(); });
-
-allowEditTierChk.addEventListener('change', ()=>{
-  // regenerate table so inputs enabled/disabled reflect checkbox
-  if(interestTypeEl.value === 'tiered') generateTieredTable();
-});
-
-hideTieredBtn.addEventListener('click',(e)=>{ e.preventDefault(); tieredRatesContainer.style.display='none'; interestTypeEl.value='flat'; methodLabel.textContent='annuitas'; });
-
-/* ======================
-   Calculate & render
-   ====================== */
-function renderResults(res){
-  summaryDiv.style.display='flex';
-  loanAmtEl.textContent = fmtRupiah(res.principal || 0);
-  monthlyEl.textContent = fmtRupiah(res.monthlyPayment || 0);
-  totalInterestEl.textContent = fmtRupiah(res.totalInterest || 0);
-  amortTableBody.innerHTML = '';
-  const labels=[], balSeries=[], interestSeries=[], principalSeries=[];
-  res.schedule.forEach(row=>{
-    labels.push(String(row.month));
-    balSeries.push(Math.round(row.endBalance));
-    interestSeries.push(Math.round(row.interestPayment));
-    principalSeries.push(Math.round(row.principalPayment));
-    const tr=document.createElement('tr');
-    tr.innerHTML = `<td class="left">#${row.month}</td><td>${fmtRupiah(row.startBalance)}</td><td>${fmtRupiah(row.principalPayment)}</td><td>${fmtRupiah(row.interestPayment)}</td><td class="left">${fmtRupiah(row.endBalance)}</td>`;
-    amortTableBody.appendChild(tr);
-  });
-  createChart(labels,[
-    {label:'Saldo akhir (Rp)',data:balSeries,borderWidth:3,tension:0.2},
-    {label:'Bunga/bln (Rp)',data:interestSeries,borderWidth:2,tension:0.2},
-    {label:'Pokok/bln (Rp)',data:principalSeries,borderWidth:2,tension:0.2}
-  ]);
-}
-
-function handleCalculate(){
-  const price = unfmt(priceEl.value);
-  const dpVal = unfmt(dpValEl.value);
-  const dpPct = parseFloat(dpPctEl.value) || 0;
-  const years = parseInt(yearsEl.value) || 0;
-  const rate = parseFloat(rateEl.value) || 0;
-  const otherFees = unfmt(otherFeesEl.value);
-  const extra = unfmt(extraEl.value);
-  let dp = dpVal;
-  if(!dp && dpPct && price) dp = Math.round(price * dpPct / 100);
-  if(price && dp) dpPctEl.value = (dp / price * 100).toFixed(2);
-  const principal = Math.max(0, price - dp + otherFees);
-  const months = years * 12;
-  if(principal<=0||months<=0){ alert("Pastikan semua input (harga, tenor, dll.) diisi dengan benar."); return; }
-
-  let res;
-  let baseRatesForResult = null;
-  if(interestTypeEl.value === 'flat'){
-    res = calcAmortization({ principal, annualRate: rate, months, extra });
-    baseRatesForResult = Array(years).fill(rate);
-  } else {
-    // read rates from table if present; otherwise construct from fixed/floating
-    const inputs = tieredRatesTableBody.querySelectorAll('input[type="number"]');
-    let baseRates;
-    if(inputs && inputs.length >= years){
-      baseRates = Array.from(inputs).map(i=>parseFloat(i.value) || rate);
-    } else {
-      const fixedY = parseInt(fixedYearsEl.value) || 0;
-      const floatR = parseFloat(floatingRateEl.value) || rate;
-      baseRates = [];
-      for(let y=1;y<=years;y++){
-        baseRates.push(y <= fixedY ? rate : floatR);
-      }
+        const pmt = (principal * rate) / (1 - Math.pow(1 + rate, -months));
+        paymentList.push(pmt);
     }
-    while(baseRates.length < years) baseRates.push(baseRates[baseRates.length-1] || rate);
-    baseRatesForResult = baseRates.slice(0, years);
-    res = calcTieredAmortization({ principal, baseRates, years, extra });
-  }
-  res.principal = principal;
-  renderResults(res);
-  window._lastResult = {
-    inputs:{ price, dp, years, rate, otherFees, extra, bank: bankEl.value, interestType: interestTypeEl.value, baseRates: baseRatesForResult },
-    summary: { monthly: res.monthlyPayment, totalInterest: res.totalInterest, totalPayment: res.totalPayment, schedule: res.schedule }
-  };
+
+    const div = document.getElementById("result");
+    div.innerHTML = `
+        <b>Harga Setelah Koreksi BF:</b> Rp ${finalPrice.toLocaleString()}<br>
+        <b>DP Setelah Koreksi BF:</b> Rp ${finalDP.toLocaleString()}<br>
+        <b>Pokok Pinjaman:</b> Rp ${principal.toLocaleString()}<br><hr>
+        <b>Simulasi Angsuran per Tahun:</b><br>
+        ${paymentList.map((p, i) => `Tahun ${i+1}: Rp ${Math.round(p).toLocaleString()}`).join("<br>")}
+    `;
 }
 
-calcBtn.addEventListener('click', handleCalculate);
-
-resetBtn.addEventListener('click', ()=>{
-  priceEl.value='0'; dpValEl.value='0'; dpPctEl.value='20';
-  yearsEl.value='15'; bankRates = loadBankRates(); populateBankSelect(); bankEl.value='BCA'; applyBankScheme();
-  otherFeesEl.value='0'; extraEl.value='0';
-  interestTypeEl.value='tiered'; methodLabel.textContent='berjenjang'; tieredRatesContainer.style.display='block';
-  summaryDiv.style.display='none'; amortTableBody.innerHTML=''; if(kprChart) kprChart.destroy();
-});
-
-/* ======================
-   CSV / share / export (kept from original)
-   ====================== */
-downloadCsvBtn.addEventListener('click', ()=>{
-  const rows = Array.from(amortTableBody.querySelectorAll('tr'));
-  if(rows.length === 0){ alert('Tidak ada data. Silakan hitung terlebih dahulu.'); return; }
-  const header = ['Bulan','Saldo awal','Angsuran pokok','Bunga','Saldo akhir'];
-  const lines = [header.join(',')];
-  rows.forEach(r=>{
-    const tds = r.querySelectorAll('td');
-    const month = tds[0].textContent.replace(/[^0-9]/g,'');
-    const start = fmtRupiah(unfmt(tds[1].textContent));
-    const pokok = fmtRupiah(unfmt(tds[2].textContent));
-    const bunga = fmtRupiah(unfmt(tds[3].textContent));
-    const end = fmtRupiah(unfmt(tds[4].textContent));
-    lines.push([month,start,pokok,bunga,end].join(','));
-  });
-  const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'amortisasi_kpr.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-});
-
-exportImgBtn.addEventListener('click', async ()=>{
-  if(!window._lastResult){ alert('Silakan hitung terlebih dahulu.'); return; }
-  try {
-    const container = document.createElement('div');
-    container.style.padding='18px'; container.style.background='#fff'; container.style.width='900px'; container.style.boxSizing='border-box';
-    const inputs = window._lastResult.inputs;
-    container.innerHTML = `<h3 style="margin:0 0 10px 0">Simulasi KPR — ${inputs.bank}</h3>
-      <div style="margin-bottom:10px">
-        <div>Pinjaman: ${fmtRupiah(inputs.price - inputs.dp + inputs.otherFees || 0)}</div>
-        <div>Angsuran/bln (preview): ${fmtRupiah(window._lastResult.summary.monthly || 0)}</div>
-        <div>Total bunga: ${fmtRupiah(window._lastResult.summary.totalInterest || 0)}</div>
-      </div><div id="miniChartWrap" style="width:100%;height:260px"></div>`;
-    document.body.appendChild(container);
-    const miniCanvas = document.createElement('canvas');
-    miniCanvas.width = 900; miniCanvas.height=260;
-    container.querySelector('#miniChartWrap').appendChild(miniCanvas);
-    const chartData = kprChart ? kprChart.data : { labels: [], datasets: [] };
-    const miniChart = new Chart(miniCanvas.getContext('2d'), { type:'line', data: chartData, options:{ responsive:false, plugins:{ legend:{display:false} } }});
-    const canvas = await html2canvas(container, { scale:2, useCORS:true, backgroundColor:'#fff' });
-    miniChart.destroy(); container.remove();
-    canvas.toBlob(async blob=>{
-      if(!blob) return alert('Gagal membuat gambar.');
-      const file = new File([blob], 'hasil_kpr.png', { type:'image/png' });
-      if(navigator.canShare && navigator.canShare({ files: [file] })){
-        try { await navigator.share({ files: [file], title: 'Hasil Simulasi KPR', text: 'Simulasi KPR — Kalkulator Praktis' }); return; } catch(e){}
-      }
-      const url = canvas.toDataURL('image/png');
-      const win = window.open();
-      if(win){ win.document.write('<title>Hasil Simulasi</title><img src="'+url+'" style="width:100%;">'); }
-      else { const a = document.createElement('a'); a.href=url; a.download='hasil_kpr.png'; a.click(); }
-    }, 'image/png', 0.95);
-  } catch(err){ console.error(err); alert('Gagal membuat gambar hasil. Gunakan browser terbaru (Chrome/Edge/Safari).'); }
-});
-
-shareTextBtn.addEventListener('click', ()=>{
-  const d = window._lastResult;
-  if(!d){ alert('Silakan hitung terlebih dahulu.'); return; }
-  let txt = `🏠 Simulasi KPR — ${d.inputs.bank}\nHarga: ${fmtRupiah(d.inputs.price)}\nUang muka: ${fmtRupiah(d.inputs.dp)}\nTenor: ${d.inputs.years} tahun\n`;
-  if(d.inputs.interestType === 'flat'){
-    txt += `Suku bunga: ${d.inputs.rate}% (Flat)\nAngsuran/bln: ${fmtRupiah(d.summary.monthly)}\nTotal bunga: ${fmtRupiah(d.summary.totalInterest)}\nTotal bayar: ${fmtRupiah(d.summary.totalPayment)}\n`;
-  } else {
-    txt += `Jenis: Berjenjang (Floating)\n\n`;
-    const schedule = d.summary.schedule || [];
-    const years = d.inputs.years;
-    const baseRates = d.inputs.baseRates || [];
-    for(let y=1;y<=Math.min(years,25);y++){
-      const startMonthIndex = (y-1)*12;
-      if(startMonthIndex >= schedule.length) break;
-      const row = schedule[startMonthIndex];
-      const rateVal = (baseRates[y-1] != null) ? baseRates[y-1] : (baseRates[baseRates.length-1] || d.inputs.rate);
-      const monthly = row ? (row.principalPayment + row.interestPayment) : 0;
-      txt += `Tahun ${y}: ${Number(rateVal).toFixed(2)}% → ${fmtRupiah(monthly)} /bln\n`;
-    }
-    txt += `\nTotal bunga: ${fmtRupiah(d.summary.totalInterest)}\nTotal bayar: ${fmtRupiah(d.summary.totalPayment)}\n`;
-  }
-  txt += `\nDibuat oleh Kalkulator Praktis`;
-  const waUrl = 'https://wa.me/?text=' + encodeURIComponent(txt);
-  window.open(waUrl, '_blank');
-});
-
-/* Initialize table at load if tiered selected */
-document.addEventListener('DOMContentLoaded', ()=>{ if(interestTypeEl.value==='tiered') generateTieredTable(); attachMoneyInputs(); });
-
+document.addEventListener("input", calculateKPR);
 </script>
+
 </body>
 </html>
