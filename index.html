@@ -3,67 +3,99 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Kalkulator Praktis — Dengan Skema Bank Fixed/Floating</title>
+  <title>Kalkulator KPR — Kalkulator KPR by dhitoproperty.id</title>
   <meta name="description" content="Simulasi angsuran KPR — Kalkulator Praktis oleh Dhito Property">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
-    /* --- gaya singkat yang mempertahankan tampilan asli --- */
-    :root {
-      --bg: #f5f7fb;
-      --card: rgba(255, 255, 255, 0.95);
-      --muted: #707b8a;
-      --accent: #007aff;
-      --radius-lg: 14px;
+    :root{
+      --bg:#f5f7fb;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --accent:#0058d6; /* biru BCA-like */
+      --accent-weak: rgba(0,88,214,0.08);
+      --radius:12px;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
-    body{margin:0;background:linear-gradient(180deg,#f9fbff,#f5f7fb);-webkit-font-smoothing:antialiased}
-    .wrap{max-width:980px;margin:18px auto;padding:12px}
-    header{display:flex;gap:12px;align-items:center;margin-bottom:14px}
-    .app-icon{width:56px;height:56px;border-radius:12px;background:var(--accent);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
-    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 10px 30px rgba(2,6,23,0.06)}
-    .grid{display:grid;gap:12px}
-    @media(min-width:920px){.grid{grid-template-columns:380px 1fr}}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#f9fbff,#f5f7fb);-webkit-font-smoothing:antialiased;color:#0f172a}
+    .topbar{background:linear-gradient(180deg,var(--accent),#0b4ab2);padding:14px 16px;color:#fff;display:flex;align-items:center;gap:12px;border-bottom-left-radius:6px;border-bottom-right-radius:6px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand .logo{width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-weight:800}
+    .brand h1{margin:0;font-size:1rem;line-height:1}
+    .brand p{margin:0;font-size:0.82rem;opacity:0.92}
+    .wrap{max-width:1000px;margin:14px auto;padding:12px}
+    .grid{display:grid;gap:14px}
+    @media(min-width:980px){.grid{grid-template-columns:400px 1fr}}
+    .card{background:var(--card);padding:14px;border-radius:var(--radius);box-shadow:0 10px 25px rgba(2,6,23,0.06)}
     label{display:block;font-size:0.86rem;color:var(--muted);margin-bottom:6px;font-weight:600}
     .input{width:100%;padding:10px;border-radius:10px;border:1px solid #e6edf8;background:#fff;font-size:1rem}
-    .row{display:flex;gap:8px}
-    .btn{padding:10px 12px;border-radius:10px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-weight:700}
-    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(0,122,255,0.12)}
     .small{font-size:0.82rem;color:var(--muted)}
-    table{width:100%;border-collapse:collapse;margin-top:8px;font-size:0.9rem}
-    th,td{padding:8px;border-bottom:1px solid #eef6ff;text-align:right}
-    th{font-weight:700;color:var(--muted)}
+    .row{display:flex;gap:10px;align-items:end}
+    .row .col{flex:1}
+    .btn{padding:10px 12px;border-radius:10px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-weight:700}
+    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(0,88,214,0.12)}
+    table{width:100%;border-collapse:collapse;margin-top:8px;font-size:0.92rem}
+    th,td{padding:8px;border-bottom:1px solid #f1f7ff;text-align:right}
+    th{font-weight:700;color:var(--muted);font-size:0.88rem}
     .left{text-align:left}
-    #tieredRatesTable input.input{height:34px;padding:6px;font-size:0.92rem;text-align:right;border-radius:8px}
+    input.money{text-align:right}
     .help{font-size:0.82rem;color:#475569;margin-top:8px}
     .stat{padding:10px;border-radius:10px;background:linear-gradient(180deg,#fff,#f8fbff);text-align:center}
+    /* responsive tweaks */
+    @media(max-width:600px){
+      .row{flex-direction:column;align-items:stretch}
+      .topbar{padding:12px}
+    }
+    /* subtle form spacing */
+    .form-row{margin-top:10px}
+    .muted-note{font-size:0.82rem;color:#455569;margin-top:6px}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="app-icon">DP</div>
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">DP</div>
       <div>
-        <h1 style="margin:0;font-size:1.15rem">Kalkulator By Dhito Property</h1>
-        <div class="small">Simulasi angsuran — dengan skema bank fixed/floating</div>
+        <h1>Kalkulator KPR</h1>
+        <p>Kalkulator KPR by <strong>dhitoproperty.id</strong></p>
       </div>
-    </header>
+    </div>
+  </div>
 
+  <div class="wrap">
     <div class="grid">
       <!-- LEFT: INPUT -->
       <div class="card" id="input-card">
-        <label for="bank">Pilih Bank</label>
-        <select id="bank" class="input" aria-label="Pilih Bank"></select>
-
-        <div style="display:flex;gap:8px;margin-top:12px">
+        <div style="display:flex;gap:12px;align-items:center;">
           <div style="flex:1">
-            <label for="price">Harga Properti</label>
-            <input id="price" class="input money" inputmode="numeric" value="0" />
+            <label for="bank">Pilih Bank</label>
+            <select id="bank" class="input" aria-label="Pilih Bank"></select>
+            <div class="muted-note">Pilih bank (nama saja). Skema fixed/floating akan otomatis terisi pada kolom bunga di bawah.</div>
           </div>
         </div>
 
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <div style="flex:1">
+        <div class="form-row">
+          <label for="price">Harga Properti</label>
+          <input id="price" class="input money" inputmode="numeric" value="0" />
+        </div>
+
+        <!-- Booking Fee -->
+        <div class="form-row">
+          <label for="bookingFee">Booking Fee</label>
+          <div style="display:flex;gap:10px">
+            <input id="bookingFee" class="input money" inputmode="numeric" value="0" />
+            <select id="bookingType" class="input" style="width:220px">
+              <option value="price">Kurangi Harga Properti</option>
+              <option value="dp">Kurangi Uang Muka (DP)</option>
+              <option value="other">Kurangi Biaya Lain-lain</option>
+            </select>
+          </div>
+          <div class="small" style="margin-top:6px">Booking fee dapat mengurangi Harga / DP / Biaya lain sesuai pilihan.</div>
+        </div>
+
+        <div class="form-row row">
+          <div class="col">
             <label for="dpVal">Uang muka</label>
             <input id="dpVal" class="input money" inputmode="numeric" value="0" />
           </div>
@@ -73,8 +105,8 @@
           </div>
         </div>
 
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <div style="flex:1">
+        <div class="form-row row">
+          <div class="col">
             <label for="years">Tenor (tahun)</label>
             <select id="years" class="input">
               <option value="1">1 tahun</option>
@@ -93,17 +125,16 @@
             </select>
           </div>
           <div style="width:160px">
-            <label for="rate">Suku bunga (fixed %) </label>
+            <label for="rate">Suku bunga (fixed %)</label>
             <input id="rate" class="input" inputmode="decimal" value="7.25" />
           </div>
         </div>
 
-        <!-- New: floating rate + fixed years display -->
-        <div style="display:flex;gap:8px;margin-top:10px;align-items:end">
-          <div style="flex:1">
+        <div class="form-row row" style="align-items:flex-end">
+          <div class="col">
             <label for="floatingRate">Floating rate setelah fixed (%)</label>
             <input id="floatingRate" class="input" inputmode="decimal" value="12.00" />
-            <div class="small" style="margin-top:6px">Ini digunakan untuk mengisi tahun setelah periode fixed.</div>
+            <div class="small" style="margin-top:6px">Untuk tahun setelah periode fixed.</div>
           </div>
           <div style="width:120px">
             <label for="fixedYears">Fixed (tahun)</label>
@@ -111,23 +142,22 @@
           </div>
         </div>
 
-        <div style="margin-top:10px">
+        <div class="form-row">
           <label for="interestType">Jenis bunga</label>
           <select id="interestType" class="input" aria-label="Jenis bunga">
-            <option value="flat">Flat (Tetap)</option>
-            <option value="tiered" selected>Berjenjang (Floating)</option>
+            <option value="flat">Flat (Annuitas)</option>
+            <option value="tiered" selected>Berjenjang (Tiered/Floating)</option>
           </select>
         </div>
 
-        <!-- Tier controls -->
-        <div id="tierControls" style="display:block;margin-top:10px">
+        <div id="tierControls" class="form-row">
           <div style="display:flex;align-items:center;gap:8px">
             <input type="checkbox" id="allowEditTier" />
-            <label for="allowEditTier" style="margin:0">Izinkan edit tier (ubah bunga per tahun)</label>
+            <label for="allowEditTier" style="margin:0;font-weight:600">Izinkan edit tier (ubah bunga tiap tahun)</label>
           </div>
         </div>
 
-        <div id="tieredRatesContainer" style="margin-top:10px">
+        <div id="tieredRatesContainer" class="form-row">
           <div style="display:flex;justify-content:space-between;align-items:center">
             <label style="margin:0">Bunga per tahun (%) — (maks 25 tahun)</label>
             <button id="hideTieredBtn" class="btn ghost" style="padding:6px 8px;font-size:0.85rem">Sembunyikan Tabel</button>
@@ -136,11 +166,11 @@
             <thead><tr><th class="left">Tahun</th><th>Bunga (%)</th><th class="left">Angsuran/bln (Rp)</th></tr></thead>
             <tbody></tbody>
           </table>
-          <div class="help">Default terisi berdasarkan bank. Centang "Izinkan edit tier" agar bisa ubah tiap tahun.</div>
+          <div class="help">Default terisi berdasarkan bank dan booking fee. Centang "Izinkan edit tier" agar dapat diubah tiap tahun.</div>
         </div>
 
-        <div style="display:flex;gap:8px;margin-top:10px">
-          <div style="flex:1">
+        <div class="form-row row">
+          <div class="col">
             <label for="otherFees">Biaya lain (opsional)</label>
             <input id="otherFees" class="input money" inputmode="numeric" value="0" />
           </div>
@@ -150,13 +180,13 @@
           </div>
         </div>
 
-        <div style="display:flex;gap:10px;margin-top:14px;align-items:center">
+        <div class="form-row" style="display:flex;gap:10px;align-items:center;margin-top:14px">
           <button id="calcBtn" class="btn">Hitung</button>
           <button id="resetBtn" class="btn ghost">Reset</button>
           <div style="margin-left:auto" class="small">Metode: <strong id="methodLabel">berjenjang</strong></div>
         </div>
 
-        <div class="stats" id="summary" style="display:none;margin-top:12px;gap:8px">
+        <div class="form-row" id="summary" style="display:none;margin-top:12px;gap:8px">
           <div class="stat" style="min-width:120px">
             <div class="small">Plafon</div>
             <div id="loanAmt" style="font-size:1.05rem;font-weight:800">Rp 0</div>
@@ -170,7 +200,6 @@
             <div id="totalInterest" style="font-size:1.05rem;font-weight:800">Rp 0</div>
           </div>
         </div>
-
       </div>
 
       <!-- RIGHT: RESULT -->
@@ -187,7 +216,7 @@
         <div id="result-area" style="margin-top:12px">
           <canvas id="kprChart" height="320" style="width:100%;max-height:420px"></canvas>
 
-          <div style="overflow:auto;margin-top:12px;max-height:320px">
+          <div style="overflow:auto;margin-top:12px;max-height:360px">
             <table id="amortTable" aria-live="polite">
               <thead><tr><th class="left">Bulan</th><th>Saldo awal</th><th>Angsuran pokok</th><th>Bunga</th><th class="left">Saldo akhir</th></tr></thead>
               <tbody></tbody>
@@ -231,13 +260,16 @@ function attachMoneyInputs() {
       el.value = formatNumberWithDots(el.value);
       const after = el.value.length;
       el.selectionEnd = pos + (after - before);
+      // trigger tier update when price/dp/otherFees/booking change
+      if (el.id === 'price' || el.id === 'dpVal' || el.id === 'otherFees' || el.id === 'bookingFee') {
+        if (interestTypeEl.value === 'tiered') generateTieredTable();
+      }
     });
   });
 }
 
 /* ======================
    Bank schemes (fixed + floating)
-   Keys must match option values in populateBankSelect
    ====================== */
 const bankSchemes = {
   'BCA': { fixedYears: 3, fixedRate: 7.25, floatingRate: 12.00 },
@@ -248,8 +280,6 @@ const bankSchemes = {
   'BSI': { fixedYears: 5, fixedRate: 6.85, floatingRate: 12.50 },
   'DEVELOPER': { fixedYears: 0, fixedRate: null, floatingRate: null }
 };
-
-/* keep legacy simple bankRates default for display text */
 const defaultBankRates = {'BCA':7.25,'BTN':6.90,'BRI':7.10,'MANDIRI':7.50,'BNI':7.40,'OCBC':7.00,'BSI':6.85,'DEVELOPER':null};
 const storageKey = 'kpr_bank_rates_v2';
 function loadBankRates(){ try{ const raw=localStorage.getItem(storageKey); if(!raw) return Object.assign({}, defaultBankRates); return Object.assign({}, defaultBankRates, JSON.parse(raw)); }catch(e){ return Object.assign({}, defaultBankRates); } }
@@ -261,6 +291,8 @@ let bankRates = loadBankRates();
    ====================== */
 const bankEl=document.getElementById('bank');
 const priceEl=document.getElementById('price');
+const bookingFeeEl=document.getElementById('bookingFee');
+const bookingTypeEl=document.getElementById('bookingType');
 const dpValEl=document.getElementById('dpVal');
 const dpPctEl=document.getElementById('dpPct');
 const yearsEl=document.getElementById('years');
@@ -333,7 +365,6 @@ function calcTieredAmortization({principal, baseRates, years, extra=0}) {
   let balance = principal;
   let totalInterest = 0;
   let monthCounter = 1;
-  // ensure baseRates length >= years
   while(baseRates.length < years) baseRates.push(baseRates[baseRates.length-1] || 0);
 
   for (let year = 1; year <= years && balance > 0.0001; year++) {
@@ -341,7 +372,6 @@ function calcTieredAmortization({principal, baseRates, years, extra=0}) {
     const monthlyRate = rate / 100 / 12;
     const remainingMonths = (years - year + 1) * 12;
 
-    // recalc payment based on remaining months and current balance
     let monthlyPayment;
     if (monthlyRate === 0) {
       monthlyPayment = balance / remainingMonths;
@@ -349,7 +379,6 @@ function calcTieredAmortization({principal, baseRates, years, extra=0}) {
       monthlyPayment = (monthlyRate * balance) / (1 - Math.pow(1 + monthlyRate, -remainingMonths));
     }
 
-    // simulate 12 months for this year
     for (let m = 1; m <= 12 && balance > 0.0001; m++) {
       const interest = balance * monthlyRate;
       let principalPay = monthlyPayment - interest + extra;
@@ -383,6 +412,29 @@ function calcTieredAmortization({principal, baseRates, years, extra=0}) {
 /* ======================
    Tier preview & table generation
    ====================== */
+function computeAdjustedValues(){
+  const price = unfmt(priceEl.value);
+  const dpVal = unfmt(dpValEl.value);
+  const otherFees = unfmt(otherFeesEl.value);
+  const bookingFee = unfmt(bookingFeeEl.value);
+  const bookingType = bookingTypeEl.value;
+
+  let priceAdj = price;
+  let dpAdj = dpVal;
+  let otherAdj = otherFees;
+
+  if (bookingFee > 0) {
+    if (bookingType === 'price') {
+      priceAdj = Math.max(0, price - bookingFee);
+    } else if (bookingType === 'dp') {
+      dpAdj = Math.max(0, dpVal - bookingFee);
+    } else if (bookingType === 'other') {
+      otherAdj = Math.max(0, otherFees - bookingFee);
+    }
+  }
+  return { price, dpVal, otherFees, priceAdj, dpAdj, otherAdj, bookingFee, bookingType };
+}
+
 function computeTieredPreview(baseRates, principal, years, extra=0){
   const preview = [];
   let balance = principal;
@@ -410,29 +462,29 @@ function computeTieredPreview(baseRates, principal, years, extra=0){
 function generateTieredTable() {
   tieredRatesTableBody.innerHTML = '';
   const years = Math.min(parseInt(yearsEl.value) || 0, 25);
-  const principal = Math.max(0, unfmt(priceEl.value) - unfmt(dpValEl.value) + unfmt(otherFeesEl.value));
+
+  // compute adjusted principal (consider booking fee)
+  const { priceAdj, dpAdj, otherAdj } = computeAdjustedValues();
+  const principal = Math.max(0, priceAdj - dpAdj + otherAdj);
   const extra = unfmt(extraEl.value);
-  // default baseRates based on fixedYears/fixedRate/floatingRate
+
   const fixedY = parseInt(fixedYearsEl.value) || 0;
   const fixedR = parseFloat(rateEl.value) || 0;
   const floatR = parseFloat(floatingRateEl.value) || fixedR;
-
   const defaultRates = [];
   for (let i = 1; i <= years; i++) {
     defaultRates.push((i <= fixedY ? fixedR : floatR).toFixed(2));
   }
 
-  const preview = computeTieredPreview(defaultRates, principal, years, extra);
+  const preview = computeTieredPreview(defaultRates.slice(), principal, years, extra);
 
   for (let i = 1; i <= years; i++) {
     const tr = document.createElement('tr');
 
-    // Tahun
     const tdYear = document.createElement('td');
     tdYear.textContent = i;
     tdYear.className = 'left';
 
-    // Bunga input (may be disabled if edits not allowed)
     const tdRate = document.createElement('td');
     const inputRate = document.createElement('input');
     inputRate.type = 'number';
@@ -443,7 +495,6 @@ function generateTieredTable() {
     inputRate.disabled = !allowEditTierChk.checked;
     tdRate.appendChild(inputRate);
 
-    // Angsuran preview (readonly money)
     const tdAmt = document.createElement('td');
     tdAmt.className = 'left';
     const inputAmt = document.createElement('input');
@@ -458,11 +509,11 @@ function generateTieredTable() {
     tr.appendChild(tdAmt);
     tieredRatesTableBody.appendChild(tr);
 
-    // Event: when rate changed (only possible if enabled)
     inputRate.addEventListener('input', () => {
       const rates = Array.from(tieredRatesTableBody.querySelectorAll('input[type="number"]')).map(el => parseFloat(el.value) || 0);
-      const newPreview = computeTieredPreview(rates, principal, years, extra);
-      // update all monthly preview fields
+      const { priceAdj: pAdj, dpAdj: dAdj, otherAdj: oAdj } = computeAdjustedValues();
+      const newPrincipal = Math.max(0, pAdj - dAdj + oAdj);
+      const newPreview = computeTieredPreview(rates, newPrincipal, years, extra);
       Array.from(tieredRatesTableBody.querySelectorAll('input.money')).forEach((el, idx) => {
         el.value = formatNumberWithDots(Math.round(newPreview[idx]?.monthlyPayment || 0));
       });
@@ -474,20 +525,19 @@ function generateTieredTable() {
 
 /* ======================
    Bank apply scheme
+   (dropdown shows only bank name)
    ====================== */
 function populateBankSelect(){
   bankEl.innerHTML='';
   Object.keys(bankRates).forEach(k=>{
     const opt=document.createElement('option');
     opt.value=k;
-    const val=bankRates[k];
-    opt.textContent=k + (val != null ? ' — ' + val + '%' : (k === 'DEVELOPER' ? ' — Developer' : ''));
+    opt.textContent=k; // only name
     bankEl.appendChild(opt);
   });
 }
 function applyBankScheme(){
   const key = bankEl.value;
-  // if scheme exists, apply defaults; but leave inputs editable (B)
   if(!key) return;
   const scheme = bankSchemes[key];
   if(scheme){
@@ -495,11 +545,9 @@ function applyBankScheme(){
     if(scheme.floatingRate != null) floatingRateEl.value = scheme.floatingRate;
     if(scheme.fixedYears != null) fixedYearsEl.value = scheme.fixedYears;
   } else {
-    // fallback: if bankRates has value, set as fixed
     const v = bankRates[key];
     if(v!=null) rateEl.value = v;
   }
-  // Regenerate tier if needed
   if(interestTypeEl.value === 'tiered') generateTieredTable();
 }
 
@@ -516,15 +564,21 @@ bankEl.addEventListener('change', ()=>{ applyBankScheme(); });
 dpPctEl.addEventListener('input', ()=>{
   const price=unfmt(priceEl.value);const pct=parseFloat(dpPctEl.value)||0;
   if(price>=0&&pct>=0){dpValEl.value=formatNumberWithDots(String(Math.round(price*pct/100)));}
+  if(interestTypeEl.value==='tiered') generateTieredTable();
 });
 dpValEl.addEventListener('input',()=>{
   const price=unfmt(priceEl.value);const dp=unfmt(dpValEl.value);
   if(price>=0&&dp>=0){dpPctEl.value=((dp/price)*100).toFixed(2);}
+  if(interestTypeEl.value==='tiered') generateTieredTable();
 });
 priceEl.addEventListener('input',()=>{
   const price=unfmt(priceEl.value);const pct=parseFloat(dpPctEl.value)||0;
   if(price>=0&&pct>=0){dpValEl.value=formatNumberWithDots(String(Math.round(price*pct/100)));}
+  if(interestTypeEl.value==='tiered') generateTieredTable();
 });
+
+bookingFeeEl.addEventListener('input', ()=>{ if(interestTypeEl.value==='tiered') generateTieredTable(); });
+bookingTypeEl.addEventListener('change', ()=>{ if(interestTypeEl.value==='tiered') generateTieredTable(); });
 
 interestTypeEl.addEventListener('change', ()=>{
   methodLabel.textContent = interestTypeEl.value === 'tiered' ? 'berjenjang' : 'annuitas';
@@ -540,12 +594,10 @@ yearsEl.addEventListener('change', ()=>{ if(interestTypeEl.value==='tiered') gen
 fixedYearsEl.addEventListener('input', ()=>{ if(interestTypeEl.value==='tiered') generateTieredTable(); });
 rateEl.addEventListener('input', ()=>{ if(interestTypeEl.value==='tiered') generateTieredTable(); });
 floatingRateEl.addEventListener('input', ()=>{ if(interestTypeEl.value==='tiered') generateTieredTable(); });
-priceEl.addEventListener('input', ()=>{ if(interestTypeEl.value==='tiered') generateTieredTable(); });
 otherFeesEl.addEventListener('input', ()=>{ if(interestTypeEl.value==='tiered') generateTieredTable(); });
 extraEl.addEventListener('input', ()=>{ if(interestTypeEl.value==='tiered') generateTieredTable(); });
 
 allowEditTierChk.addEventListener('change', ()=>{
-  // regenerate table so inputs enabled/disabled reflect checkbox
   if(interestTypeEl.value === 'tiered') generateTieredTable();
 });
 
@@ -554,7 +606,7 @@ hideTieredBtn.addEventListener('click',(e)=>{ e.preventDefault(); tieredRatesCon
 /* ======================
    Calculate & render
    ====================== */
-function renderResults(res){
+function renderResults(res, meta){
   summaryDiv.style.display='flex';
   loanAmtEl.textContent = fmtRupiah(res.principal || 0);
   monthlyEl.textContent = fmtRupiah(res.monthlyPayment || 0);
@@ -577,18 +629,18 @@ function renderResults(res){
   ]);
 }
 
+/* Main calculate handler */
 function handleCalculate(){
-  const price = unfmt(priceEl.value);
-  const dpVal = unfmt(dpValEl.value);
+  const { price, dpVal, otherFees, priceAdj, dpAdj, otherAdj, bookingFee, bookingType } = computeAdjustedValues();
   const dpPct = parseFloat(dpPctEl.value) || 0;
   const years = parseInt(yearsEl.value) || 0;
   const rate = parseFloat(rateEl.value) || 0;
-  const otherFees = unfmt(otherFeesEl.value);
   const extra = unfmt(extraEl.value);
-  let dp = dpVal;
-  if(!dp && dpPct && price) dp = Math.round(price * dpPct / 100);
-  if(price && dp) dpPctEl.value = (dp / price * 100).toFixed(2);
-  const principal = Math.max(0, price - dp + otherFees);
+  let dp = dpAdj;
+  if(!dp && dpPct && priceAdj) dp = Math.round(priceAdj * dpPct / 100);
+  if(priceAdj && dp) dpPctEl.value = (dp / Math.max(1, priceAdj) * 100).toFixed(2);
+
+  const principal = Math.max(0, priceAdj - dp + otherAdj);
   const months = years * 12;
   if(principal<=0||months<=0){ alert("Pastikan semua input (harga, tenor, dll.) diisi dengan benar."); return; }
 
@@ -598,7 +650,6 @@ function handleCalculate(){
     res = calcAmortization({ principal, annualRate: rate, months, extra });
     baseRatesForResult = Array(years).fill(rate);
   } else {
-    // read rates from table if present; otherwise construct from fixed/floating
     const inputs = tieredRatesTableBody.querySelectorAll('input[type="number"]');
     let baseRates;
     if(inputs && inputs.length >= years){
@@ -616,25 +667,41 @@ function handleCalculate(){
     res = calcTieredAmortization({ principal, baseRates, years, extra });
   }
   res.principal = principal;
+
   renderResults(res);
   window._lastResult = {
-    inputs:{ price, dp, years, rate, otherFees, extra, bank: bankEl.value, interestType: interestTypeEl.value, baseRates: baseRatesForResult },
+    inputs:{
+      originalPrice: price,
+      priceAdjusted: priceAdj,
+      originalDp: dpVal,
+      dpAdjusted: dpAdj,
+      bookingFee,
+      bookingType,
+      years, rate, otherFees, otherAdjusted: otherAdj,
+      bank: bankEl.value,
+      interestType: interestTypeEl.value,
+      baseRates: baseRatesForResult,
+      monthlyPreview: res.monthlyPayment
+    },
     summary: { monthly: res.monthlyPayment, totalInterest: res.totalInterest, totalPayment: res.totalPayment, schedule: res.schedule }
   };
 }
 
+/* events */
 calcBtn.addEventListener('click', handleCalculate);
 
 resetBtn.addEventListener('click', ()=>{
-  priceEl.value='0'; dpValEl.value='0'; dpPctEl.value='20';
+  priceEl.value='0'; bookingFeeEl.value='0'; bookingTypeEl.value='price';
+  dpValEl.value='0'; dpPctEl.value='20';
   yearsEl.value='15'; bankRates = loadBankRates(); populateBankSelect(); bankEl.value='BCA'; applyBankScheme();
   otherFeesEl.value='0'; extraEl.value='0';
   interestTypeEl.value='tiered'; methodLabel.textContent='berjenjang'; tieredRatesContainer.style.display='block';
   summaryDiv.style.display='none'; amortTableBody.innerHTML=''; if(kprChart) kprChart.destroy();
+  if(interestTypeEl.value==='tiered') generateTieredTable();
 });
 
 /* ======================
-   CSV / share / export (kept from original)
+   CSV / share / export
    ====================== */
 downloadCsvBtn.addEventListener('click', ()=>{
   const rows = Array.from(amortTableBody.querySelectorAll('tr'));
@@ -663,7 +730,9 @@ exportImgBtn.addEventListener('click', async ()=>{
     const inputs = window._lastResult.inputs;
     container.innerHTML = `<h3 style="margin:0 0 10px 0">Simulasi KPR — ${inputs.bank}</h3>
       <div style="margin-bottom:10px">
-        <div>Pinjaman: ${fmtRupiah(inputs.price - inputs.dp + inputs.otherFees || 0)}</div>
+        <div>Harga (after booking): ${fmtRupiah(inputs.priceAdjusted || inputs.originalPrice || 0)}</div>
+        <div>DP (after booking): ${fmtRupiah(inputs.dpAdjusted || inputs.originalDp || 0)}</div>
+        <div>Pinjaman: ${fmtRupiah((inputs.priceAdjusted || inputs.originalPrice || 0) - (inputs.dpAdjusted || inputs.originalDp || 0) + (inputs.otherAdjusted||0))}</div>
         <div>Angsuran/bln (preview): ${fmtRupiah(window._lastResult.summary.monthly || 0)}</div>
         <div>Total bunga: ${fmtRupiah(window._lastResult.summary.totalInterest || 0)}</div>
       </div><div id="miniChartWrap" style="width:100%;height:260px"></div>`;
@@ -692,7 +761,7 @@ exportImgBtn.addEventListener('click', async ()=>{
 shareTextBtn.addEventListener('click', ()=>{
   const d = window._lastResult;
   if(!d){ alert('Silakan hitung terlebih dahulu.'); return; }
-  let txt = `🏠 Simulasi KPR — ${d.inputs.bank}\nHarga: ${fmtRupiah(d.inputs.price)}\nUang muka: ${fmtRupiah(d.inputs.dp)}\nTenor: ${d.inputs.years} tahun\n`;
+  let txt = `🏠 Simulasi KPR — ${d.inputs.bank}\nHarga (after booking): ${fmtRupiah(d.inputs.priceAdjusted || d.inputs.originalPrice)}\nUang muka (after booking): ${fmtRupiah(d.inputs.dpAdjusted || d.inputs.originalDp)}\nTenor: ${d.inputs.years} tahun\n`;
   if(d.inputs.interestType === 'flat'){
     txt += `Suku bunga: ${d.inputs.rate}% (Flat)\nAngsuran/bln: ${fmtRupiah(d.summary.monthly)}\nTotal bunga: ${fmtRupiah(d.summary.totalInterest)}\nTotal bayar: ${fmtRupiah(d.summary.totalPayment)}\n`;
   } else {
@@ -710,14 +779,16 @@ shareTextBtn.addEventListener('click', ()=>{
     }
     txt += `\nTotal bunga: ${fmtRupiah(d.summary.totalInterest)}\nTotal bayar: ${fmtRupiah(d.summary.totalPayment)}\n`;
   }
-  txt += `\nDibuat oleh Kalkulator Praktis`;
+  txt += `\nDibuat oleh Kalkulator Praktis — dhitoproperty.id`;
   const waUrl = 'https://wa.me/?text=' + encodeURIComponent(txt);
   window.open(waUrl, '_blank');
 });
 
 /* Initialize table at load if tiered selected */
-document.addEventListener('DOMContentLoaded', ()=>{ if(interestTypeEl.value==='tiered') generateTieredTable(); attachMoneyInputs(); });
-
+document.addEventListener('DOMContentLoaded', ()=>{
+  if(interestTypeEl.value==='tiered') generateTieredTable();
+  attachMoneyInputs();
+});
 </script>
 </body>
 </html>
