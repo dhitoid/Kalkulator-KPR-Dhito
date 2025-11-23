@@ -3,151 +3,155 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kalkulator KPR Modern 2026</title>
+
+<title>Kalkulator KPR</title>
 
 <style>
     body {
+        font-family: Arial, sans-serif;
+        background: #f2f4f6;
         margin: 0;
-        background: #f4f6f9;
-        font-family: system-ui, -apple-system, Segoe UI, Roboto;
-        padding: 20px;
+        padding: 18px;
         color: #222;
     }
 
-    h1 {
+    h2 {
         text-align: center;
-        margin-bottom: 25px;
-        font-size: 26px;
+        font-size: 22px;
         font-weight: 700;
-        color: #1b1d20;
-    }
-
-    .card {
-        background: #fff;
-        padding: 18px;
-        border-radius: 14px;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
         margin-bottom: 20px;
     }
 
+    .section {
+        background: #fff;
+        padding: 18px;
+        margin-bottom: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
     label {
-        font-size: 15px;
         font-weight: 600;
-        margin-bottom: 6px;
         display: block;
-        color: #333;
+        margin-bottom: 6px;
+        font-size: 15px;
     }
 
     input, select {
         width: 100%;
         padding: 12px;
-        border-radius: 10px;
-        border: 1px solid #d6d6d6;
         font-size: 15px;
-        margin-bottom: 15px;
-        outline: none;
-        transition: .2s;
+        margin-bottom: 16px;
+        border: 1.3px solid #ccc;
+        border-radius: 10px;
+        box-sizing: border-box;
     }
 
     input:focus, select:focus {
-        border-color: #2979ff;
-        box-shadow: 0 0 0 3px rgba(41,121,255,0.15);
+        border-color: #007aff;
+        outline: none;
     }
 
-    .radio-row {
-        display: flex;
-        gap: 16px;
-        margin-bottom: 15px;
-        margin-top: -5px;
-    }
-
-    .radio-row label {
-        font-weight: 500;
-    }
-
-    .btn-primary {
-        width: 100%;
-        background: #2979ff;
-        color: white;
-        padding: 14px;
-        border-radius: 12px;
-        font-size: 17px;
-        border: none;
-        cursor: pointer;
-        margin-top: 10px;
-        font-weight: 600;
-        transition: 0.25s;
-    }
-
-    .btn-primary:hover {
-        background: #1a5edb;
+    .radio-line {
+        margin-bottom: 14px;
+        font-size: 15px;
     }
 
     table {
         width: 100%;
-        border-collapse: collapse;
         margin-top: 14px;
-    }
-
-    table th, table td {
-        padding: 10px;
-        border-bottom: 1px solid #e8e8e8;
-        text-align: center;
+        border-collapse: collapse;
         font-size: 14px;
     }
 
+    table th, table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+    }
+
     table th {
-        background: #f0f2f5;
+        background: #f0f2f4;
+        font-weight: 700;
+    }
+
+    td[contenteditable="true"] {
+        background: #fafafa;
+    }
+
+    button {
+        width: 100%;
+        padding: 14px;
+        background: #007aff;
+        color: white;
+        border: none;
+        border-radius: 10px;
         font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 8px;
+    }
+
+    button:hover {
+        background: #005ed0;
+    }
+
+    #result {
+        line-height: 1.6;
+        font-size: 15px;
+        padding-top: 12px;
     }
 </style>
 </head>
+
 <body>
 
-<h1>Kalkulator KPR Modern 2026</h1>
+<h2>Kalkulator KPR</h2>
 
-<!-- CARD: DATA DASAR -->
-<div class="card">
+<!-- SECTION HARGA -->
+<div class="section">
     <label>Harga Properti</label>
-    <input id="price" type="number" placeholder="misal 350000000">
+    <input id="price" type="number" placeholder="contoh: 350000000">
 
-    <label>Down Payment (DP)</label>
-    <input id="dp" type="number" placeholder="misal 50000000">
+    <label>DP</label>
+    <input id="dp" type="number" placeholder="contoh: 50000000">
 
     <label>Booking Fee</label>
-    <input id="bookingFee" type="number" placeholder="misal 5000000">
+    <input id="bookingFee" type="number" placeholder="contoh: 5000000">
 
-    <div class="radio-row">
-        <label><input type="radio" name="bfMode" value="reducePrice" checked> Kurangi Harga</label>
+    <div class="radio-line">
+        <label><input type="radio" name="bfMode" value="reducePrice" checked> Kurangi Harga</label><br>
         <label><input type="radio" name="bfMode" value="reduceDP"> Kurangi DP</label>
     </div>
-
 </div>
 
-<!-- CARD: TENOR & BUNGA-->
-<div class="card">
-    <label>Bank</label>
+<!-- SECTION BANK -->
+<div class="section">
+    <label>Pilih Bank</label>
     <select id="bankSelect">
         <option value="">Pilih Bank</option>
-        <option value="bca">BCA</option>
-        <option value="btn">BTN</option>
-        <option value="mandiri">Mandiri</option>
-        <option value="bsi">BSI</option>
+        <option>BCA</option>
+        <option>BTN</option>
+        <option>Mandiri</option>
+        <option>BRI</option>
+        <option>BNI</option>
+        <option>BSI</option>
+        <option>Developer</option>
     </select>
 
-    <label>Bunga Tahun 1</label>
-    <input id="rate1" type="number" step="0.01" placeholder="misal 7.25">
+    <label>Bunga Tahun Pertama (%)</label>
+    <input id="rate1" type="number" step="0.01" placeholder="contoh: 7.25">
 
-    <label>Bunga Floating (setelah tahun 3/5)</label>
-    <input id="rateFloating" type="number" step="0.01" placeholder="misal 12">
+    <label>Bunga Floating (%)</label>
+    <input id="rateFloating" type="number" step="0.01" placeholder="contoh: 12.0">
 
-    <label>Tenor (tahun)</label>
-    <input id="years" type="number" placeholder="max 30 tahun">
+    <label>Tenor (Tahun)</label>
+    <input id="years" type="number" placeholder="contoh: 20">
 </div>
 
-<!-- CARD: TABEL BUNGA TIER -->
-<div class="card">
-    <h3 style="margin-top:0;margin-bottom:10px;font-size:17px;">Bunga Berjenjang</h3>
+<!-- SECTION TIER -->
+<div class="section">
+    <label style="font-size:16px;font-weight:700;">Bunga Berjenjang</label>
 
     <table>
         <thead>
@@ -159,42 +163,28 @@
         <tbody id="tieredRatesTableBody"></tbody>
     </table>
 
-    <button class="btn-primary" onclick="generateTier()">Generate Bunga</button>
+    <button onclick="generateTier()">Generate Bunga</button>
 </div>
 
-<!-- CARD: HASIL -->
-<div class="card">
-    <h3 style="margin-top:0;font-size:17px;">Hasil Simulasi</h3>
-    <div id="result" style="font-size:15px;line-height:1.6;margin-top:5px;color:#333;">
-        Masukkan data untuk melihat hasil.
-    </div>
+<!-- SECTION HASIL -->
+<div class="section">
+    <label style="font-weight:700;font-size:16px;">Hasil Simulasi</label>
+    <div id="result">Masukkan data untuk melihat hasil.</div>
 </div>
 
 
 <script>
-// =========================================
-//        TABEL BUNGA BANK (HANYA FIXED)
-// =========================================
-const bankSchemes = {
-    bca: { fixedYears: 3 },
-    btn: { fixedYears: 5 },
-    mandiri: { fixedYears: 3 },
-    bsi: { fixedYears: 5 }
-};
 
-// =========================================
-//       GENERATE BUNGA BERJENJANG
-// =========================================
+// GENERATE TIER TABLE (manual, tanpa autofill bank)
 function generateTier() {
     const years = parseInt(document.getElementById("years").value);
-    const fixedRate = parseFloat(document.getElementById("rate1").value);
-    const floatingRate = parseFloat(document.getElementById("rateFloating").value);
-    const bank = document.getElementById("bankSelect").value;
-    const body = document.querySelector("#tieredRatesTableBody");
+    const rate1 = parseFloat(document.getElementById("rate1").value);
+    const floating = parseFloat(document.getElementById("rateFloating").value);
+
+    const body = document.getElementById("tieredRatesTableBody");
     body.innerHTML = "";
 
-    let fixedYears = 3;
-    if (bank && bankSchemes[bank]) fixedYears = bankSchemes[bank].fixedYears;
+    if (!years || years < 1) return;
 
     for (let y = 1; y <= years; y++) {
         const tr = document.createElement("tr");
@@ -204,9 +194,7 @@ function generateTier() {
 
         const tdR = document.createElement("td");
         tdR.contentEditable = true;
-        tdR.style.background = "#fafafa";
-        tdR.style.borderRadius = "6px";
-        tdR.textContent = (y <= fixedYears ? fixedRate : floatingRate).toFixed(2);
+        tdR.textContent = (y === 1 ? rate1 : floating).toFixed(2);
 
         tr.appendChild(tdY);
         tr.appendChild(tdR);
@@ -217,9 +205,8 @@ function generateTier() {
     calculateKPR();
 }
 
-// =========================================
-//             HITUNG KPR
-// =========================================
+
+// PERHITUNGAN KPR
 function calculateKPR() {
     const price = Number(document.getElementById("price").value) || 0;
     const dp = Number(document.getElementById("dp").value) || 0;
@@ -231,6 +218,7 @@ function calculateKPR() {
     let finalPrice = price;
     let finalDP = dp;
 
+    // Aplikasi booking fee
     if (bfMode === "reducePrice") {
         finalPrice -= bf;
     } else {
@@ -239,33 +227,30 @@ function calculateKPR() {
 
     const principal = finalPrice - finalDP;
 
-    let tierRates = [];
-    document.querySelectorAll("#tieredRatesTableBody tr").forEach(row => {
-        let r = parseFloat(row.children[1].textContent);
-        tierRates.push(r);
-    });
-
-    let paymentList = [];
-
-    for (let y = 0; y < years; y++) {
-        const rate = tierRates[y] / 100 / 12;
-        const months = 12;
-
-        const pmt = (principal * rate) / (1 - Math.pow(1 + rate, -months));
-        paymentList.push(pmt);
+    const rows = document.querySelectorAll("#tieredRatesTableBody tr");
+    if (rows.length < 1) {
+        document.getElementById("result").innerHTML = "Generate tabel bunga dulu.";
+        return;
     }
 
-    const div = document.getElementById("result");
-    div.innerHTML = `
-        <b>Harga Setelah Koreksi BF:</b> Rp ${finalPrice.toLocaleString()}<br>
-        <b>DP Setelah Koreksi BF:</b> Rp ${finalDP.toLocaleString()}<br>
-        <b>Pokok Pinjaman:</b> Rp ${principal.toLocaleString()}<br><hr>
+    let resultHTML = `
+        <b>Harga Setelah Booking Fee:</b> Rp ${finalPrice.toLocaleString()}<br>
+        <b>DP Setelah Booking Fee:</b> Rp ${finalDP.toLocaleString()}<br>
+        <b>Pinjaman:</b> Rp ${principal.toLocaleString()}<br><hr>
         <b>Simulasi Angsuran per Tahun:</b><br>
-        ${paymentList.map((p, i) => `Tahun ${i+1}: Rp ${Math.round(p).toLocaleString()}`).join("<br>")}
     `;
+
+    rows.forEach((r, i) => {
+        const rate = parseFloat(r.children[1].textContent) / 100 / 12;
+        const pmt = (principal * rate) / (1 - Math.pow(1 + rate, -12));
+        resultHTML += `Tahun ${i+1}: Rp ${Math.round(pmt).toLocaleString()}<br>`;
+    });
+
+    document.getElementById("result").innerHTML = resultHTML;
 }
 
 document.addEventListener("input", calculateKPR);
+
 </script>
 
 </body>
