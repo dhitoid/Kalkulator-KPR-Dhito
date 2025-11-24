@@ -412,50 +412,46 @@ let isTypingInTierTable = false;
 
 // helper: compute adjusted values (unchanged)
 function computeAdjustedValues(){
-  const price = unfmt(priceEl.value);
-  const dpVal = unfmt(dpValEl.value);
-  const otherFees = unfmt(otherFeesEl.value);
   const bookingFee = unfmt(bookingFeeEl.value);
   const bookingType = bookingTypeEl.value;
 
-  let priceAdj = price;
-  let dpAdj = dpVal;
-  let otherAdj = otherFees;
+  let priceAdj = basePrice;
+  let dpAdj = baseDP;
+  let otherAdj = baseOther;
 
   if (bookingFee > 0) {
     switch (bookingType) {
       case 'price':
-        priceAdj = Math.max(0, price - bookingFee);
+        priceAdj = Math.max(0, basePrice - bookingFee);
         break;
       case 'dp':
-        dpAdj = Math.max(0, dpVal - bookingFee);
+        dpAdj = Math.max(0, baseDP - bookingFee);
         break;
       case 'other':
-        otherAdj = Math.max(0, otherFees - bookingFee);
+        otherAdj = Math.max(0, baseOther - bookingFee);
         break;
     }
   }
-  return { price, dpVal, otherFees, priceAdj, dpAdj, otherAdj, bookingFee, bookingType };
+
+  return { priceAdj, dpAdj, otherAdj };
 }
 
 function applyBookingAdjustmentToInputs() {
-  const { priceAdj, dpAdj, otherAdj, bookingType } = computeAdjustedValues();
+  const { priceAdj, dpAdj, otherAdj } = computeAdjustedValues();
+  const type = bookingTypeEl.value;
 
-  if (bookingType === 'price') {
+  if (type === 'price') {
     priceEl.value = priceAdj.toLocaleString('id-ID');
-    priceEl.dataset.raw = String(priceAdj);
-  } 
-  else if (bookingType === 'dp') {
-    dpValEl.value = dpAdj.toLocaleString('id-ID');
-    dpValEl.dataset.raw = String(dpAdj);
-
-    // Auto update persentase DP
-    const price = unfmt(priceEl.value);
-    dpPctEl.value = price ? ((dpAdj / price) * 100).toFixed(2) : '0';
   }
-  else if (bookingType === 'other') {
+  else if (type === 'dp') {
+    dpValEl.value = dpAdj.toLocaleString('id-ID');
+
+    // hitung ulang persen DP dari basePrice
+    let pct = basePrice ? (dpAdj / basePrice * 100) : 0;
+    dpPctEl.value = pct.toFixed(2);
+  }
+  else if (type === 'other') {
     otherFeesEl.value = otherAdj.toLocaleString('id-ID');
-    otherFeesEl.dataset.raw = String(otherAdj);
   }
 }
 
