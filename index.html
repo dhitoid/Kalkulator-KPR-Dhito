@@ -809,11 +809,21 @@ bankEl.addEventListener('change', debouncedApplyBank);
   priceEl, dpValEl, dpPctEl, yearsEl, rateEl,
   bookingFeeEl, otherFeesEl, extraEl
 ].forEach(el=>{
-  el.addEventListener('input', ()=>{
-    if(interestTypeEl.value === 'tiered'){
-      debouncedGenerateTiered();
-    }
-  });
+  el.addEventListener("input", debounce(function(){
+
+      // format angka tanpa ngefreeze UI
+      if (this.classList.contains("money")) {
+          let raw = this.value.replace(/\./g, "");
+          this.value = Number(raw || 0).toLocaleString("id-ID");
+      }
+
+      // AMBIL TABEL HANYA SEKALI setelah user selesai ketik
+      if (interestTypeEl.value === "tiered") {
+          generateTieredTable();
+      }
+
+  }, 350)); // 350ms → user ketik cepat = smooth
+});
 });
 
     </script>
