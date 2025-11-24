@@ -423,12 +423,16 @@ function computeAdjustedValues(){
   let otherAdj = otherFees;
 
   if (bookingFee > 0) {
-    if (bookingType === 'price') {
-      priceAdj = Math.max(0, price - bookingFee);
-    } else if (bookingType === 'dp') {
-      dpAdj = Math.max(0, dpVal - bookingFee);
-    } else if (bookingType === 'other') {
-      otherAdj = Math.max(0, otherFees - bookingFee);
+    switch (bookingType) {
+      case 'price':
+        priceAdj = Math.max(0, price - bookingFee);
+        break;
+      case 'dp':
+        dpAdj = Math.max(0, dpVal - bookingFee);
+        break;
+      case 'other':
+        otherAdj = Math.max(0, otherFees - bookingFee);
+        break;
     }
   }
   return { price, dpVal, otherFees, priceAdj, dpAdj, otherAdj, bookingFee, bookingType };
@@ -439,10 +443,19 @@ function applyBookingAdjustmentToInputs() {
 
   if (bookingType === 'price') {
     priceEl.value = priceAdj.toLocaleString('id-ID');
-  } else if (bookingType === 'dp') {
+    priceEl.dataset.raw = String(priceAdj);
+  } 
+  else if (bookingType === 'dp') {
     dpValEl.value = dpAdj.toLocaleString('id-ID');
-  } else if (bookingType === 'other') {
+    dpValEl.dataset.raw = String(dpAdj);
+
+    // Auto update persentase DP
+    const price = unfmt(priceEl.value);
+    dpPctEl.value = price ? ((dpAdj / price) * 100).toFixed(2) : '0';
+  }
+  else if (bookingType === 'other') {
     otherFeesEl.value = otherAdj.toLocaleString('id-ID');
+    otherFeesEl.dataset.raw = String(otherAdj);
   }
 }
 
@@ -701,10 +714,9 @@ initMoneyInputsRealtime();
 });
 
 bookingTypeEl.addEventListener('change', () => {
-  applyBookingAdjustmentToInputs();     // ← update input
+  applyBookingAdjustmentToInputs();
   debouncedRebuildTierTable();
 });
-
 
 // inputs that update DP/percent and should update preview lightly
 dpValEl.addEventListener('input', debounce(() => {
@@ -724,10 +736,10 @@ priceEl.addEventListener('input', debounce(() => {
 }, 220));
 
 bookingFeeEl.addEventListener('input', debounce(()=>{
-  applyBookingAdjustmentToInputs();     // ← sinkron input
+  applyBookingAdjustmentToInputs();     
   debouncedUpdateTierPreviewOnly();
   debouncedRebuildTierTable();
-},220));
+},150));
 
 otherFeesEl.addEventListener('input', debounce(()=>{
   debouncedUpdateTierPreviewOnly();
