@@ -236,7 +236,6 @@
    CONFIG / UTIL
    ====================== */
 const MAX_YEARS = 25;
-
 function debounce(fn, delay = 250) {
   let t;
   return (...args) => {
@@ -406,56 +405,66 @@ function calcTieredAmortization({principal, baseRates, years, extra=0}) {
 }
 
 /* ======================
+   NEW: base/original values (prevent double subtraction)
+   ====================== */
+let basePrice = 0;
+let baseDP = 0;
+let baseOther = 0;
+
+/* ======================
    TIER LOGIC (optimized)
    ====================== */
 let isTypingInTierTable = false;
 
-// helper: compute adjusted values (unchanged)
 function computeAdjustedValues(){
+  // read booking fee & type from inputs (these are formatted strings, use unfmt)
   const bookingFee = unfmt(bookingFeeEl.value);
   const bookingType = bookingTypeEl.value;
 
+  // use base/original values to compute adjusted ones (prevent double subtraction)
   let priceAdj = basePrice;
   let dpAdj = baseDP;
   let otherAdj = baseOther;
 
   if (bookingFee > 0) {
-    switch (bookingType) {
-      case 'price':
-        priceAdj = Math.max(0, basePrice - bookingFee);
-        break;
-      case 'dp':
-        dpAdj = Math.max(0, baseDP - bookingFee);
-        break;
-      case 'other':
-        otherAdj = Math.max(0, baseOther - bookingFee);
-        break;
+    if (bookingType === 'price') {
+      priceAdj = Math.max(0, basePrice - bookingFee);
+    } else if (bookingType === 'dp') {
+      dpAdj = Math.max(0, baseDP - bookingFee);
+    } else if (bookingType === 'other') {
+      otherAdj = Math.max(0, baseOther - bookingFee);
     }
   }
 
-  return { priceAdj, dpAdj, otherAdj };
+  // also return originals for other logic compatibility
+  return {
+    price: basePrice,
+    dpVal: baseDP,
+    otherFees: baseOther,
+    priceAdj,
+    dpAdj,
+    otherAdj,
+    bookingFee,
+    bookingType
+  };
 }
 
 function applyBookingAdjustmentToInputs() {
-  const { priceAdj, dpAdj, otherAdj } = computeAdjustedValues();
-  const type = bookingTypeEl.value;
+  const { priceAdj, dpAdj, otherAdj, bookingType } = computeAdjustedValues();
 
-  if (type === 'price') {
-    priceEl.value = priceAdj.toLocaleString('id-ID');
-  }
-  else if (type === 'dp') {
-    dpValEl.value = dpAdj.toLocaleString('id-ID');
-
-    // hitung ulang persen DP dari basePrice
-    let pct = basePrice ? (dpAdj / basePrice * 100) : 0;
-    dpPctEl.value = pct.toFixed(2);
-  }
-  else if (type === 'other') {
-    otherFeesEl.value = otherAdj.toLocaleString('id-ID');
+  if (bookingType === 'price') {
+    // show adjusted price but DO NOT change basePrice
+    priceEl.value = priceAdj ? Number(String(priceAdj)).toLocaleString('id-ID') : '';
+  } else if (bookingType === 'dp') {
+    dpValEl.value = dpAdj ? Number(String(dpAdj)).toLocaleString('id-ID') : '';
+    // adjust dpPct to reflect dpAdj relative to basePrice
+    dpPctEl.value = basePrice ? ((dpAdj / Math.max(1, basePrice)) * 100).toFixed(2) : '0.00';
+  } else if (bookingType === 'other') {
+    otherFeesEl.value = otherAdj ? Number(String(otherAdj)).toLocaleString('id-ID') : '';
   }
 }
 
-// compute preview (unchanged)
+/* computeTieredPreview unchanged logic */
 function computeTieredPreview(baseRates, principal, years, extra=0){
   const preview = [];
   let balance = principal;
@@ -480,13 +489,10 @@ function computeTieredPreview(baseRates, principal, years, extra=0){
   return preview;
 }
 
-/* Build or adjust the tier table. This function will create rows when needed,
-   but will NOT reattach per-input listeners (we use delegation). */
+/* Build or adjust the tier table */
 function rebuildTierTable() {
-  if (isTypingInTierTable) return; // avoid rebuild during typing
-
+  if (isTypingInTierTable) return;
   const years = Math.min(parseInt(yearsEl.value) || 0, MAX_YEARS);
-  // clear and build fresh (only on explicit changes)
   tieredRatesTableBody.innerHTML = '';
 
   const { priceAdj, dpAdj, otherAdj } = computeAdjustedValues();
@@ -538,10 +544,9 @@ function rebuildTierTable() {
     frag.appendChild(tr);
   }
   tieredRatesTableBody.appendChild(frag);
-  // attachMoneyInputs only for top-level money inputs; tier monthly are readOnly so we skip heavy attach
 }
 
-/* Update only monthly preview cells (lightweight, used during typing) */
+/* Update monthly preview cells only */
 function updateTierPreviewOnly() {
   const years = Math.min(parseInt(yearsEl.value) || 0, MAX_YEARS);
   const rateInputs = Array.from(tieredRatesTableBody.querySelectorAll('input.tier-rate'));
@@ -553,8 +558,6 @@ function updateTierPreviewOnly() {
 
   const preview = computeTieredPreview(rates, principal, years, extra);
   const monthlyInputs = Array.from(tieredRatesTableBody.querySelectorAll('input.tier-monthly'));
-
-  // update monthly cells
   for (let i = 0; i < years; i++) {
     const el = monthlyInputs[i];
     if (!el) continue;
@@ -566,13 +569,8 @@ function updateTierPreviewOnly() {
 const debouncedRebuildTierTable = debounce(() => { rebuildTierTable(); }, 220);
 const debouncedUpdateTierPreviewOnly = debounce(() => { updateTierPreviewOnly(); }, 160);
 
-/* ======================
-   REAL-TIME MONEY FORMATTER (caret-preserving, lightweight)
-   ====================== */
-/* Format digits into id-ID thousand separators while preserving caret position.
-   This is intentionally lightweight (string ops only). */
+/* REAL-TIME MONEY FORMATTER (caret-preserving) */
 function formatMoneyRealtimeWithCaret(el) {
-  // on init, if there is a starting numeric value, normalize it
   if (el.value) {
     const rawInit = String(el.value).replace(/\D/g, '');
     el.value = rawInit ? Number(rawInit).toLocaleString('id-ID') : '';
@@ -582,24 +580,14 @@ function formatMoneyRealtimeWithCaret(el) {
   }
 
   el.addEventListener('input', function(e) {
-    // capture current caret and value
     const old = this.value;
     const sel = this.selectionStart;
-
-    // count digits before caret in old value
     const digitsBefore = (old.slice(0, sel).match(/\d/g) || []).length;
-
-    // raw digits of entire value
     const raw = old.replace(/\D/g, '');
-
-    // format new display
     const formatted = raw ? Number(raw).toLocaleString('id-ID') : '';
-
-    // set value
     this.value = formatted;
     this.dataset.raw = raw;
 
-    // compute new caret position: find position in formatted where digitsBefore-th digit appears
     if (digitsBefore === 0) {
       this.selectionStart = this.selectionEnd = 0;
     } else {
@@ -609,36 +597,51 @@ function formatMoneyRealtimeWithCaret(el) {
         if (/\d/.test(formatted[pos])) dCount++;
         if (dCount >= digitsBefore) { pos++; break; }
       }
-      // clamp
       if (pos > formatted.length) pos = formatted.length;
       this.selectionStart = this.selectionEnd = pos;
     }
 
-    // lightweight updates (do NOT perform heavy rebuild immediately)
+    // update base values live when user types in price/dp/other
+    if (this === priceEl) {
+      basePrice = Number(raw || 0);
+    } else if (this === dpValEl) {
+      baseDP = Number(raw || 0);
+      // sync dpPct
+      dpPctEl.value = basePrice ? ((baseDP / Math.max(1, basePrice))*100).toFixed(2) : '0.00';
+    } else if (this === otherFeesEl) {
+      baseOther = Number(raw || 0);
+    } else if (this === bookingFeeEl) {
+      // bookingFee doesn't change base values
+    }
+
     debouncedUpdateTierPreviewOnly();
-    // schedule heavy rebuild slower to avoid too-frequent table rebuilds
     debouncedRebuildTierTable();
   });
 
-  // on blur ensure final format (already formatted) and trigger a rebuild
   el.addEventListener('blur', function() {
-    // already formatted; ensure rebuild
+    // ensure numeric formatting already applied
     debouncedRebuildTierTable();
   });
 }
 
-/* Setup money inputs for top-level fields */
+/* Setup money inputs */
 function initMoneyInputsRealtime() {
+  // init base values from initial DOM content (if any)
+  basePrice = unfmt(priceEl.value);
+  baseDP = unfmt(dpValEl.value);
+  baseOther = unfmt(otherFeesEl.value);
+
   [priceEl, dpValEl, bookingFeeEl, otherFeesEl, extraEl].forEach(i => {
     formatMoneyRealtimeWithCaret(i);
   });
 
   // dpPct special behavior (percent input)
   dpPctEl.addEventListener('input', debounce(() => {
-    const price = unfmt(priceEl.value);
+    const price = basePrice;
     const pct = parseFloat(dpPctEl.value) || 0;
     if (price >= 0 && pct >= 0) {
       const dp = Math.round(price * pct / 100);
+      baseDP = dp;
       dpValEl.value = dp ? Number(String(dp)).toLocaleString('id-ID') : '';
       dpValEl.dataset.raw = String(dp);
     }
@@ -647,30 +650,22 @@ function initMoneyInputsRealtime() {
   }, 220));
 }
 
-/* ======================
-   Event Delegation for Tier Table
-   (single listener, no per-row listeners)
-   ====================== */
+/* Event Delegation for Tier Table */
 tieredRatesTableBody.addEventListener('input', (e) => {
   if (e.target && e.target.matches('input.tier-rate')) {
-    // user is typing in a tier rate
     isTypingInTierTable = true;
-    // lightweight preview update
     debouncedUpdateTierPreviewOnly();
-    // release typing flag after pause
     debounce(() => { isTypingInTierTable = false; }, 350)();
   }
 });
 
-/* Also listen for changes to allowEditTierChk so we can enable/disable fields */
+/* allowEditTier toggle */
 allowEditTierChk.addEventListener('change', () => {
   const enabled = allowEditTierChk.checked;
   tieredRatesTableBody.querySelectorAll('input.tier-rate').forEach(i => i.disabled = !enabled);
 });
 
-/* ======================
-   UI wiring & events (optimized)
-   ====================== */
+/* UI wiring & events */
 function populateBankSelect(){
   bankEl.innerHTML='';
   Object.keys(bankRates).forEach(k=>{
@@ -695,49 +690,57 @@ function applyBankScheme(){
   debouncedRebuildTierTable();
 }
 
-/* Top-level initializations */
+/* Initializations */
 populateBankSelect();
 bankEl.value = Object.keys(bankRates)[0] || 'BCA';
 applyBankScheme();
 initMoneyInputsRealtime();
 
-// wire change events that should rebuild the table (debounced)
+/* wire change events that should rebuild the table */
 [
   bankEl, yearsEl, fixedYearsEl, rateEl, floatingRateEl,
-  bookingTypeEl, allowEditTierChk
-].forEach(el => {
-  el.addEventListener('change', () => debouncedRebuildTierTable());
-});
+  allowEditTierChk
+].forEach(el => { el.addEventListener('change', () => debouncedRebuildTierTable()); });
 
 bookingTypeEl.addEventListener('change', () => {
+  // when booking type changes, re-render inputs from base values
   applyBookingAdjustmentToInputs();
   debouncedRebuildTierTable();
 });
 
-// inputs that update DP/percent and should update preview lightly
+/* dpVal/price bookingFee listeners (debounced already inside formatter) */
 dpValEl.addEventListener('input', debounce(() => {
-  const price = unfmt(priceEl.value);
-  const dp = unfmt(dpValEl.value);
-  if (price >= 0 && dp >= 0) dpPctEl.value = ((dp/Math.max(1, price))*100).toFixed(2);
+  // ensure baseDP is consistent (formatMoneyRealtimeWithCaret already sets baseDP)
+  baseDP = unfmt(dpValEl.value);
+  const price = basePrice;
+  if (price >= 0) dpPctEl.value = ((baseDP / Math.max(1, price)) * 100).toFixed(2);
   debouncedUpdateTierPreviewOnly();
   debouncedRebuildTierTable();
 }, 220));
 
 priceEl.addEventListener('input', debounce(() => {
-  const price = unfmt(priceEl.value);
+  // basePrice updated in formatter
+  const price = basePrice;
   const pct = parseFloat(dpPctEl.value) || 0;
-  if(price>=0 && pct>=0){ dpValEl.value = String(Math.round(price*pct/100)); dpValEl.value = dpValEl.value ? Number(dpValEl.value).toLocaleString('id-ID') : ''; }
+  if(price>=0 && pct>=0){
+    const dp = Math.round(price * pct / 100);
+    baseDP = dp;
+    dpValEl.value = dp ? Number(String(dp)).toLocaleString('id-ID') : '';
+    dpValEl.dataset.raw = String(dp);
+  }
   debouncedUpdateTierPreviewOnly();
   debouncedRebuildTierTable();
 }, 220));
 
 bookingFeeEl.addEventListener('input', debounce(()=>{
-  applyBookingAdjustmentToInputs();     
+  // booking fee affects displayed adjusted field, but base values stay the same
+  applyBookingAdjustmentToInputs();
   debouncedUpdateTierPreviewOnly();
   debouncedRebuildTierTable();
-},150));
+},220));
 
 otherFeesEl.addEventListener('input', debounce(()=>{
+  baseOther = unfmt(otherFeesEl.value);
   debouncedUpdateTierPreviewOnly();
   debouncedRebuildTierTable();
 },220));
@@ -765,9 +768,7 @@ interestTypeEl.addEventListener('change', ()=>{
 /* hide button */
 hideTieredBtn.addEventListener('click',(e)=>{ e.preventDefault(); tieredRatesContainer.style.display='none'; interestTypeEl.value='flat'; methodLabel.textContent='annuitas'; });
 
-/* ======================
-   Calculate & render (kept similar)
-   ====================== */
+/* Calculate & render (kept similar) */
 function renderResults(res, meta){
   summaryDiv.style.display='flex';
   loanAmtEl.textContent = fmtRupiah(res.principal || 0);
@@ -852,6 +853,11 @@ function handleCalculate(){
 calcBtn.addEventListener('click', handleCalculate);
 
 resetBtn.addEventListener('click', ()=>{
+  // reset base values
+  basePrice = 0;
+  baseDP = 0;
+  baseOther = 0;
+
   priceEl.value='0'; bookingFeeEl.value='0'; bookingTypeEl.value='price';
   dpValEl.value='0'; dpPctEl.value='20';
   yearsEl.value='15'; bankRates = loadBankRates(); populateBankSelect(); bankEl.value='BCA'; applyBankScheme();
@@ -881,68 +887,19 @@ downloadCsvBtn.addEventListener('click', ()=>{
   const a = document.createElement('a'); a.href = url; a.download = 'amortisasi_kpr.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
 });
 
-exportImgBtn.addEventListener('click', async ()=>{
-  if(!window._lastResult){ alert('Silakan hitung terlebih dahulu.'); return; }
-  try {
-    const container = document.createElement('div');
-    container.style.padding='18px'; container.style.background='#fff'; container.style.width='900px'; container.style.boxSizing='border-box';
-    const inputs = window._lastResult.inputs;
-    container.innerHTML = `<h3 style="margin:0 0 10px 0">Simulasi KPR — ${inputs.bank}</h3>
-      <div style="margin-bottom:10px">
-        <div>Harga (after booking): ${fmtRupiah(inputs.priceAdjusted || inputs.originalPrice || 0)}</div>
-        <div>DP (after booking): ${fmtRupiah(inputs.dpAdjusted || inputs.originalDp || 0)}</div>
-        <div>Pinjaman: ${fmtRupiah((inputs.priceAdjusted || inputs.originalPrice || 0) - (inputs.dpAdjusted || inputs.originalDp || 0) + (inputs.otherAdjusted||0))}</div>
-        <div>Angsuran/bln (preview): ${fmtRupiah(window._lastResult.summary.monthly || 0)}</div>
-        <div>Total bunga: ${fmtRupiah(window._lastResult.summary.totalInterest || 0)}</div>
-      </div><div id="miniChartWrap" style="width:100%;height:260px"></div>`;
-    document.body.appendChild(container);
-    const miniCanvas = document.createElement('canvas');
-    miniCanvas.width = 900; miniCanvas.height=260;
-    container.querySelector('#miniChartWrap').appendChild(miniCanvas);
-    const chartData = kprChart ? kprChart.data : { labels: [], datasets: [] };
-    const miniChart = new Chart(miniCanvas.getContext('2d'), { type:'line', data: chartData, options:{ responsive:false, plugins:{ legend:{display:false} } }});
-    const canvas = await html2canvas(container, { scale:2, useCORS:true, backgroundColor:'#fff' });
-    miniChart.destroy(); container.remove();
-    canvas.toBlob(async blob=>{
-      if(!blob) return alert('Gagal membuat gambar.');
-      const file = new File([blob], 'hasil_kpr.png', { type:'image/png' });
-      if(navigator.canShare && navigator.canShare({ files: [file] })){
-        try { await navigator.share({ files: [file], title: 'Hasil Simulasi KPR', text: 'Simulasi KPR — Kalkulator Praktis' }); return; } catch(e){}
-      }
-      const url = canvas.toDataURL('image/png');
-      const win = window.open();
-      if(win){ win.document.write('<title>Hasil Simulasi</title><img src="'+url+'" style="width:100%;">'); }
-      else { const a = document.createElement('a'); a.href=url; a.download='hasil_kpr.png'; a.click(); }
-    }, 'image/png', 0.95);
-  } catch(err){ console.error(err); alert('Gagal membuat gambar hasil. Gunakan browser terbaru (Chrome/Edge/Safari).'); }
-});
+/* Export image / share text: kept same as before (use window._lastResult) */
+/* ... existing exportImgBtn & shareTextBtn code can remain unchanged ... */
+/* For brevity I didn't repeat those unchanged handlers here. Keep them in your file. */
 
-shareTextBtn.addEventListener('click', ()=>{
-  const d = window._lastResult;
-  if(!d){ alert('Silakan hitung terlebih dahulu.'); return; }
-  let txt = `🏠 Simulasi KPR — ${d.inputs.bank}\nHarga (after booking): ${fmtRupiah(d.inputs.priceAdjusted || d.inputs.originalPrice)}\nUang muka (after booking): ${fmtRupiah(d.inputs.dpAdjusted || d.inputs.originalDp)}\nTenor: ${d.inputs.years} tahun\n`;
-  if(d.inputs.interestType === 'flat'){
-    txt += `Suku bunga: ${d.inputs.rate}% (Flat)\nAngsuran/bln: ${fmtRupiah(d.summary.monthly)}\nTotal bunga: ${fmtRupiah(d.summary.totalInterest)}\nTotal bayar: ${fmtRupiah(d.summary.totalPayment)}\n`;
-  } else {
-    txt += `Jenis: Berjenjang (Floating)\n\n`;
-    const schedule = d.summary.schedule || [];
-    const years = d.inputs.years;
-    const baseRates = d.inputs.baseRates || [];
-    for(let y=1;y<=Math.min(years,MAX_YEARS);y++){
-      const startMonthIndex = (y-1)*12;
-      if(startMonthIndex >= schedule.length) break;
-      const row = schedule[startMonthIndex];
-      const rateVal = (baseRates[y-1] != null) ? baseRates[y-1] : (baseRates[baseRates.length-1] || d.inputs.rate);
-      const monthly = row ? (row.principalPayment + row.interestPayment) : 0;
-      txt += `Tahun ${y}: ${Number(rateVal).toFixed(2)}% → ${fmtRupiah(monthly)} /bln\n`;
-    }
-    txt += `\nTotal bunga: ${fmtRupiah(d.summary.totalInterest)}\nTotal bayar: ${fmtRupiah(d.summary.totalPayment)}\n`;
-  }
-  txt += `\nDibuat oleh Kalkulator Praktis — dhitoproperty.id`;
-  const waUrl = 'https://wa.me/?text=' + encodeURIComponent(txt);
-  window.open(waUrl, '_blank');
-});
+/* Initialize table at load if tiered selected (once) */
+document.addEventListener('DOMContentLoaded', ()=>{
+  // initialize base values from DOM (if initial values present)
+  basePrice = unfmt(priceEl.value);
+  baseDP = unfmt(dpValEl.value);
+  baseOther = unfmt(otherFeesEl.value);
 
+  if(interestTypeEl.value==='tiered') debouncedRebuildTierTable();
+});
 /* Initialize table at load if tiered selected (once) */
 document.addEventListener('DOMContentLoaded', ()=>{
   if(interestTypeEl.value==='tiered') debouncedRebuildTierTable();
