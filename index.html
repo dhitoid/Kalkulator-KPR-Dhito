@@ -334,7 +334,7 @@ function createChart(labels,datasets){
 }
 
 /* ======================
-   AMORTIZATION (kept same, slightly refactor)
+   AMORTIZATION (kept same)
    ====================== */
 function calcAmortization({principal,annualRate,months,extra=0}){
   const r=annualRate/12/100;
@@ -543,66 +543,87 @@ function updateTierPreviewOnly() {
 
 /* Debounced helpers */
 const debouncedRebuildTierTable = debounce(() => { rebuildTierTable(); }, 220);
-const debouncedUpdateTierPreviewOnly = debounce(() => { updateTierPreviewOnly(); }, 180);
+const debouncedUpdateTierPreviewOnly = debounce(() => { updateTierPreviewOnly(); }, 160);
 
 /* ======================
-   MONEY INPUT: light & responsive
+   REAL-TIME MONEY FORMATTER (caret-preserving, lightweight)
    ====================== */
-/* For top-level money inputs we use a lightweight approach:
-   - on 'input' we store raw digits
-   - on pause (debounce) we format and trigger heavy updates (if needed)
-*/
-function setupTopMoneyInput(el, triggersHeavy = false) {
-  // store raw in dataset
-  el.dataset.raw = String(el.value).replace(/\D/g, '') || '';
+/* Format digits into id-ID thousand separators while preserving caret position.
+   This is intentionally lightweight (string ops only). */
+function formatMoneyRealtimeWithCaret(el) {
+  // on init, if there is a starting numeric value, normalize it
+  if (el.value) {
+    const rawInit = String(el.value).replace(/\D/g, '');
+    el.value = rawInit ? Number(rawInit).toLocaleString('id-ID') : '';
+    el.dataset.raw = rawInit;
+  } else {
+    el.dataset.raw = '';
+  }
 
-  // immediate input: accept digits only, keep caret roughly same
-  el.addEventListener('input', function (e) {
-    const start = this.selectionStart;
-    const raw = this.value.replace(/\D/g, '');
+  el.addEventListener('input', function(e) {
+    // capture current caret and value
+    const old = this.value;
+    const sel = this.selectionStart;
+
+    // count digits before caret in old value
+    const digitsBefore = (old.slice(0, sel).match(/\d/g) || []).length;
+
+    // raw digits of entire value
+    const raw = old.replace(/\D/g, '');
+
+    // format new display
+    const formatted = raw ? Number(raw).toLocaleString('id-ID') : '';
+
+    // set value
+    this.value = formatted;
     this.dataset.raw = raw;
-    // keep unformatted while typing for fastest response:
-    this.value = raw;
-    // if this input should trigger heavy update, use debounced rebuild/preview
-    if (triggersHeavy) {
-      debouncedUpdateTierPreviewOnly(); // lightweight update
-      debouncedRebuildTierTable(); // heavy update after pause (rebuild if needed)
+
+    // compute new caret position: find position in formatted where digitsBefore-th digit appears
+    if (digitsBefore === 0) {
+      this.selectionStart = this.selectionEnd = 0;
+    } else {
+      let dCount = 0;
+      let pos = 0;
+      for (; pos < formatted.length; pos++) {
+        if (/\d/.test(formatted[pos])) dCount++;
+        if (dCount >= digitsBefore) { pos++; break; }
+      }
+      // clamp
+      if (pos > formatted.length) pos = formatted.length;
+      this.selectionStart = this.selectionEnd = pos;
     }
+
+    // lightweight updates (do NOT perform heavy rebuild immediately)
+    debouncedUpdateTierPreviewOnly();
+    // schedule heavy rebuild slower to avoid too-frequent table rebuilds
+    debouncedRebuildTierTable();
   });
 
-  // on blur or after pause, format nicely
-  el.addEventListener('blur', function () {
-    const raw = this.dataset.raw || '';
-    this.value = raw ? Number(raw).toLocaleString('id-ID') : '';
-    if (triggersHeavy) {
-      debouncedRebuildTierTable();
-    }
+  // on blur ensure final format (already formatted) and trigger a rebuild
+  el.addEventListener('blur', function() {
+    // already formatted; ensure rebuild
+    debouncedRebuildTierTable();
   });
-
-  // also format after short pause so users see thousand separators when they stop typing
-  el.addEventListener('keyup', debounce(function () {
-    const raw = this.dataset.raw || '';
-    this.value = raw ? Number(raw).toLocaleString('id-ID') : '';
-  }, 900));
 }
 
-/* Setup money inputs */
-function initMoneyInputs() {
-  // top-level money inputs: price, dpVal, bookingFee, otherFees, extra
-  setupTopMoneyInput(priceEl, true);
-  setupTopMoneyInput(dpValEl, true);
-  setupTopMoneyInput(bookingFeeEl, true);
-  setupTopMoneyInput(otherFeesEl, true);
-  setupTopMoneyInput(extraEl, true);
+/* Setup money inputs for top-level fields */
+function initMoneyInputsRealtime() {
+  [priceEl, dpValEl, bookingFeeEl, otherFeesEl, extraEl].forEach(i => {
+    formatMoneyRealtimeWithCaret(i);
+  });
 
-  // dpPct is percent (normal input) - keep existing behavior but debounce heavy updates
+  // dpPct special behavior (percent input)
   dpPctEl.addEventListener('input', debounce(() => {
     const price = unfmt(priceEl.value);
     const pct = parseFloat(dpPctEl.value) || 0;
-    if (price >= 0 && pct >= 0) dpValEl.value = String(Math.round(price * pct / 100));
+    if (price >= 0 && pct >= 0) {
+      const dp = Math.round(price * pct / 100);
+      dpValEl.value = dp ? Number(String(dp)).toLocaleString('id-ID') : '';
+      dpValEl.dataset.raw = String(dp);
+    }
     debouncedUpdateTierPreviewOnly();
     debouncedRebuildTierTable();
-  }, 250));
+  }, 220));
 }
 
 /* ======================
@@ -613,7 +634,7 @@ tieredRatesTableBody.addEventListener('input', (e) => {
   if (e.target && e.target.matches('input.tier-rate')) {
     // user is typing in a tier rate
     isTypingInTierTable = true;
-    // update preview only (light)
+    // lightweight preview update
     debouncedUpdateTierPreviewOnly();
     // release typing flag after pause
     debounce(() => { isTypingInTierTable = false; }, 350)();
@@ -623,7 +644,6 @@ tieredRatesTableBody.addEventListener('input', (e) => {
 /* Also listen for changes to allowEditTierChk so we can enable/disable fields */
 allowEditTierChk.addEventListener('change', () => {
   const enabled = allowEditTierChk.checked;
-  // toggle disabled state quickly without rebuilding whole table
   tieredRatesTableBody.querySelectorAll('input.tier-rate').forEach(i => i.disabled = !enabled);
 });
 
@@ -658,7 +678,7 @@ function applyBankScheme(){
 populateBankSelect();
 bankEl.value = Object.keys(bankRates)[0] || 'BCA';
 applyBankScheme();
-initMoneyInputs();
+initMoneyInputsRealtime();
 
 // wire change events that should rebuild the table (debounced)
 [
@@ -680,7 +700,7 @@ dpValEl.addEventListener('input', debounce(() => {
 priceEl.addEventListener('input', debounce(() => {
   const price = unfmt(priceEl.value);
   const pct = parseFloat(dpPctEl.value) || 0;
-  if(price>=0 && pct>=0){ dpValEl.value = String(Math.round(price*pct/100)); }
+  if(price>=0 && pct>=0){ dpValEl.value = String(Math.round(price*pct/100)); dpValEl.value = dpValEl.value ? Number(dpValEl.value).toLocaleString('id-ID') : ''; }
   debouncedUpdateTierPreviewOnly();
   debouncedRebuildTierTable();
 }, 220));
@@ -901,6 +921,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if(interestTypeEl.value==='tiered') debouncedRebuildTierTable();
 });
 </script>
+
     </body>
     </html>
     
