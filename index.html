@@ -434,6 +434,18 @@ function computeAdjustedValues(){
   return { price, dpVal, otherFees, priceAdj, dpAdj, otherAdj, bookingFee, bookingType };
 }
 
+function applyBookingAdjustmentToInputs() {
+  const { priceAdj, dpAdj, otherAdj, bookingType } = computeAdjustedValues();
+
+  if (bookingType === 'price') {
+    priceEl.value = priceAdj.toLocaleString('id-ID');
+  } else if (bookingType === 'dp') {
+    dpValEl.value = dpAdj.toLocaleString('id-ID');
+  } else if (bookingType === 'other') {
+    otherFeesEl.value = otherAdj.toLocaleString('id-ID');
+  }
+}
+
 // compute preview (unchanged)
 function computeTieredPreview(baseRates, principal, years, extra=0){
   const preview = [];
@@ -688,6 +700,12 @@ initMoneyInputsRealtime();
   el.addEventListener('change', () => debouncedRebuildTierTable());
 });
 
+bookingTypeEl.addEventListener('change', () => {
+  applyBookingAdjustmentToInputs();     // ← update input
+  debouncedRebuildTierTable();
+});
+
+
 // inputs that update DP/percent and should update preview lightly
 dpValEl.addEventListener('input', debounce(() => {
   const price = unfmt(priceEl.value);
@@ -706,6 +724,7 @@ priceEl.addEventListener('input', debounce(() => {
 }, 220));
 
 bookingFeeEl.addEventListener('input', debounce(()=>{
+  applyBookingAdjustmentToInputs();     // ← sinkron input
   debouncedUpdateTierPreviewOnly();
   debouncedRebuildTierTable();
 },220));
