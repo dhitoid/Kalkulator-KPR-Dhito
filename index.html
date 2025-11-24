@@ -904,6 +904,55 @@ document.addEventListener('DOMContentLoaded', ()=>{
 document.addEventListener('DOMContentLoaded', ()=>{
   if(interestTypeEl.value==='tiered') debouncedRebuildTierTable();
 });
+
+function generateFloatingWA() {
+    const bankName = bankEl.value || "BANK";
+    const price = fmt(priceEl.value);
+    const booking = fmt(bookingFeeEl.value);
+    const dp = fmt(dpValEl.value);
+
+    const priceNum = unfmt(priceEl.value);
+    const dpNum = unfmt(dpValEl.value);
+    const plafondNum = priceNum - dpNum;
+    const plafond = plafondNum.toLocaleString("id-ID");
+
+    // Floating interest rate
+    const rate = parseFloat(rateEl.value) || 0;
+
+    const tenors = [10, 15, 20, 25];
+
+    let wa = 
+`KPR ${bankName}
+
+HARGA PROPERTI : Rp ${price}
+BOOKING FEE : Rp ${booking}
+DP : Rp ${dp}
+SISA PLAFOND : Rp ${plafond}
+
+SIMULASI ANGSURAN SUKU BUNGA ${bankName} ${rate}%`;
+
+    tenors.forEach(year => {
+        const months = year * 12;
+        const bunga = rate / 100 / 12;
+
+        // annuitas
+        const ang = plafondNum * bunga / (1 - Math.pow(1 + bunga, -months));
+        const angsuran = isFinite(ang) ? ang.toLocaleString("id-ID") : "0";
+
+        wa += `\n${year} TAHUN : Rp ${angsuran}`;
+    });
+
+    return wa;
+}
+
+document.getElementById("shareText").addEventListener("click", function () {
+    const msg = generateFloatingWA();
+    const encoded = encodeURIComponent(msg);
+    const url = "https://wa.me/?text=" + encoded;
+    window.open(url, "_blank");
+});
+
+
 </script>
 
     </body>
