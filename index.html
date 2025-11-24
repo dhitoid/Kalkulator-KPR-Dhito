@@ -825,6 +825,47 @@ bankEl.addEventListener('change', debouncedApplyBank);
   }, 350)); // 350ms → user ketik cepat = smooth
 });
 
+function debounce(fn, delay) {
+    let t;
+    return function () {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, arguments), delay);
+    };
+}
+
+/* ========== ANTI LAG MONEY INPUT ========== */
+function setupMoneyInput(el) {
+    let lastValue = "";
+
+    el.addEventListener("input", function () {
+        // ambil raw number (tanpa titik)
+        const raw = this.value.replace(/\./g, "");
+
+        // jika bukan angka, reset
+        if (!/^\d*$/.test(raw)) {
+            this.value = lastValue;
+            return;
+        }
+
+        lastValue = raw; // simpan
+    });
+
+    el.addEventListener("input", debounce(function () {
+        // format angka hanya sekali setelah user berhenti mengetik
+        if (lastValue === "") {
+            this.value = "";
+            return;
+        }
+
+        this.value = Number(lastValue).toLocaleString("id-ID");
+
+        // trigger hitungan lainnya, tapi HANYA sekali
+        updateAllCalculations();
+
+    }, 350));
+}
+
+
     </script>
     </body>
     </html>
