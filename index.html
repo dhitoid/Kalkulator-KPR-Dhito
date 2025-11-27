@@ -235,6 +235,39 @@
 /* ======================
    CONFIG / UTIL
    ====================== */
+
+function generateWAReport() {
+    if (!window._lastResult) {
+        return "Silakan hitung simulasi KPR terlebih dahulu.";
+    }
+
+    const d = window._lastResult.inputs;
+    const s = window._lastResult.summary;
+
+    const price = fmtRupiah(d.originalPrice);
+    const dp = fmtRupiah(d.dpAdjusted);
+    const booking = fmtRupiah(d.bookingFee);
+    const plafond = fmtRupiah(d.priceAdjusted - d.dpAdjusted + d.otherAdjusted);
+
+    const rate = d.rate || d.baseRates?.[0] || 0;
+    const monthly = fmtRupiah(s.monthly);
+
+    return (
+`📌 *Simulasi KPR ${d.bank}*
+
+💰 *Harga*: ${price}
+💳 *DP*: ${dp}
+🔖 *Booking Fee*: ${booking}
+🏦 *Plafon*: ${plafond}
+
+📆 *Tenor*: ${d.years} tahun
+📈 *Suku Bunga*: ${rate}%
+💸 *Estimasi Angsuran*: ${monthly}/bulan
+
+Ingin dibantu cekkan pengajuan KPR? 😊`
+    );
+}
+
 const MAX_YEARS = 25;
 function debounce(fn, delay = 250) {
   let t;
@@ -946,12 +979,12 @@ SIMULASI ANGSURAN SUKU BUNGA ${bankName} ${rate}%`;
 }
 
 document.getElementById("shareText").addEventListener("click", function () {
-    const msg = generateFloatingWA();
+    const msg = generateWAReport();
     const encoded = encodeURIComponent(msg);
     const url = "https://wa.me/?text=" + encoded;
+
     window.open(url, "_blank");
 });
-
 
 </script>
     </body>
