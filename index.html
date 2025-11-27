@@ -51,7 +51,7 @@
 
   .grid{
     display:grid;gap:14px;
-    align-items:start; /* FIX agar grafik tidak mendorong layout */
+    align-items:start;
   }
   @media(min-width:980px){
     .grid{grid-template-columns:400px 1fr}
@@ -100,40 +100,46 @@
   .form-row{margin-top:10px}
   .muted-note{font-size:0.82rem;color:#455569;margin-top:6px}
 
-  /* =============================== */
-  /*          FIX RESULT AREA        */
-  /* =============================== */
 
-  /* 1. Kartu hasil dibuat stabil tingginya */
-/* FIX layout agar grafik tidak mendorong elemen lain */
-#result-card {
-  display: flex;
-  flex-direction: column;
-}
+  /* ====================================================== */
+  /*        FIX FINAL – Layout Stabil, Tidak Mengecil       */
+  /* ====================================================== */
 
-#result-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
+  /* pastikan card kanan TIDAK mengecil setelah hitung */
+  #result-card {
+    display:flex;
+    flex-direction:column;
+    min-height:600px !important;
+    height:auto !important;
+  }
 
-/* canvas akan shrink dengan benar */
-#result-area canvas {
-  max-width: 100%;
-  height: auto !important;
-}
+  /* area grafik + tabel stabil */
+  #result-area {
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-height:450px !important;
+    height:auto !important;
+  }
 
-/* area tabel agar tidak meluber */
-#result-area > div {
-  flex: 1;
-  overflow: auto;
-  min-height: 200px;
-}
+  /* canvas Chart.js dikunci agar tidak override height */
+  #kprChart {
+    height:320px !important;
+    max-height:340px !important;
+    width:100% !important;
+  }
 
-/* ketika grafik floating/flat berubah, layout tetap stabil */
-.grid {
-  align-items: start;
-}
+  /* tabel scroll agar tidak mendorong layout */
+  #result-area > div {
+    flex:1;
+    overflow:auto;
+    min-height:200px;
+  }
+
+  /* ulang align FIX */
+  .grid{
+    align-items:start;
+  }
 </style>
 </head>
 <body>
