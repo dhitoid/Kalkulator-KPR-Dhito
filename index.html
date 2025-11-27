@@ -8,7 +8,9 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
-/* ========== MODE TERANG (DEFAULT) ========== */
+/* ===========================
+   MODE TERANG (DEFAULT)
+=========================== */
 :root {
   --bg: #f5f7fb;
   --card: #ffffff;
@@ -19,220 +21,264 @@
   --radius: 12px;
 }
 
-/* ========== MODE GELAP ========== */
+/* ===========================
+   MODE GELAP
+=========================== */
 body.dark {
   --bg: #0f172a;
   --card: #1e293b;
   --text: #e2e8f0;
   --muted: #94a3b8;
   --accent: #3b82f6;
-  --accent-weak: rgba(59,130,246,0.15);
+  --accent-weak: rgba(59,130,246,0.25);
 }
 
-/* Base apply */
-body {
-  background: var(--bg);
-  color: var(--text);
+/* ===========================
+   BASE
+=========================== */
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",Arial;
+  transition:background .25s,color .25s;
 }
 
-/* Card */
-.card {
-  background: var(--card);
-  color: var(--text);
+/* ===========================
+   FLOATING THEME SWITCH (iOS)
+=========================== */
+.theme-toggle-box{
+  position:fixed;
+  top:18px;
+  right:18px;
+  z-index:999;
 }
 
-/* Input */
-.input {
-  background: var(--card);
-  color: var(--text);
-  border: 1px solid var(--accent-weak);
+.switch{
+  position:relative;
+  width:54px;
+  height:28px;
+  display:inline-block;
 }
 
-.input::placeholder {
-  color: var(--muted);
+.switch input{
+  opacity:0;
+  width:0;
+  height:0;
 }
 
-/* Table */
-table th,
-table td {
-  border-bottom: 1px solid var(--accent-weak);
-  color: var(--text);
+.slider{
+  position:absolute;
+  cursor:pointer;
+  top:0; left:0; right:0; bottom:0;
+  background:#cbd5e1;
+  border-radius:30px;
+  transition:.3s;
 }
 
-/* Topbar */
-.topbar {
-  background: linear-gradient(180deg, var(--accent), #0b4ab2);
-  color: #fff;
+.slider:before{
+  position:absolute;
+  content:"";
+  height:22px;
+  width:22px;
+  left:3px;
+  bottom:3px;
+  background:white;
+  border-radius:50%;
+  transition:.3s;
 }
 
-/* Toggle Switch Style */
-.theme-toggle {
-  margin-left: auto;
+/* icon */
+.slider::after{
+  content:"🌙";
+  position:absolute;
+  right:8px;
+  top:4px;
+  font-size:16px;
+  transition:.3s;
 }
 
-.theme-toggle input {
-  display: none;
+/* saat ON (dark) */
+input:checked + .slider{
+  background:#3b82f6;
 }
 
-.toggle-label {
-  cursor: pointer;
-  font-size: 1.3rem;
-  user-select: none;
+input:checked + .slider:before{
+  transform:translateX(26px);
 }
 
-/* Saat mode gelap icon berubah */
-body.dark .toggle-label {
-  content: "☀️";
+input:checked + .slider::after{
+  content:"☀️";
+  left:8px;
+  right:auto;
 }
 
-  :root{
-    --bg:#f5f7fb;
-    --card:#ffffff;
-    --muted:#6b7280;
-    --accent:#0058d6;
-    --accent-weak: rgba(0,88,214,0.08);
-    --radius:12px;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    background:linear-gradient(180deg,#f9fbff,#f5f7fb);
-    -webkit-font-smoothing:antialiased;
-    color:#0f172a
-  }
+/* ===========================
+   HEADER TOPBAR
+=========================== */
+.topbar{
+  background:linear-gradient(180deg,var(--accent),#0b4ab2);
+  padding:14px 16px;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  border-bottom-left-radius:6px;
+  border-bottom-right-radius:6px;
+}
 
-  /* HEADER */
-  .topbar{
-    background:linear-gradient(180deg,var(--accent),#0b4ab2);
-    padding:14px 16px;
-    color:#fff;
-    display:flex;
-    align-items:center;
-    gap:12px;
-    border-bottom-left-radius:6px;
-    border-bottom-right-radius:6px
-  }
+.logo{
+  width:44px;
+  height:44px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.12);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+  font-size:18px;
+}
 
-  .brand{display:flex;align-items:center;gap:12px}
-  .brand .logo{
-    width:44px;height:44px;border-radius:10px;
-    background:rgba(255,255,255,0.12);
-    display:flex;align-items:center;justify-content:center;font-weight:800
-  }
-  .brand h1{margin:0;font-size:1rem;line-height:1}
-  .brand p{margin:0;font-size:0.82rem;opacity:0.92}
+.brand h1{
+  margin:0;
+  font-size:1rem;
+}
 
-  /* LAYOUT */
-  .wrap{max-width:1000px;margin:14px auto;padding:12px}
+.brand p{
+  margin:0;
+  opacity:.9;
+  font-size:.83rem;
+}
 
-  .grid{
-    display:grid;gap:14px;
-    align-items:start;
-  }
-  @media(min-width:980px){
-    .grid{grid-template-columns:400px 1fr}
-  }
+/* ===========================
+   LAYOUT
+=========================== */
+.wrap{max-width:1000px;margin:14px auto;padding:12px}
 
-  .card{
-    background:var(--card);
-    padding:14px;
-    border-radius:var(--radius);
-    box-shadow:0 10px 25px rgba(2,6,23,0.06)
-  }
+.grid{
+  display:grid;
+  gap:14px;
+  align-items:start;
+}
 
-  /* INPUT FORM */
-  label{display:block;font-size:0.86rem;color:var(--muted);margin-bottom:6px;font-weight:600}
-  .input{
-    width:100%;padding:10px;border-radius:10px;
-    border:1px solid #e6edf8;background:#fff;font-size:1rem
-  }
+@media(min-width:980px){
+  .grid{grid-template-columns:400px 1fr}
+}
 
-  .small{font-size:0.82rem;color:var(--muted)}
-  .row{display:flex;gap:10px;align-items:end}
-  .row .col{flex:1}
-  .btn{
-    padding:10px 12px;border-radius:10px;
-    background:var(--accent);color:#fff;border:none;cursor:pointer;font-weight:700
-  }
-  .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(0,88,214,0.12)}
+.card{
+  background:var(--card);
+  padding:14px;
+  border-radius:var(--radius);
+  box-shadow:0 10px 25px rgba(2,6,23,0.06);
+  transition:background .25s,color .25s;
+}
 
-  /* TABLE */
-  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:0.92rem}
-  th,td{padding:8px;border-bottom:1px solid #f1f7ff;text-align:right}
-  th{font-weight:700;color:var(--muted);font-size:0.88rem}
-  .left{text-align:left}
-  input.money{text-align:right}
+/* ===========================
+   INPUTS
+=========================== */
+label{
+  font-size:.86rem;color:var(--muted);margin-bottom:6px;font-weight:600;
+}
 
-  .help{font-size:0.82rem;color:#475569;margin-top:8px}
-  .stat{padding:10px;border-radius:10px;background:linear-gradient(180deg,#fff,#f8fbff);text-align:center}
+.input{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid var(--accent-weak);
+  background:var(--card);
+  color:var(--text);
+  font-size:1rem;
+  transition:.25s;
+}
 
-  /* MOBILE */
-  @media(max-width:600px){
-    .row{flex-direction:column;align-items:stretch}
-    .topbar{padding:12px}
-  }
+.input::placeholder{color:var(--muted)}
+.row{display:flex;gap:10px;align-items:end}
+.row .col{flex:1}
 
-  /* SPACING */
-  .form-row{margin-top:10px}
-  .muted-note{font-size:0.82rem;color:#455569;margin-top:6px}
+.btn{
+  padding:10px 12px;
+  border-radius:10px;
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  cursor:pointer;
+  font-weight:700;
+  transition:.25s;
+}
 
+.btn.ghost{
+  background:transparent;
+  color:var(--accent);
+  border:1px solid var(--accent-weak);
+}
 
-  /* ====================================================== */
-  /*        FIX FINAL – Layout Stabil, Tidak Mengecil       */
-  /* ====================================================== */
+/* ===========================
+   TABLE
+=========================== */
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:8px;
+  font-size:.92rem;
+}
 
-  /* pastikan card kanan TIDAK mengecil setelah hitung */
-  #result-card {
-    display:flex;
-    flex-direction:column;
-    min-height:600px !important;
-    height:auto !important;
-  }
+th,td{
+  padding:8px;
+  border-bottom:1px solid var(--accent-weak);
+  text-align:right;
+  color:var(--text);
+}
 
-  /* area grafik + tabel stabil */
-  #result-area {
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    min-height:450px !important;
-    height:auto !important;
-  }
+th{font-weight:700;color:var(--muted)}
+.left{text-align:left}
 
-  /* canvas Chart.js dikunci agar tidak override height */
-  #kprChart {
-    height:320px !important;
-    max-height:340px !important;
-    width:100% !important;
-  }
+/* ===========================
+   RESULT AREA FIX
+=========================== */
+#result-card{
+  display:flex;
+  flex-direction:column;
+  min-height:600px!important;
+}
 
-  /* tabel scroll agar tidak mendorong layout */
-  #result-area > div {
-    flex:1;
-    overflow:auto;
-    min-height:200px;
-  }
+#result-area{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  min-height:450px!important;
+}
 
-  /* ulang align FIX */
-  .grid{
-    align-items:start;
-  }
+#kprChart{
+  height:320px!important;
+  max-height:340px!important;
+  width:100%!important;
+}
+
+#result-area > div{
+  flex:1;
+  overflow:auto;
+  min-height:200px;
+}
 </style>
 </head>
 <body>
-  <div class="topbar">
-    <div class="theme-toggle">
-  <input type="checkbox" id="themeSwitch">
-  <label for="themeSwitch" class="toggle-label">🌙</label>
+  <!-- Floating Theme Toggle -->
+<div class="theme-toggle-box">
+  <label class="switch">
+    <input type="checkbox" id="themeSwitch">
+    <span class="slider"></span>
+  </label>
 </div>
-    <div class="brand">
-      <div class="logo">DP</div>
-      <div>
-        <h1>Kalkulator KPR</h1>
-        <p> by <strong>dhitoproperty.id</strong></p>
-      </div>
-    </div>
+
+<!-- HEADER -->
+<div class="topbar">
+  <div class="logo">DP</div>
+  <div class="brand">
+    <h1>Kalkulator KPR</h1>
+    <p>dhitoproperty.id</p>
   </div>
+</div>
 
   <div class="wrap">
     <div class="grid">
