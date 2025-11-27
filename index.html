@@ -8,6 +8,83 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <style>
+/* ========== MODE TERANG (DEFAULT) ========== */
+:root {
+  --bg: #f5f7fb;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --text: #0f172a;
+  --accent: #0058d6;
+  --accent-weak: rgba(0,88,214,0.08);
+  --radius: 12px;
+}
+
+/* ========== MODE GELAP ========== */
+body.dark {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #3b82f6;
+  --accent-weak: rgba(59,130,246,0.15);
+}
+
+/* Base apply */
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Card */
+.card {
+  background: var(--card);
+  color: var(--text);
+}
+
+/* Input */
+.input {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--accent-weak);
+}
+
+.input::placeholder {
+  color: var(--muted);
+}
+
+/* Table */
+table th,
+table td {
+  border-bottom: 1px solid var(--accent-weak);
+  color: var(--text);
+}
+
+/* Topbar */
+.topbar {
+  background: linear-gradient(180deg, var(--accent), #0b4ab2);
+  color: #fff;
+}
+
+/* Toggle Switch Style */
+.theme-toggle {
+  margin-left: auto;
+}
+
+.theme-toggle input {
+  display: none;
+}
+
+.toggle-label {
+  cursor: pointer;
+  font-size: 1.3rem;
+  user-select: none;
+}
+
+/* Saat mode gelap icon berubah */
+body.dark .toggle-label {
+  content: "☀️";
+}
+
   :root{
     --bg:#f5f7fb;
     --card:#ffffff;
@@ -144,6 +221,10 @@
 </head>
 <body>
   <div class="topbar">
+    <div class="theme-toggle">
+  <input type="checkbox" id="themeSwitch">
+  <label for="themeSwitch" class="toggle-label">🌙</label>
+</div>
     <div class="brand">
       <div class="logo">DP</div>
       <div>
@@ -325,6 +406,23 @@
 /* ======================
    CONFIG / UTIL
    ====================== */
+
+const toggle = document.getElementById("themeSwitch");
+
+  toggle.addEventListener("change", () => {
+    document.body.classList.toggle("dark");
+
+    // simpan preferensi
+    localStorage.setItem("theme", 
+      document.body.classList.contains("dark") ? "dark" : "light"
+    );
+  });
+
+  // saat reload, gunakan preferensi terakhir
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark");
+    toggle.checked = true;
+  }
 
 function generateWAReport() {
     if (!window._lastResult) {
