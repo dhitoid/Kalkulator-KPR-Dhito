@@ -10,34 +10,32 @@
 
 <style>
 /* =========================================================
-   🟦 MODE TERANG (DEFAULT) — iOS STYLE
+   🟦 MODE TERANG (DEFAULT)
 ========================================================= */
 :root {
-  --bg: #f5f5f7;
-  --bg2: #ffffffcc;
+  --bg: #f3f6fb;
   --card: #ffffff;
-  --muted: #6e6e73;
-  --text: #1c1c1e;
-  --accent: #007aff;
-  --accent-soft: #e5f0ff;
-  --accent-weak: rgba(0,122,255,0.18);
-  --radius: 16px;
-  --shadow: 0 6px 18px rgba(0,0,0,0.08);
+  --muted: #6b7280;
+  --text: #0f172a;
+  --accent: #0058d6;
+  --accent-soft: #e8efff;
+  --accent-weak: rgba(0,88,214,0.12);
+  --radius: 12px;
+  --shadow: 0 8px 20px rgba(0,0,0,0.06);
 }
 
 /* =========================================================
-   🌙 MODE GELAP — iOS DARK
+   🌙 MODE GELAP
 ========================================================= */
 body.dark {
-  --bg: #000000;
-  --bg2: #1c1c1ecc;
-  --card: #1c1c1e;
-  --text: #f2f2f7;
-  --muted: #a1a1a6;
-  --accent: #0a84ff;
-  --accent-soft: rgba(10,132,255,0.15);
-  --accent-weak: rgba(10,132,255,0.28);
-  --shadow: 0 8px 26px rgba(0,0,0,0.65);
+  --bg: #0e1729;
+  --card: #182234;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #3b82f6;
+  --accent-soft: rgba(59,130,246,0.15);
+  --accent-weak: rgba(59,130,246,0.25);
+  --shadow: 0 8px 22px rgba(0,0,0,0.35);
 }
 
 /* =========================================================
@@ -49,76 +47,29 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
                "Segoe UI", Roboto, "Helvetica Neue", Arial;
   transition: background .25s, color .25s;
 }
 
-/* =========================================================
-   🧭 HEADER — iOS Translucent Navigation Bar
-========================================================= */
-.topbar {
-  position: sticky;
-  top: 0;
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  background: var(--bg2);
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-  z-index: 10;
-}
-
-.logo {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  background: var(--accent);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-weight: 800;
-  font-size: 20px;
-}
-
-.brand h1 {
-  margin: 0;
-  font-size: 1.22rem;
+h1, h2, h3, h4 {
   font-weight: 700;
-}
-
-.brand p {
-  margin: 0;
-  font-size: .85rem;
-  opacity: .8;
+  color: var(--text);
 }
 
 /* =========================================================
-   🌗 FIXED iOS CONTROL (THEME SWITCH)
+   🌗 THEME SWITCH
 ========================================================= */
-.theme-float {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  z-index: 999999;
-  backdrop-filter: blur(14px) saturate(180%);
-  -webkit-backdrop-filter: blur(14px);
-  background: var(--bg2);
-  padding: 8px 14px;
-  border-radius: 30px;
-  box-shadow: var(--shadow);
+.theme-toggle-box {
+  margin-left: auto;
   display: flex;
   align-items: center;
 }
 
-/* iOS SWITCH */
 .switch {
   position: relative;
-  width: 56px;
-  height: 30px;
+  width: 54px;
+  height: 28px;
 }
 
 .switch input {
@@ -131,7 +82,7 @@ body {
   position: absolute;
   inset: 0;
   cursor: pointer;
-  background: #b8b8bd;
+  background: #cbd5e1;
   border-radius: 30px;
   transition: .3s;
 }
@@ -139,8 +90,8 @@ body {
 .slider:before {
   content: "";
   position: absolute;
-  height: 24px;
-  width: 24px;
+  height: 22px;
+  width: 22px;
   left: 3px;
   bottom: 3px;
   background: white;
@@ -153,7 +104,8 @@ body {
   position: absolute;
   right: 8px;
   top: 4px;
-  font-size: 15px;
+  font-size: 16px;
+  transition: .3s;
 }
 
 input:checked + .slider {
@@ -171,17 +123,55 @@ input:checked + .slider::after {
 }
 
 /* =========================================================
+   🧭 HEADER
+========================================================= */
+.topbar {
+  background: linear-gradient(180deg, var(--accent), #0b4ab2);
+  padding: 14px 16px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.brand p {
+  margin: 0;
+  font-size: .85rem;
+  opacity: .9;
+}
+
+/* =========================================================
    📐 LAYOUT
 ========================================================= */
 .wrap {
   max-width: 1020px;
-  margin: 20px auto;
+  margin: 18px auto;
   padding: 12px;
 }
 
 .grid {
   display: grid;
-  gap: 20px;
+  gap: 16px;
 }
 
 @media (min-width: 980px) {
@@ -190,19 +180,17 @@ input:checked + .slider::after {
   }
 }
 
-/* =========================================================
-   🧊 iOS CARD STYLE
-========================================================= */
+/* CARD */
 .card {
   background: var(--card);
-  padding: 20px;
+  padding: 16px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  transition: background .3s, color .3s;
+  transition: .25s;
 }
 
 /* =========================================================
-   🔢 INPUT iOS
+   🔢 INPUT & FORM
 ========================================================= */
 label {
   display: block;
@@ -214,8 +202,8 @@ label {
 
 .input {
   width: 100%;
-  padding: 12px 14px;
-  border-radius: 12px;
+  padding: 11px 12px;
+  border-radius: 10px;
   border: 1px solid var(--accent-weak);
   background: var(--card);
   color: var(--text);
@@ -225,7 +213,7 @@ label {
 
 .input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 4px var(--accent-soft);
+  box-shadow: 0 0 0 3px var(--accent-soft);
   outline: none;
 }
 
@@ -233,7 +221,6 @@ label {
   color: var(--muted);
 }
 
-/* ROW */
 .row {
   display: flex;
   gap: 10px;
@@ -242,24 +229,20 @@ label {
 
 .col { flex: 1; }
 
-/* =========================================================
-   🟦 iOS BUTTON
-========================================================= */
+/* BUTTON */
 .btn {
-  padding: 12px 16px;
-  border-radius: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
   background: var(--accent);
-  color: white;
-  font-weight: 700;
-  cursor: pointer;
+  color: #fff;
   border: none;
+  cursor: pointer;
+  font-weight: 700;
   transition: .25s;
-  letter-spacing: .2px;
-  font-size: .9rem;
 }
 
 .btn:hover {
-  opacity: .87;
+  opacity: .88;
 }
 
 .btn.ghost {
@@ -273,12 +256,12 @@ label {
 }
 
 /* =========================================================
-   📊 TABLE
+   📊 TABLE MODERN
 ========================================================= */
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: .88rem;
+  font-size: .9rem;
 }
 
 th {
@@ -298,57 +281,67 @@ td {
 .left { text-align: left; }
 
 /* =========================================================
-   📈 FIX RESULT AREA SUPAYA TIDAK MENGECIL SAAT HITUNG
+   📈 RESULT FIX
 ========================================================= */
 #result-card {
   display: flex;
   flex-direction: column;
-  min-height: 600px;
+  min-height: 580px;
 }
 
 #result-area {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 500px;
+}
+
+#kprChart {
+  height: 320px !important;
+  max-height: 360px !important;
+  display: block !important;
 }
 
 #result-area > div {
   flex: 1;
+  overflow: auto;
+}
+
+/* memastikan container tidak collapse */
+#result-area,
+#result-card {
+  min-height: 500px;
 }
 
 canvas#kprChart {
   min-height: 300px !important;
-  max-height: 420px !important;
-  display: block;
-  width: 100%;
+  max-width: 100% !important;
 }
 </style>
 </head>
 
 <body>
-
-<!-- FIXED TOGGLE FLOAT -->
-<div class="theme-float">
-  <label class="switch">
-    <input type="checkbox" id="themeSwitch">
-    <span class="slider"></span>
-  </label>
-</div>
-
 <!-- HEADER -->
 <div class="topbar">
   <div class="logo">DP</div>
+
   <div class="brand">
     <h1>Kalkulator KPR</h1>
     <p>dhitoproperty.id</p>
   </div>
+
+  <div class="theme-toggle-box">
+    <label class="switch">
+      <input type="checkbox" id="themeSwitch">
+      <span class="slider"></span>
+    </label>
+  </div>
 </div>
+
 
 <div class="wrap">
   <div class="grid">
 
-        <!-- LEFT INPUT -->
+    <!-- LEFT INPUT -->
     <div class="card" id="input-card">
       <!-- (SEMUA BAGIAN INPUT — TIDAK ADA YANG DIUBAH) -->
       <!-- … tetap sama persis seperti yang kamu kirim … -->
@@ -489,9 +482,8 @@ canvas#kprChart {
       </div>
     </div>
 
-    <!-- RIGHT CARD (result) -->
+    <!-- RIGHT RESULT -->
     <div class="card" id="result-card">
-
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
         <h2 style="margin:0">Hasil & Amortisasi</h2>
         <div class="controls">
@@ -502,7 +494,7 @@ canvas#kprChart {
       </div>
 
       <div id="result-area" style="margin-top:12px">
-        <canvas id="kprChart"></canvas>
+        <canvas id="kprChart" height="320" style="width:100%;max-height:420px"></canvas>
 
         <div style="overflow:auto;margin-top:12px;max-height:360px">
           <table id="amortTable" aria-live="polite">
@@ -520,8 +512,8 @@ canvas#kprChart {
         </div>
       </div>
 
-      <footer style="margin-top:12px;color:var(--muted);font-size:.82rem">
-        Dibuat oleh Dhito Property · Rumus annuitas · Ilustrasi.
+      <footer style="margin-top:12px">
+        <div class="small">Dibuat oleh Dhito Property · Catatan: perhitungan menggunakan rumus annuitas per periode. Hanya ilustrasi.</div>
       </footer>
     </div>
 
