@@ -9,321 +9,183 @@
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
-/* =========================================================
-   🟦 MODE TERANG (DEFAULT)
-========================================================= */
-:root {
-  --bg: #f3f6fb;
-  --card: #ffffff;
+/* ============================
+   iOS / Apple UI - Header B (Glass) + Card Glass (Style 1)
+   - Keeps all HTML structure & IDs unchanged
+   - Fix: chart fixed height so it won't shrink after render
+============================ */
+
+/* ---------- Colors & variables ---------- */
+:root{
+  --bg: #f5f7fb;
+  --card: rgba(255,255,255,0.85);
   --muted: #6b7280;
   --text: #0f172a;
-  --accent: #0058d6;
-  --accent-soft: #e8efff;
-  --accent-weak: rgba(0,88,214,0.12);
-  --radius: 12px;
-  --shadow: 0 8px 20px rgba(0,0,0,0.06);
+  --accent: #007aff; /* iOS blue */
+  --accent-soft: rgba(0,122,255,0.10);
+  --accent-weak: rgba(0,122,255,0.12);
+  --radius: 14px;
+  --glass-blur: saturate(180%) blur(14px);
+  --shadow: 0 8px 30px rgba(2,6,23,0.06);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
 
-/* =========================================================
-   🌙 MODE GELAP
-========================================================= */
-body.dark {
-  --bg: #0e1729;
-  --card: #182234;
-  --text: #e2e8f0;
+/* Dark theme values */
+body.dark{
+  --bg: #0f1727;
+  --card: rgba(24,30,36,0.72);
   --muted: #94a3b8;
-  --accent: #3b82f6;
-  --accent-soft: rgba(59,130,246,0.15);
-  --accent-weak: rgba(59,130,246,0.25);
-  --shadow: 0 8px 22px rgba(0,0,0,0.35);
+  --text: #e6eef8;
+  --accent: #0a84ff;
+  --accent-soft: rgba(10,132,255,0.12);
+  --accent-weak: rgba(10,132,255,0.20);
+  --shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-/* =========================================================
-   🔤 BASE STYLE
-========================================================= */
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
-               "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  transition: background .25s, color .25s;
+/* ---------- Base ---------- */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  transition:background .22s ease, color .22s ease;
 }
 
-h1, h2, h3, h4 {
-  font-weight: 700;
-  color: var(--text);
+/* ---------- Topbar (Header B) - Glass Blur ---------- */
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:30;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 16px;
+  background:var(--card);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset;
 }
 
-/* =========================================================
-   🌗 THEME SWITCH
-========================================================= */
-.theme-toggle-box {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
+/* Make sure toggle sits inside topbar to avoid floating while scrolling */
+.theme-toggle-box{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
 }
 
-.switch {
-  position: relative;
-  width: 54px;
-  height: 28px;
+/* Logo / brand */
+.logo{
+  width:44px;
+  height:44px;
+  border-radius:12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.2));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--accent);
+  font-weight:800;
+  font-size:18px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.04);
 }
 
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+.brand h1{margin:0;font-size:1rem;font-weight:700}
+.brand p{margin:0;font-size:.82rem;opacity:.75}
+
+/* ---------- Layout ---------- */
+.wrap{max-width:1020px;margin:18px auto;padding:12px}
+.grid{display:grid;gap:16px}
+@media(min-width:980px){ .grid{ grid-template-columns:380px 1fr } }
+
+/* ---------- Cards - Glass (style 1) ---------- */
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:16px;
+  box-shadow:var(--shadow);
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  transition: transform .18s ease, box-shadow .18s ease;
 }
 
-.slider {
-  position: absolute;
-  inset: 0;
-  cursor: pointer;
-  background: #cbd5e1;
-  border-radius: 30px;
-  transition: .3s;
+/* Slight uplift on focus for modern feel */
+.card:focus-within{ transform: translateY(-3px); box-shadow: 0 18px 40px rgba(2,6,23,0.08); }
+
+/* ---------- Forms ---------- */
+label{display:block;font-size:.86rem;color:var(--muted);margin-bottom:6px;font-weight:600}
+.input{
+  width:100%;
+  padding:11px 12px;
+  border-radius:12px;
+  border:1px solid var(--accent-weak);
+  background: rgba(255,255,255,0.9);
+  color:var(--text);
+  font-size:.98rem;
+  transition: box-shadow .18s ease, border-color .18s ease;
+}
+body.dark .input{ background: rgba(20,20,22,0.55); color:var(--text) }
+.input:focus{ outline:none; border-color:var(--accent); box-shadow:0 6px 18px var(--accent-soft) }
+
+/* rows & layout helper */
+.row{display:flex;gap:10px;align-items:end}
+.row .col{flex:1}
+
+/* ---------- Buttons ---------- */
+.btn{
+  padding:10px 14px;border-radius:12px;border:none;
+  background:var(--accent); color:#fff; cursor:pointer; font-weight:700;
+  box-shadow: 0 6px 16px rgba(0,122,255,0.12);
+}
+.btn.ghost{ background:transparent;color:var(--accent); border:1px solid var(--accent-weak) }
+
+/* ---------- Tables modern ---------- */
+table{width:100%;border-collapse:collapse;margin-top:8px;font-size:.92rem}
+th,td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04);text-align:right;color:var(--text)}
+th{font-weight:700;color:var(--muted)}
+.left{text-align:left}
+
+/* ---------- RESULT AREA / Chart stability FIX ---------- */
+/* keep result card stable and prevent chart from collapsing/resize */
+#result-card{ display:flex; flex-direction:column; min-height:640px; }
+#result-area{ flex:1; display:flex; flex-direction:column; min-height:520px; }
+
+/* force canvas to a fixed height so Chart.js resizing won't collapse container */
+canvas#kprChart{
+  width:100% !important;
+  height:360px !important;       /* FIX: stable height */
+  max-height:360px !important;
+  min-height:360px !important;
+  display:block !important;
 }
 
-.slider:before {
-  content: "";
-  position: absolute;
-  height: 22px;
-  width: 22px;
-  left: 3px;
-  bottom: 3px;
-  background: white;
-  border-radius: 50%;
-  transition: .3s;
-}
-
-.slider::after {
-  content: "🌙";
-  position: absolute;
-  right: 8px;
-  top: 4px;
-  font-size: 16px;
-  transition: .3s;
-}
-
-input:checked + .slider {
-  background: var(--accent);
-}
-
-input:checked + .slider:before {
-  transform: translateX(26px);
-}
-
-input:checked + .slider::after {
-  content: "☀️";
-  left: 8px;
-  right: auto;
-}
-
-/* =========================================================
-   🧭 HEADER
-========================================================= */
-.topbar {
-  background: linear-gradient(180deg, var(--accent), #0b4ab2);
-  padding: 14px 16px;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
-}
-
-.logo {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.15);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: 800;
-  font-size: 18px;
-}
-
-.brand h1 {
-  margin: 0;
-  font-size: 1.05rem;
-  font-weight: 700;
-}
-
-.brand p {
-  margin: 0;
-  font-size: .85rem;
-  opacity: .9;
-}
-
-/* =========================================================
-   📐 LAYOUT
-========================================================= */
-.wrap {
-  max-width: 1020px;
-  margin: 18px auto;
-  padding: 12px;
-}
-
-.grid {
-  display: grid;
-  gap: 16px;
-}
-
-@media (min-width: 980px) {
-  .grid {
-    grid-template-columns: 380px 1fr;
-  }
-}
-
-/* CARD */
-.card {
-  background: var(--card);
-  padding: 16px;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  transition: .25s;
-}
-
-/* =========================================================
-   🔢 INPUT & FORM
-========================================================= */
-label {
-  display: block;
-  font-size: .85rem;
-  color: var(--muted);
-  margin-bottom: 6px;
-  font-weight: 600;
-}
-
-.input {
-  width: 100%;
-  padding: 11px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--accent-weak);
-  background: var(--card);
-  color: var(--text);
-  font-size: .98rem;
-  transition: 0.2s;
-}
-
-.input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft);
-  outline: none;
-}
-
-.input::placeholder {
-  color: var(--muted);
-}
-
-.row {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.col { flex: 1; }
-
-/* BUTTON */
-.btn {
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  font-weight: 700;
-  transition: .25s;
-}
-
-.btn:hover {
-  opacity: .88;
-}
-
-.btn.ghost {
-  background: transparent;
-  color: var(--accent);
-  border: 1px solid var(--accent-weak);
-}
-
-.btn.ghost:hover {
-  background: var(--accent-soft);
-}
-
-/* =========================================================
-   📊 TABLE MODERN
-========================================================= */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: .9rem;
-}
-
-th {
-  padding: 10px 8px;
-  color: var(--muted);
-  text-align: right;
-  border-bottom: 2px solid var(--accent-weak);
-}
-
-td {
-  padding: 10px 8px;
-  color: var(--text);
-  border-bottom: 1px solid var(--accent-weak);
-  text-align: right;
-}
-
-.left { text-align: left; }
-
-/* =========================================================
-   📈 RESULT FIX
-========================================================= */
-#result-card {
-  display: flex;
-  flex-direction: column;
-  min-height: 580px;
-}
-
-#result-area {
+/* the wrapper below canvas must keep stable height as well */
+#result-area > div{
   flex: 1;
-  display: flex;
-  flex-direction: column;
+  overflow:auto;
+  min-height: 360px;
 }
 
-#kprChart {
-  height: 320px !important;
-  max-height: 360px !important;
-  display: block !important;
+/* responsiveness tweaks */
+@media(max-width:600px){
+  .grid{ grid-template-columns: 1fr; }
+  canvas#kprChart{ height:260px !important; min-height:260px !important; max-height:260px !important; }
+  #result-area{ min-height:320px; }
 }
 
-#result-area > div {
-  flex: 1;
-  overflow: auto;
-}
-
-/* memastikan container tidak collapse */
-#result-area,
-#result-card {
-  min-height: 500px;
-}
-
-canvas#kprChart {
-  min-height: 300px !important;
-  max-width: 100% !important;
-}
+/* small helpers */
+.small { font-size:.82rem; color:var(--muted) }
+.help { font-size:.82rem; color:var(--muted); margin-top:6px; }
+.stat { padding:10px; border-radius:10px; background: rgba(255,255,255,0.5); }
+body.dark .stat { background: rgba(255,255,255,0.02); }
 </style>
 </head>
 
 <body>
-<!-- HEADER -->
+<!-- TOPBAR (Header B - Glass) -->
 <div class="topbar">
   <div class="logo">DP</div>
-
   <div class="brand">
     <h1>Kalkulator KPR</h1>
     <p>dhitoproperty.id</p>
@@ -337,17 +199,10 @@ canvas#kprChart {
   </div>
 </div>
 
-
 <div class="wrap">
   <div class="grid">
-
     <!-- LEFT INPUT -->
     <div class="card" id="input-card">
-      <!-- (SEMUA BAGIAN INPUT — TIDAK ADA YANG DIUBAH) -->
-      <!-- … tetap sama persis seperti yang kamu kirim … -->
-      <!-- … saya tidak ubah satu baris pun … -->
-      <!-- (scroll ke bawah — semuanya lengkap) -->
-
       <div style="display:flex;gap:12px;align-items:center;">
         <div style="flex:1">
           <label for="bank">Pilih Bank</label>
@@ -519,6 +374,29 @@ canvas#kprChart {
 
   </div>
 </div>
+
+<script>
+/* Theme toggle restore (UI only, does not change calculator logic) */
+(function(){
+  const sw = document.getElementById('themeSwitch');
+  const apply = (dark) => {
+    if(dark) document.body.classList.add('dark'); else document.body.classList.remove('dark');
+    if(sw) sw.checked = !!dark;
+  };
+  try{
+    const saved = localStorage.getItem('dhito_theme');
+    apply(saved === 'dark');
+  }catch(e){}
+  if(sw){
+    sw.addEventListener('change', (e)=>{
+      const dark = !!e.target.checked;
+      apply(dark);
+      try{ localStorage.setItem('dhito_theme', dark ? 'dark' : 'light'); }catch(e){}
+      // Ensure Chart.js recalculates size properly but keep height fixed by CSS above
+      if(window.kprChart && typeof window.kprChart.resize === 'function') window.kprChart.resize();
+    });
+  }
+})();
 
 <script>
 /* ======================
