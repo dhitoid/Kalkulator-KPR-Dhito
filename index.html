@@ -494,14 +494,20 @@ canvas#kprChart {
 
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
         <h2 style="margin:0">Hasil & Amortisasi</h2>
-        <div class="controls">
-          <button id="exportImg" class="btn">Bagikan Gambar</button>
-          <button id="downloadCsv" class="btn ghost">Ekspor CSV</button>
-          <button id="shareText" class="btn ghost">Kirim ke WhatsApp</button>
-        </div>
+  <div class="controls">
+  <button id="saveResult" class="btn ghost">💾 Simpan</button>
+  <button id="showSaved" class="btn ghost">📂 Riwayat</button>
+  <button id="exportImg" class="btn">Bagikan Gambar</button>
+  <button id="downloadCsv" class="btn ghost">Ekspor CSV</button>
+  <button id="shareText" class="btn ghost">WhatsApp</button>
+</div>
       </div>
 
       <div id="result-area" style="margin-top:12px">
+        <div id="savedPanel" class="card" style="display:none;margin-top:16px">
+  <h3 style="margin-top:0">📂 Riwayat Simulasi</h3>
+  <div id="savedList"></div>
+</div>
         <canvas id="kprChart"></canvas>
 
         <div style="overflow:auto;margin-top:12px;max-height:360px">
@@ -1297,6 +1303,92 @@ document.getElementById("shareText").addEventListener("click", function () {
 
     window.open(url, "_blank");
 });
+
+const SAVE_KEY = "kpr_saved_results_v1";
+
+function getSavedResults(){
+  try {
+    return JSON.parse(localStorage.getItem(SAVE_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveResults(list){
+  localStorage.setItem(SAVE_KEY, JSON.stringify(list));
+}
+
+document.getElementById("saveResult").addEventListener("click", () => {
+  if (!window._lastResult) {
+    alert("Hitung simulasi terlebih dahulu");
+    return;
+  }
+
+  const d = window._lastResult.inputs;
+  const s = window._lastResult.summary;
+
+  const saved = getSavedResults();
+
+  saved.unshift({
+    id: Date.now(),
+    date: new Date().toLocaleString("id-ID"),
+    bank: d.bank,
+    price: d.priceAdjusted,
+    dp: d.dpAdjusted,
+    principal: s.schedule[0]?.startBalance || 0,
+    years: d.years,
+    rate: d.rate,
+    monthly: s.monthly,
+    totalInterest: s.totalInterest
+  });
+
+  saveResults(saved);
+  alert("✅ Simulasi berhasil disimpan");
+});
+
+document.getElementById("showSaved").addEventListener("click", () => {
+  const panel = document.getElementById("savedPanel");
+  const listEl = document.getElementById("savedList");
+
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+
+  const data = getSavedResults();
+  if (data.length === 0) {
+    listEl.innerHTML = "<p class='small'>Belum ada simulasi tersimpan</p>";
+    return;
+  }
+
+  listEl.innerHTML = "";
+
+  data.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.style.marginBottom = "10px";
+
+    div.innerHTML = `
+      <div style="display:flex;justify-content:space-between;gap:10px">
+        <div>
+          <strong>${item.bank}</strong><br>
+          <span class="small">${item.date}</span><br>
+          Angsuran: <b>${fmtRupiah(item.monthly)}</b><br>
+          Tenor: ${item.years} th
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="btn ghost" onclick="deleteSaved(${item.id})">🗑️</button>
+        </div>
+      </div>
+    `;
+    listEl.appendChild(div);
+  });
+});
+
+function deleteSaved(id){
+  if (!confirm("Hapus simulasi ini?")) return;
+  const data = getSavedResults().filter(x => x.id !== id);
+  saveResults(data);
+  document.getElementById("showSaved").click();
+}
+
 
 </script>
     </body>
