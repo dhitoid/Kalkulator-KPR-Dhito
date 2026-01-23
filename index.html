@@ -1391,6 +1391,191 @@ function deleteSaved(id){
 
 
 </script>
+
+<script>
+/* =========================================================
+   🔥 PRO ADDON — CLIENT MODE (SAFE EXTENSION)
+   ❌ TIDAK MENGUBAH KODE ASLI
+========================================================= */
+(function(){
+
+const CLIENT_KEY = "kpr_clients_v1";
+
+/* ---------- UTIL ---------- */
+function rupiah(n){
+  if(!isFinite(n)) return "Rp 0";
+  return "Rp " + Math.round(n).toLocaleString("id-ID");
+}
+function loadClients(){
+  try { return JSON.parse(localStorage.getItem(CLIENT_KEY)) || []; }
+  catch { return []; }
+}
+function saveClients(d){
+  localStorage.setItem(CLIENT_KEY, JSON.stringify(d));
+}
+
+/* ---------- TAMBAH INPUT NAMA KLIEN ---------- */
+function injectClientInput(){
+  const card = document.getElementById("input-card");
+  if(!card || document.getElementById("clientName")) return;
+
+  const wrap = document.createElement("div");
+  wrap.className = "form-row";
+  wrap.innerHTML = `
+    <label>Nama Klien / Pembeli</label>
+    <input id="clientName" class="input" placeholder="Contoh: Budi Santoso">
+  `;
+  card.prepend(wrap);
+}
+
+/* ---------- TAMBAH TOMBOL PRO ---------- */
+function injectButtons(){
+  const controls = document.querySelector("#result-card .controls");
+  if(!controls || document.getElementById("saveClient")) return;
+
+  const saveBtn = document.createElement("button");
+  saveBtn.id = "saveClient";
+  saveBtn.className = "btn ghost";
+  saveBtn.textContent = "👤 Simpan Klien";
+
+  const listBtn = document.createElement("button");
+  listBtn.id = "showClients";
+  listBtn.className = "btn ghost";
+  listBtn.textContent = "📋 Klien";
+
+  controls.prepend(listBtn);
+  controls.prepend(saveBtn);
+}
+
+/* ---------- PANEL DATA KLIEN ---------- */
+function injectPanel(){
+  const area = document.getElementById("result-area");
+  if(!area || document.getElementById("clientPanel")) return;
+
+  const panel = document.createElement("div");
+  panel.id = "clientPanel";
+  panel.className = "card";
+  panel.style.display = "none";
+  panel.style.marginTop = "16px";
+  panel.innerHTML = `
+    <h3 style="margin-top:0">👤 Data Klien</h3>
+    <div id="clientList" style="display:grid;gap:12px"></div>
+  `;
+  area.prepend(panel);
+}
+
+/* ---------- SIMPAN KLIEN ---------- */
+function saveClient(){
+  if(!window._lastResult){
+    alert("Hitung simulasi terlebih dahulu");
+    return;
+  }
+
+  const d = window._lastResult.inputs;
+  const s = window._lastResult.summary;
+
+  const data = loadClients();
+  data.unshift({
+    id: Date.now(),
+    date: new Date().toLocaleString("id-ID"),
+    client: document.getElementById("clientName")?.value || "-",
+    bank: d.bank,
+    price: d.priceAdjusted,
+    dp: d.dpAdjusted,
+    plafond: s.schedule[0]?.startBalance || 0,
+    years: d.years,
+    rate: d.rate,
+    monthly: s.monthly
+  });
+
+  saveClients(data);
+  alert("✅ Klien berhasil disimpan");
+}
+
+/* ---------- RENDER LIST ---------- */
+function renderClients(){
+  const panel = document.getElementById("clientPanel");
+  const list = document.getElementById("clientList");
+  if(!panel || !list) return;
+
+  panel.style.display = panel.style.display === "none" ? "block" : "none";
+  list.innerHTML = "";
+
+  const data = loadClients();
+  if(!data.length){
+    list.innerHTML = "<p class='small'>Belum ada data klien</p>";
+    return;
+  }
+
+  data.forEach(d=>{
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <div style="display:flex;justify-content:space-between;gap:12px">
+        <div>
+          <strong>${d.client}</strong><br>
+          <span class="small">${d.date}</span><br><br>
+          💰 Harga: <b>${rupiah(d.price)}</b><br>
+          💳 DP: <b>${rupiah(d.dp)}</b><br>
+          🏦 Plafon: <b>${rupiah(d.plafond)}</b><br>
+          📆 Tenor: ${d.years} th<br>
+          📈 Bunga: ${d.rate}%<br>
+          💸 <b>${rupiah(d.monthly)}/bulan</b>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="btn ghost" onclick="shareClient(${d.id})">📤 WA</button>
+          <button class="btn ghost" onclick="deleteClient(${d.id})">🗑️</button>
+        </div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+/* ---------- SHARE WA ---------- */
+window.shareClient = function(id){
+  const d = loadClients().find(x=>x.id===id);
+  if(!d) return;
+
+  const msg =
+`📌 *Simulasi KPR*
+
+👤 *Klien*: ${d.client}
+🏦 Bank: ${d.bank}
+
+💰 Harga: ${rupiah(d.price)}
+💳 DP: ${rupiah(d.dp)}
+🏦 Plafon: ${rupiah(d.plafond)}
+
+📆 Tenor: ${d.years} tahun
+📈 Bunga: ${d.rate}%
+💸 *Angsuran: ${rupiah(d.monthly)}/bulan*
+
+_Kalkulator by dhitoproperty.id_`;
+
+  window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
+};
+
+/* ---------- DELETE ---------- */
+window.deleteClient = function(id){
+  if(!confirm("Hapus data klien ini?")) return;
+  saveClients(loadClients().filter(x=>x.id!==id));
+  renderClients();
+};
+
+/* ---------- INIT ---------- */
+document.addEventListener("DOMContentLoaded", ()=>{
+  injectClientInput();
+  injectButtons();
+  injectPanel();
+
+  document.getElementById("saveClient")?.addEventListener("click", saveClient);
+  document.getElementById("showClients")?.addEventListener("click", renderClients);
+});
+
+})();
+</script>
+
     </body>
     </html>
     
