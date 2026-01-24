@@ -10,150 +10,156 @@
 
 <style>
 /* =========================================================
-   🟦 MODE TERANG (DEFAULT) — iOS STYLE
+   🍎 iOS 26 DESIGN SYSTEM — CLEAN & PRO
 ========================================================= */
 :root {
   --bg: #f5f5f7;
-  --bg2: #ffffffcc;
+  --bg2: rgba(255,255,255,0.75);
   --card: #ffffff;
-  --muted: #6e6e73;
   --text: #1c1c1e;
+  --muted: #6e6e73;
+  --line: rgba(0,0,0,0.08);
+
   --accent: #007aff;
-  --accent-soft: #e5f0ff;
-  --accent-weak: rgba(0,122,255,0.18);
-  --radius: 16px;
-  --shadow: 0 6px 18px rgba(0,0,0,0.08);
+  --accent-soft: rgba(0,122,255,0.12);
+  --accent-weak: rgba(0,122,255,0.22);
+
+  --radius: 18px;
+  --radius-sm: 14px;
+  --shadow: 0 8px 30px rgba(0,0,0,0.08);
 }
 
 /* =========================================================
-   🌙 MODE GELAP — iOS DARK
+   🌙 DARK MODE — iOS 26
 ========================================================= */
 body.dark {
   --bg: #000000;
-  --bg2: #1c1c1ecc;
+  --bg2: rgba(28,28,30,0.78);
   --card: #1c1c1e;
   --text: #f2f2f7;
   --muted: #a1a1a6;
+  --line: rgba(255,255,255,0.08);
+
   --accent: #0a84ff;
-  --accent-soft: rgba(10,132,255,0.15);
+  --accent-soft: rgba(10,132,255,0.18);
   --accent-weak: rgba(10,132,255,0.28);
-  --shadow: 0 8px 26px rgba(0,0,0,0.65);
+
+  --shadow: 0 14px 40px rgba(0,0,0,0.7);
 }
 
 /* =========================================================
-   🔤 BASE STYLE
+   🔤 BASE RESET
 ========================================================= */
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
-               "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  transition: background .25s, color .25s;
+  font-family: -apple-system, BlinkMacSystemFont,
+    "SF Pro Display", "SF Pro Text",
+    "Segoe UI", Roboto, Helvetica, Arial;
+  transition: background .3s ease, color .3s ease;
 }
 
 /* =========================================================
-   🧭 HEADER — iOS Translucent Navigation Bar
+   🧭 iOS NAVBAR (TRANSLUCENT)
 ========================================================= */
 .topbar {
   position: sticky;
   top: 0;
-  backdrop-filter: saturate(180%) blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  z-index: 20;
+  backdrop-filter: saturate(180%) blur(22px);
+  -webkit-backdrop-filter: blur(22px);
   background: var(--bg2);
-  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  padding: 14px 20px;
   display: flex;
   align-items: center;
-  gap: 15px;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-  z-index: 10;
+  gap: 14px;
 }
 
 .logo {
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   border-radius: 14px;
-  background: var(--accent);
+  background: linear-gradient(145deg, #0a84ff, #0060df);
+  color: #fff;
   display: flex;
-  justify-content: center;
   align-items: center;
-  color: white;
+  justify-content: center;
   font-weight: 800;
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .brand h1 {
   margin: 0;
-  font-size: 1.22rem;
+  font-size: 1.15rem;
   font-weight: 700;
 }
 
 .brand p {
   margin: 0;
-  font-size: .85rem;
-  opacity: .8;
+  font-size: .82rem;
+  color: var(--muted);
 }
 
 /* =========================================================
-   🌗 FIXED iOS CONTROL (THEME SWITCH)
+   🌗 FLOATING THEME SWITCH (iOS)
 ========================================================= */
 .theme-float {
   position: fixed;
   top: 16px;
   right: 16px;
-  z-index: 999999;
-  backdrop-filter: blur(14px) saturate(180%);
-  -webkit-backdrop-filter: blur(14px);
+  z-index: 9999;
   background: var(--bg2);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   padding: 8px 14px;
-  border-radius: 30px;
+  border-radius: 999px;
   box-shadow: var(--shadow);
-  display: flex;
-  align-items: center;
 }
 
-/* iOS SWITCH */
+/* SWITCH */
 .switch {
   position: relative;
-  width: 56px;
-  height: 30px;
+  width: 52px;
+  height: 28px;
 }
 
 .switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+  display: none;
 }
 
 .slider {
   position: absolute;
   inset: 0;
-  cursor: pointer;
-  background: #b8b8bd;
-  border-radius: 30px;
+  border-radius: 999px;
+  background: #c7c7cc;
   transition: .3s;
 }
 
 .slider:before {
   content: "";
   position: absolute;
-  height: 24px;
-  width: 24px;
+  width: 22px;
+  height: 22px;
   left: 3px;
-  bottom: 3px;
-  background: white;
+  top: 3px;
+  background: #fff;
   border-radius: 50%;
   transition: .3s;
 }
 
-.slider::after {
+.slider:after {
   content: "🌙";
   position: absolute;
-  right: 8px;
+  right: 7px;
   top: 4px;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 input:checked + .slider {
@@ -161,52 +167,52 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-  transform: translateX(26px);
+  transform: translateX(24px);
 }
 
-input:checked + .slider::after {
+input:checked + .slider:after {
   content: "☀️";
-  left: 8px;
+  left: 7px;
   right: auto;
 }
 
 /* =========================================================
-   📐 LAYOUT
+   📐 LAYOUT — SIMPEL & LEGA
 ========================================================= */
 .wrap {
   max-width: 1020px;
-  margin: 20px auto;
+  margin: 24px auto;
   padding: 12px;
 }
 
 .grid {
   display: grid;
-  gap: 20px;
+  gap: 22px;
 }
 
-@media (min-width: 980px) {
+@media (min-width: 960px) {
   .grid {
     grid-template-columns: 380px 1fr;
   }
 }
 
 /* =========================================================
-   🧊 iOS CARD STYLE
+   🧊 CARD iOS 26
 ========================================================= */
 .card {
   background: var(--card);
-  padding: 20px;
   border-radius: var(--radius);
+  padding: 20px;
   box-shadow: var(--shadow);
   transition: background .3s, color .3s;
 }
 
 /* =========================================================
-   🔢 INPUT iOS
+   🔢 INPUT — CUSTOM (NO CHROME UI)
 ========================================================= */
 label {
   display: block;
-  font-size: .85rem;
+  font-size: .82rem;
   color: var(--muted);
   margin-bottom: 6px;
   font-weight: 600;
@@ -214,52 +220,64 @@ label {
 
 .input {
   width: 100%;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid var(--accent-weak);
+  padding: 13px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
   background: var(--card);
   color: var(--text);
-  font-size: .98rem;
-  transition: 0.2s;
+  font-size: .95rem;
+  appearance: none;
 }
 
 .input:focus {
+  outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 4px var(--accent-soft);
-  outline: none;
 }
 
 .input::placeholder {
   color: var(--muted);
 }
 
-/* ROW */
-.row {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+/* HILANGKAN ARROW NUMBER */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
-
-.col { flex: 1; }
+input[type=number] {
+  -moz-appearance: textfield;
+}
 
 /* =========================================================
-   🟦 iOS BUTTON
+   🧩 FORM ROW
 ========================================================= */
-.btn {
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: var(--accent);
-  color: white;
-  font-weight: 700;
-  cursor: pointer;
-  border: none;
-  transition: .25s;
-  letter-spacing: .2px;
-  font-size: .9rem;
+.row {
+  display: flex;
+  gap: 12px;
 }
 
-.btn:hover {
-  opacity: .87;
+.col {
+  flex: 1;
+}
+
+/* =========================================================
+   🔵 BUTTON — iOS SOLID & GHOST
+========================================================= */
+.btn {
+  padding: 13px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: .9rem;
+  border: none;
+  cursor: pointer;
+  transition: transform .15s ease, opacity .2s;
+}
+
+.btn:active {
+  transform: scale(.97);
 }
 
 .btn.ghost {
@@ -273,55 +291,49 @@ label {
 }
 
 /* =========================================================
-   📊 TABLE
+   📊 TABLE — CLEAN iOS
 ========================================================= */
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: .88rem;
+  font-size: .85rem;
 }
 
 th {
+  text-align: right;
   padding: 10px 8px;
   color: var(--muted);
-  text-align: right;
-  border-bottom: 2px solid var(--accent-weak);
+  border-bottom: 2px solid var(--line);
 }
 
 td {
-  padding: 10px 8px;
-  color: var(--text);
-  border-bottom: 1px solid var(--accent-weak);
   text-align: right;
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--line);
 }
 
-.left { text-align: left; }
+.left {
+  text-align: left;
+}
 
 /* =========================================================
-   📈 FIX RESULT AREA SUPAYA TIDAK MENGECIL SAAT HITUNG
+   📈 RESULT AREA — STABLE HEIGHT
 ========================================================= */
 #result-card {
   display: flex;
   flex-direction: column;
-  min-height: 600px;
+  min-height: 620px;
 }
 
 #result-area {
   flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 500px;
-}
-
-#result-area > div {
-  flex: 1;
 }
 
 canvas#kprChart {
-  min-height: 300px !important;
-  max-height: 420px !important;
-  display: block;
   width: 100%;
+  max-height: 420px;
 }
 </style>
 </head>
